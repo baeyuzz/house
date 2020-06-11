@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ssafy.happyhouse.dto.Notice;
 import com.ssafy.happyhouse.dto.QnA;
 import com.ssafy.happyhouse.service.QnAService;
+import com.ssafy.happyhouse.util.Algo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -71,6 +74,21 @@ public class QnAController {
 	@DeleteMapping("/{qna_no}")
 	public ResponseEntity<Boolean> deleteQnA(@PathVariable int qna_no) {
 		return new ResponseEntity<Boolean>(service.deleteQnA(qna_no), HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "제목으로 Q&A 검색")
+	@ResponseBody
+	@PostMapping("/search")
+	private ResponseEntity<List<QnA>> searchQna(@RequestBody Map<String, Object> map) {
+		List<QnA> qnaList = service.getAllQnA();
+		String title = (String) map.get("title");
+		
+		// 공지사항을 제목으로 검색할때 KMP 알고리즘 사용
+		if(title != null && title.length() > 0) {
+			qnaList = Algo.KMP2(qnaList, title);
+		}
+		
+		return new ResponseEntity<List<QnA>>(qnaList, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "Reply 등록")

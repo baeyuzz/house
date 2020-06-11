@@ -95,5 +95,4 @@ public class QnA {
 				+ ", reply_datetime=" + reply_datetime + ", reply_userid=" + reply_userid + "]";
 	}
 	
-	
 }

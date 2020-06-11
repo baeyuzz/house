@@ -50,11 +50,12 @@ import http from "@/http-common.js";
       data(){
         return {
           title : "",
+          searchlist: this.$store.state.qnaItems,
         }
       },
       computed : {
         qnalist(){
-          return this.$store.state.qnaItems;
+          return this.searchlist;
           },
         name() {
           return this.$store.state.name;
@@ -66,16 +67,18 @@ import http from "@/http-common.js";
         },
       methods: {
         searchQna() {
-          http.post("/qna/search",{
+          console.log('click search');
+          http.post("/qna/search/",{
             title : this.title
           })
           .then(response => {
-            this.qnaist = response.data;
+          this.searchlist = response.data;
           })
           .catch(err => {
             alert("Error : ", err);
           });
         },
+ 
         getQna(no) {
             console.log('getQna -> '+ no);
             this.$router.push('/qna/'+no);
