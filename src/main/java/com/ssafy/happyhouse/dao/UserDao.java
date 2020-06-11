@@ -48,4 +48,12 @@ public interface UserDao {
 	 * @param id	삭제할 유저의 id
 	 */
 	public int deleteUser(String id);
+	
+	
+	/**
+	 * 아이디를 통해 유저의 비밀번호 변경
+	 * @param userid	유저의 id
+	 * @param userpwd 
+	 */
+	public int changePwd(String userid, String userpwd);
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class UserController {
 	}
 
 	/*
-	 *  .go Mapping
+	 * .go Mapping
 	 */
 	@GetMapping("/login.go")
 	private String loginGo(HttpServletRequest request, Model model) {
@@ -70,7 +71,7 @@ public class UserController {
 		session.setAttribute("name", user.getUsername());
 		return "joincheck";
 	}
-	
+
 	@GetMapping("/useredit.go")
 	private String editGo(Model model, HttpSession session) {
 		String id = (String) session.getAttribute("id");
@@ -79,56 +80,21 @@ public class UserController {
 		model.addAttribute("user", userInfo);
 		return "useredit";
 	}
-	
+
 	@GetMapping("/removeConfirm.go")
 	private String removeGo() {
 		return "removeConfirm";
 	}
-	
+
 	@GetMapping("/findpw.go")
 	private String findPwGo() {
 		return "find_pw";
 	}
-	
+
 	/*
 	 * .do Mapping
 	 */
-	
-	@ApiOperation(value = "로그인")
-	@ResponseBody
-	@PostMapping("/login")
-	private ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> map, HttpSession session) {
-		String userid = (String)map.get("userid");
-		String userpwd = (String)map.get("userpwd");
-		
-		UserInfo user = new UserInfo();
-		user.setUserid(userid);
-		user.setUserpwd(userpwd);
-		String name = service.login(user);
 
-		HashMap<String, Object> ret = new HashMap<>();
-		
-		if (name != null) {
-			// 로그인 성공
-			System.out.println("로그인 성공");
-			session.setAttribute("id", userid);
-			session.setAttribute("name", name);
-			// 유저 == 관리자라면 추가적인 설정
-			if (userid.equals("admin")) {
-				session.setAttribute("isAdmin", true);
-			}
-			
-			ret.put("state", true);
-			ret.put("name", name);
-		} else {
-			// 로그인 실패
-			System.out.println("로그인 실패");
-			
-			ret.put("state", false);
-		}
-		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
-	}
-	
 	@PostMapping("/login.do")
 	private String login2(HttpServletRequest request, HttpServletResponse response, Model model, HttpSession session,
 			String userid, String userpwd) {
@@ -192,21 +158,6 @@ public class UserController {
 		}
 	}
 
-	@ApiOperation(value = "로그아웃")
-	@ResponseBody
-	@GetMapping("/logout")
-	private ResponseEntity<String> logout(HttpSession session) {
-		session.invalidate();
-		return new ResponseEntity<String>("logout", HttpStatus.OK);
-	}
-	
-	@GetMapping("/logout.do")
-	private String logout2(HttpSession session) {
-		session.invalidate();
-
-		return "redirect:/";
-	}
-
 	@GetMapping("/viewinfo.do")
 	private String viewInfo(HttpSession session, Model model) {
 		String id = (String) session.getAttribute("id");
@@ -217,14 +168,10 @@ public class UserController {
 		return "viewinfo";
 	}
 
-	
-
 	@GetMapping("join.do")
 	private String join() {
 		return "redirect:/";
 	}
-
-	
 
 	@PostMapping("/edit.do")
 	private String edit(Model model, HttpSession session, UserInfo user) {
@@ -238,8 +185,6 @@ public class UserController {
 		return "viewinfo";
 	}
 
-	
-
 	@GetMapping("/remove.do")
 	private String unjoin(HttpSession session) {
 		String id = (String) session.getAttribute("id");
@@ -249,7 +194,7 @@ public class UserController {
 	}
 
 	@PostMapping("/resetpw.do")
-	private String resetPw(Model model, String password1,String password2, HttpSession session ) {
+	private String resetPw(Model model, String password1, String password2, HttpSession session) {
 		if (!password1.equals(password2)) {
 			model.addAttribute("pwUnmatch", true);
 			return "reset_pw";
@@ -260,14 +205,15 @@ public class UserController {
 		String name = info.getUsername();
 		String address = info.getAddress();
 		String email = info.getEmail();
-		
+
 		UserInfo userInfo = new UserInfo(id, name, password1, email, address, "");
 		service.modifyUser(userInfo);
 		return "redirect:/";
 	}
 
 	@PostMapping("/findpw.do")
-	private String findPw(HttpSession session, Model model, String userid, String username, String email) throws SQLException {
+	private String findPw(HttpSession session, Model model, String userid, String username, String email)
+			throws SQLException {
 		UserInfo userInfo = service.search(userid);
 		if (userInfo != null) {
 			System.out.println("아이디 존재");
@@ -282,34 +228,136 @@ public class UserController {
 			System.out.println("아이디 없음");
 			model.addAttribute("noInfo", true);
 		}
-		
+
 		session.setAttribute("id", userid);
 
 		return "reset_pw";
 	}
 
-	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	@ApiOperation(value = "로그인")
+	@ResponseBody
+	@PostMapping("/login")
+	private ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> map, HttpSession session) {
+		String userid = (String) map.get("userid");
+		String userpwd = (String) map.get("userpwd");
+
+		UserInfo user = new UserInfo();
+		user.setUserid(userid);
+		user.setUserpwd(userpwd);
+		String name = service.login(user);
+
+		HashMap<String, Object> ret = new HashMap<>();
+
+		if (name != null) {
+			// 로그인 성공
+			System.out.println("로그인 성공");
+			session.setAttribute("id", userid);
+			session.setAttribute("name", name);
+			// 유저 == 관리자라면 추가적인 설정
+			if (userid.equals("admin")) {
+				session.setAttribute("isAdmin", true);
+			}
+
+			ret.put("state", true);
+			ret.put("name", name);
+		} else {
+			// 로그인 실패
+			System.out.println("로그인 실패");
+
+			ret.put("state", false);
+		}
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "로그아웃")
+	@ResponseBody
+	@GetMapping("/logout")
+	private ResponseEntity<String> logout(HttpSession session) {
+		session.invalidate();
+		return new ResponseEntity<String>("logout", HttpStatus.OK);
+	}
+
+	@GetMapping("/logout.do")
+	private String logout2(HttpSession session) {
+		session.invalidate();
+
+		return "redirect:/";
+	}
+
 	@ApiOperation(value = "회원가입")
 	@ResponseBody
 	@PostMapping("/join")
 	private ResponseEntity<Map<String, Object>> join(@RequestBody Map<String, Object> map, HttpSession session) {
-		String userid = (String)map.get("userid");
-		String userpwd = (String)map.get("userpwd");
-		String username = (String)map.get("username");
-		String email = (String)map.get("email");
-		String address = (String)map.get("address");
-		
+		String userid = (String) map.get("userid");
+		String userpwd = (String) map.get("userpwd");
+		String username = (String) map.get("username");
+		String email = (String) map.get("email");
+		String address = (String) map.get("address");
+
 		UserInfo user = new UserInfo();
 		user.setUserid(userid);
 		user.setUserpwd(userpwd);
 		user.setUsername(username);
 		user.setEmail(email);
 		user.setAddress(address);
+
+		HashMap<String, Object> ret = new HashMap<>();
+		ret.put("state", service.addUser(user));
+
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "비밀번호 찾기")
+	@ResponseBody
+	@PostMapping("/findpw")
+	private ResponseEntity<Map<String, Object>> findPw2(@RequestBody Map<String, Object> map, HttpSession session) {
+		String userid = (String) map.get("userid");
+		String username = (String) map.get("username");
+		String email = (String) map.get("email");
+
+		session.setAttribute("id", userid);
 		
 		HashMap<String, Object> ret = new HashMap<>();
-		ret.put("state",service.addUser(user));
 		
-		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
+		UserInfo userInfo = service.search(userid);
+		
+		if (userInfo != null) {
+			System.out.println("아이디 존재");
+			if (userInfo.getUsername().equals(username) && userInfo.getEmail().equals(email)) {
+				System.out.println("입력정보 일치");
+				ret.put("userid", userid);
+				ret.put("state", true);
+			} else {
+				System.out.println("입력정보 불일치");
+				ret.put("state", false);
+			}
+		} else {
+			System.out.println("아이디 없음");
+			ret.put("state", false);
+		}
+
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "비밀번호 재설정")
+	@ResponseBody
+	@PostMapping("/resetpw/{userid}")
+	private ResponseEntity<Map<String, Object>> resetPw2(@PathVariable String userid, @RequestBody Map<String, Object> map, HttpSession session) {
+
+		HashMap<String, Object> ret = new HashMap<>();
+
+		System.out.println(userid);
+		String userpwd = (String) map.get("pw1");
+		String pw2 = (String) map.get("pw2");
+
+		if (!userpwd.equals(pw2)) {
+			System.out.println("different pwd");
+			ret.put("state", false);
+		} else
+			ret.put("state", service.changePw(userid, userpwd));
+
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 
 }

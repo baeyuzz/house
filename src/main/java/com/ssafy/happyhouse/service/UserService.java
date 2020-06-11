@@ -43,4 +43,10 @@ public interface UserService {
 	 * @param id	삭제할 유저의 id
 	 */
 	public boolean deleteUser(String id);
+
+	/**
+	 * 아이디를 통해 유저의 비밀번호 변경
+	 * @param id, pwd
+	 */
+	public boolean changePw(String userid, String userpwd);
 }

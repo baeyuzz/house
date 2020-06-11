@@ -19,8 +19,5 @@ qna에 리플달기 -> 해결 버튼 누르기 -> 나중에 다른ㄱ ㅓ 다 �
 1. 위에 vue board 타이틀 바꾸기
 2. http://localhost:8080/happyhouse/index.html 접속하면 테이블 바로 안 뜸
 3. 회원 정보 뷰
-4. 관심지역 뷰 ㅇ
-5. 가입 뷰 ㅇ
 6. 페이징 
 7. 비번 찾기 
-8. qna css ㅇ

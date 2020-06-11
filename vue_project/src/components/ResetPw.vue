@@ -1,12 +1,8 @@
-<!-- vue에 쓸 코드 정렬할 용도로 만듦 -->
 <template>
 <div class="container">
 
 	<h3>비밀번호 재설정</h3>
 	<div class="center-block" align="center">
-		<!-- <div v-if="different">
-				<h4>동일한 비밀번호를 입력해주세요</h4>
-		</div> -->
 		<form method="post" action="#" class="form-horizontal">
 
 			<!-- pwd1 -->
@@ -34,13 +30,13 @@ import http from "@/http-common.js";
 export default {
     data() {
         return {
-		   pw1 : '',
-		   pw2 : '',
+			pw1 : '',
+			pw2 : '',
         }
     },
     methods: {
-        findpw () {
-            http.post('/user/resetpw', {
+        resetpw () {
+            http.post('/user/resetpw/'+this.$route.params.userid, {
                 pw1: this.pw1
                 , pw2: this.pw2
             })
@@ -49,11 +45,11 @@ export default {
                     alert("비밀번호 변경 성공! 로그인 해주세요")
                     this.$router.push('/');
                 } else {
-                    alert("일치하는 정보 없음")
+                alert("Error ! 동일한 비밀번호를 입력해주세요");
                 }
             })
             .catch((error) => {
-                alert("Error ! 동일한 비밀번호를 입력해주세요\n",error);
+                alert("Error ! ",error);
             });
         }
     },

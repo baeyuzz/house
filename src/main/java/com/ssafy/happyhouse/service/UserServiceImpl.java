@@ -54,5 +54,11 @@ public class UserServiceImpl implements UserService {
 		int n = userDao.deleteUser(id);
 		return n > 0;
 	}
+
+	@Override
+	public boolean changePw(String userid, String userpwd) {
+		return userDao.changePwd(userid, userpwd) > 0;
+		
+	}
 		
 }

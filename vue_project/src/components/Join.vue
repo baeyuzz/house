@@ -10,7 +10,6 @@
 
 
 			<form method="post" action="#">
-                <!-- ${pageContext.request.contextPath}/user/joinCheck.go" -->
 				<!-- ID -->
 				<div class="form-group" align="left">
 					<label for="">아이디</label> 
