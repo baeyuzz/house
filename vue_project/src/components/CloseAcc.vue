@@ -32,7 +32,7 @@ export default {
 	
 }
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .button {
     border: none;
     color:#fff;

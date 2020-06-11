@@ -66,7 +66,7 @@ export default {
     console.log('Notice Detail created() called!');
     this.no = this.$route.params.no;
     http
-      .get("/notice/detail/" + this.no)
+      .get("/notice/detail/" + this.no + "/" + this.admin)
       .then(response => {
         this.notice = response.data;
       })
@@ -76,10 +76,23 @@ export default {
   },
   methods: {
       goModifyPage() {
-
+        this.$router.push('/notice/modify/' + this.no);
       }
       , deleteNotice() {
-
+        http
+          .delete('/notice/delete/' + this.no)
+          .then(response => {
+            if(response.data) {
+              alert('공지사항이 삭제되었습니다!');
+            } else {
+              alert('공지사항 삭제에 실패했습니다!');
+            }
+            this.$router.push('/notice/list');
+          })
+          .catch(error => {
+            alert('Error: ' + error);
+            this.$router.push('/notice/list');
+          });
       }
   },
 };

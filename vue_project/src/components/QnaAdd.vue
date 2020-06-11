@@ -80,6 +80,19 @@ export default {
   width: 700px;
   margin: auto;
 }
+input,
+textarea {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+input, textarea {
+  outline: none;
+  border: 0;
+}
+textarea {
+  resize: none;
+}
 #content-cell {
   max-height: 700px;
   overflow: scroll;

@@ -7,6 +7,7 @@ const store = new Vuex.Store({
     state: {
         qnaItems: [],
         qna: {}
+
         , name: ''
         , id: ''
         , admin: false

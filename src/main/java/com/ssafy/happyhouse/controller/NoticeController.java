@@ -48,11 +48,13 @@ public class NoticeController {
 	
 	@ApiOperation(value = "공지사항 상세보기")
 	@ResponseBody
-	@GetMapping("/detail/{no}")
-	private ResponseEntity<Notice> getNotice(@PathVariable int no, HttpSession session) {	
+	@GetMapping("/detail/{no}/{isAdmin}")
+	private ResponseEntity<Notice> getNotice(@PathVariable int no,
+										@PathVariable boolean isAdmin,
+										HttpSession session) {	
 		Notice notice = service.getNotice(no);
 		
-		if(!"admin".equals(notice.getUserid())) {
+		if(!isAdmin) {
 			notice.setHitCount(notice.getHitCount() + 1);
 			service.updateHitCount(no);	
 		}

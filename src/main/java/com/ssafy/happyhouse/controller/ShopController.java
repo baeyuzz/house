@@ -4,15 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,35 +94,5 @@ public class ShopController {
 		}
 		
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
-	}
-	
-	@GetMapping("/pageNav.do")
-	private String envPaging(int pg, HttpSession session, Model model) {
-		String city = (String)session.getAttribute("shop_city");
-		String gu = (String)session.getAttribute("shop_gu");
-		String dong = (String)session.getAttribute("shop_dong");
-		
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("city", city);
-		map.put("gu", gu);
-		map.put("dong", dong);
-		map.put("start", (pg - 1) * 10);
-		map.put("interval", 10);
-		
-		int n = service.countShop(map);
-		
-		List<ShopInfo> list = service.searchAllShop(map);
-		
-		if(list.size() > 0) {
-			model.addAttribute("shopList", list);
-		}
-		
-		if(n > 10) {
-			PageNavigation pageNavigation = 
-					PageNavigation.makePageNavigation(pg, 10, n);
-			model.addAttribute("shopPaging", pageNavigation);
-		}
-		
-		return "interestlist";
 	}
 }

@@ -47,7 +47,7 @@
           </router-link>
         </div>
       </div>
-            <!-- 시간 될 때 여기에 Paging 추가 -->
+      <!-- 시간 될 때 여기에 Paging 추가 -->
     </section>
   </div>
 </template>

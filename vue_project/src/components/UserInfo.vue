@@ -81,7 +81,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #mypage {
 	text-align: center;
 }
@@ -89,6 +89,10 @@ export default {
 #info>p {
 	text-align: left;
 	font-size: 18px;
+}
+
+h3 {
+	text-align: center;
 }
 
 th {

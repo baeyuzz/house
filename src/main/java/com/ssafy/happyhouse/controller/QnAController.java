@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ssafy.happyhouse.dto.Notice;
 import com.ssafy.happyhouse.dto.QnA;
 import com.ssafy.happyhouse.service.QnAService;
 import com.ssafy.happyhouse.util.Algo;

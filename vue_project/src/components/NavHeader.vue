@@ -57,7 +57,7 @@
             </li>
 
             <li v-if="name.length > 0" class="nav-item">
-              <a class="nav-link" href="#">관심지역 보기</a>
+              <router-link class="nav-link" to="/interest/list">관심지역 보기</router-link>
             </li>
           </ul>
         </div>
@@ -86,11 +86,9 @@ export default {
         .catch(error => {
           alert("Error: ", error);
         });
-    },
-    mypage(){
-      
-        this.$router.push("/user/mypage/" + this.$store.state.id);
- 
+    }
+    , mypage() {
+      this.$router.push("/user/mypage/" + this.$store.state.id);
     }
   }
 };
@@ -128,7 +126,7 @@ export default {
 
 #top-menu {
   margin: 0px;
-  background-image: url("http://127.0.0.1:8080/happyhouse/include/headerimg.jpg");
+  background-image: url("/include/headerimg.jpg");
   background-position: center top;
   background-size: cover;
 }
