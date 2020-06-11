@@ -6,44 +6,80 @@
 			<h3 id="title">회원 정보 확인</h3>
 			<div id="info">
 				<table class="table">
+       
 					<tr>
 						<th>아이디</th>
-						<td>${user.userid}</td>
+						<td>{{userid}}</td>
 					</tr>
 					<tr>
 						<th>비밀번호</th>
-						<td>${user.userpwd}</td>
+						<td>{{userpwd}}</td>
 					</tr>
 					<tr>
 						<th>이름</th>
-						<td>${user.username}</td>
-					</tr>
-					<tr>
-						<th>주소</th>
-						<td>${user.address}</td>
+						<td>{{username}}</td>
 					</tr>
 					<tr>
 						<th>이메일</th>
-						<td>${user.email}</td>
+						<td>{{email}}</td>
+					</tr>
+					<tr>
+						<th>주소</th>
+						<td>{{address}}</td>
 					</tr>
 				</table>
 			</div>
 			<div id="infobtn">
-				<a href="${pageContext.request.contextPath}/"
-					class="btn button pl-2 pr-2" id="ok" role="button">확인</a> <a
-					href="${pageContext.request.contextPath}/user/useredit.go"
-					class="btn button pl-2 pr-2" id="edit" role="button">수정</a> <a
-					href="${pageContext.request.contextPath}/user/removeConfirm.go"
-					class="btn button pl-2 pr-2" id="delId" role="button">회원 탈퇴</a>
+				<a @click.prevent="goMain" class="btn button pl-2 pr-2" id="ok" role="button">확인</a>
+				<a @click.prevent="update" class="btn button pl-2 pr-2" id="edit" role="button">수정</a>
+				<a @click.prevent="close" class="btn button pl-2 pr-2" id="delId" role="button">회원 탈퇴</a>
 			</div>
 		</div>
 		<div class="col-md-4"></div>
 	</div>
 </template>
+
 <script>
+import http from "@/http-common.js";
+
 export default {
-    
-}
+  data() {
+    return {
+		userid : this.$store.state.id,
+		userpwd: '',
+		username: '',
+		email : '',
+		address : '',
+    };
+  },
+  created() {
+    http
+      .get("/user/mypage/" + this.userid )
+      .then(response => {
+        this.username = response.data.username;
+        this.userpwd = response.data.userpwd;
+        this.email = response.data.email;
+        this.address = response.data.address;
+      })
+      .catch(error => {
+        alert("Error: ", error);
+      });
+  },
+  methods: {
+    update() {
+     
+          this.$router.push("/user/update");
+        
+	},
+	goMain(){
+		this.$router.push("/");
+	},
+	close(){
+		this.$router.push("/user/closeAccount")
+		
+	}
+  }
+};
 </script>
 <style>
 #mypage {

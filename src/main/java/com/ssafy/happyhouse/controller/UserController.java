@@ -317,11 +317,11 @@ public class UserController {
 		String email = (String) map.get("email");
 
 		session.setAttribute("id", userid);
-		
+
 		HashMap<String, Object> ret = new HashMap<>();
-		
+
 		UserInfo userInfo = service.search(userid);
-		
+
 		if (userInfo != null) {
 			System.out.println("아이디 존재");
 			if (userInfo.getUsername().equals(username) && userInfo.getEmail().equals(email)) {
@@ -343,7 +343,8 @@ public class UserController {
 	@ApiOperation(value = "비밀번호 재설정")
 	@ResponseBody
 	@PostMapping("/resetpw/{userid}")
-	private ResponseEntity<Map<String, Object>> resetPw2(@PathVariable String userid, @RequestBody Map<String, Object> map, HttpSession session) {
+	private ResponseEntity<Map<String, Object>> resetPw2(@PathVariable String userid,
+			@RequestBody Map<String, Object> map, HttpSession session) {
 
 		HashMap<String, Object> ret = new HashMap<>();
 
@@ -359,5 +360,63 @@ public class UserController {
 
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
+
+	@ApiOperation(value = "마이페이지")
+	@ResponseBody
+	@GetMapping("/mypage/{userid}")
+	private ResponseEntity<Map<String, Object>> mypage(@PathVariable String userid, HttpSession session) {
+		
+		System.out.println(userid);
+		UserInfo userInfo = service.search(userid);
+
+		HashMap<String, Object> ret = new HashMap<>();
+
+		ret.put("state", true);
+		ret.put("username", userInfo.getUsername());
+		ret.put("userpwd", userInfo.getUserpwd());
+		ret.put("email", userInfo.getEmail());
+		ret.put("address", userInfo.getAddress());
+		
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+	
+	
+	@ApiOperation(value = "회원정보 수정")
+	@ResponseBody
+	@PostMapping("/update")
+	private ResponseEntity<Map<String, Object>> userUpdate(@RequestBody Map<String, Object> map, HttpSession session) {
+//		String id = (String) session.getAttribute("id");
+		HashMap<String, Object> ret = new HashMap<>();
+
+		String userid = (String) map.get("userid");
+		UserInfo user = service.search(userid);
+		
+		String userpwd = (String) map.get("userpwd");
+		String username = (String) map.get("username");
+		String email = (String) map.get("email");
+		String address = (String) map.get("address");
+		
+		user.setAddress(address);
+		user.setEmail(email);
+		user.setUsername(username);
+		user.setUserpwd(userpwd);
+		
+		ret.put("state", service.modifyUser(user));
+		
+
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/closeAccount/{userid}")
+	private ResponseEntity<Map<String, Object>> close(@PathVariable String userid, HttpSession session) {
+		HashMap<String, Object> ret = new HashMap<>();
+
+		ret.put("state", service.deleteUser(userid));
+		session.invalidate();
+		
+		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+	}
+
 
 }

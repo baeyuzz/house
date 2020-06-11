@@ -24,6 +24,9 @@ import QnaList from './components/QnaList.vue';
 import QnaDetail from './components/QnaDetail.vue';
 import QnaAdd from './components/QnaAdd.vue';
 import QnaModify from './components/QnaModify.vue'
+import UserInfo from './components/UserInfo.vue';
+import UserUpdate from './components/UserUpdate.vue';
+import CloseAcc from './components/CloseAcc.vue';
 
 Vue.use(VueRouter);
 
@@ -38,6 +41,9 @@ const router = new VueRouter({
     , {path: '/user/join', component: Join}
     , {path: '/user/findpw', component: FindPw}
     , {path: '/user/resetpw/:userid', component: ResetPw}
+    , {path: '/user/mypage/:userid', component: UserInfo}
+    , {path: '/user/update', component: UserUpdate}
+    , {path: '/user/closeAccount', component: CloseAcc}
     
     , {path:'/qna',component:QnaList}
     , {path:'/qna/:no',component:QnaDetail}
