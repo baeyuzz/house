@@ -288,4 +288,28 @@ public class UserController {
 		return "reset_pw";
 	}
 
+	
+	@ApiOperation(value = "회원가입")
+	@ResponseBody
+	@PostMapping("/join")
+	private ResponseEntity<Map<String, Object>> join(@RequestBody Map<String, Object> map, HttpSession session) {
+		String userid = (String)map.get("userid");
+		String userpwd = (String)map.get("userpwd");
+		String username = (String)map.get("username");
+		String email = (String)map.get("email");
+		String address = (String)map.get("address");
+		
+		UserInfo user = new UserInfo();
+		user.setUserid(userid);
+		user.setUserpwd(userpwd);
+		user.setUsername(username);
+		user.setEmail(email);
+		user.setAddress(address);
+		
+		HashMap<String, Object> ret = new HashMap<>();
+		ret.put("state",service.addUser(user));
+		
+		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
+	}
+
 }

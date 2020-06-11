@@ -16,6 +16,7 @@ import HouseDetail from '@/components/HouseDetail.vue';
 import NoticeList from '@/components/NoticeList.vue';
 import NoticeDetail from '@/components/NoticeDetail.vue';
 import Login from '@/components/Login.vue';
+import Join from '@/components/Join.vue';
 
 import QnaList from './components/QnaList.vue';
 import QnaDetail from './components/QnaDetail.vue';
@@ -32,6 +33,7 @@ const router = new VueRouter({
     , {path: '/notice/list', component: NoticeList}
     , {path: '/notice/detail/:no', component: NoticeDetail}
     , {path: '/user/login', component: Login}
+    , {path: '/user/join', component: Join}
     
     , {path:'/qna',component:QnaList}
     , {path:'/qna/:no',component:QnaDetail}
