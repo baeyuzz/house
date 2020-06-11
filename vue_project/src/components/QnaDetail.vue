@@ -1,56 +1,4 @@
 <template>
-  <!-- <div>
-    <table>
-      <tbody>
-        <tr>
-          <td>번호</td>
-          <td>
-            <span>{{qna.qna_no}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>제목</td>
-          <td>
-            <span>{{qna.qna_title}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>내용</td>
-          <td>
-            <span>{{qna.qna_content}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>등록일</td>
-          <td>
-            <span>{{qna.qna_datetime}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>id</td>
-          <td>
-            <span>{{qna.qna_userid}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <span class="addContainer" @click="movePage">
-              목록
-            </span>
-            <template v-if="qna.qna_userid == id">
-            <span class="addContainer" @click="update(qna.qna_no)">
-              수정
-            </span>
-            <span class="addContainer" @click="deleteQnA(qna.qna_no)">
-              삭제
-            </span>
-            </template>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div> -->
-
    <div>
     <section class="content-box">
      <h2>Q&A</h2>
@@ -67,11 +15,9 @@
             <td class="text-muted">조회수: {{notice.hitCount}}</td>
           </tr> -->
           <tr class="bg-white">
-            <td
-              id="content-cell"
-              class="border border-top-0 border-dark text-left"
-              colspan="4"
-            >{{qna.qna_content}}</td>
+            <td id="content-cell" class="border border-top-0 border-dark text-left" colspan="4">
+              {{qna.qna_content}}
+            </td>
           </tr>
         </table>
         <div class="d-flex justify-content-end">
