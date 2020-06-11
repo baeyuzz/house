@@ -2,21 +2,27 @@ package com.ssafy.happyhouse.controller;
 
 import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.happyhouse.dto.InterestRegion;
 import com.ssafy.happyhouse.service.InterestRegionService;
 import com.ssafy.happyhouse.util.PageNavigation;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Interest Controller")
@@ -30,25 +36,17 @@ public class InterestController {
 		this.service = service;
 	}
 	
-
-	@GetMapping("/addRegion.go")
-	private String addRegionGo() {
-		return "addRegion";
-	}
-	
-	@GetMapping("/add.do") // interestlist.jsp 에서 관심지역 추가 버튼 누르면 addregion.jsp로 가고 거기서 submit하면 이리로 옴 
-	private String interestAdd(Model model,HttpSession session, String province, String city, String dong) {
-		String id = (String)session.getAttribute("id");
-		service.addInterestRegion(new InterestRegion(province, city, dong, id));
-		return "redirect:/interest/list.do";
+	@ApiOperation(value = "관심지역 추가")
+	@ResponseBody
+	@PostMapping("/add")
+	private ResponseEntity<Boolean> interestRegionAdd(@RequestBody InterestRegion region) {
+		return new ResponseEntity<Boolean>(service.addInterestRegion(region), HttpStatus.OK);
 	}
 
-
-
-	@GetMapping(value = "/list.do")
-	private String interestRegionList(HttpSession session) {
-		String id = (String)session.getAttribute("id");
-		
+	@ApiOperation(value = "관심지역 리스트 조회")
+	@ResponseBody
+	@GetMapping("/list/{id}")
+	private ResponseEntity<Map<String, Object>> interestRegionList(@PathVariable String id) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("id", id);
 		map.put("start", 0);
@@ -58,24 +56,30 @@ public class InterestController {
 		
 		List<InterestRegion> list = service.searchInterestRegion(map);
 		
+		HashMap<String, Object> ret = new HashMap<>();
 		if(list.size() > 0) {
-			session.setAttribute("irList", list);
+			ret.put("list", list);
 		}
 		
 		if(n > 10) {
 			PageNavigation pageNavigation = 
-					PageNavigation.makePageNavigation(1, 10, n, "_ir_");
-			session.setAttribute("irPaging", pageNavigation);
+					PageNavigation.makePageNavigation(1, 10, n);
+			ret.put("hasPaging", true);
+			ret.put("paging", pageNavigation.getNavigator());
+		} else {
+			ret.put("hasPaging", false);
 		}
 		
-		return "interestlist";
+		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
-	@GetMapping("/pageNav.do")
-	private String interestPaging(int pg, HttpSession session) {
-		String id = (String)session.getAttribute("id");
-		
+	@ApiOperation(value = "관심지역 페이지 이동")
+	@ResponseBody
+	@PostMapping("/pagenav")
+	private ResponseEntity<Map<String, Object>> interestPageNav(@RequestBody Map<String, Object> param) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		String id = (String)param.get("id");
+		int pg = Integer.parseInt((String)param.get("pg"));
 		map.put("id", id);
 		map.put("start", (pg - 1) * 10);
 		map.put("interval", 10);
@@ -84,22 +88,26 @@ public class InterestController {
 		
 		List<InterestRegion> list = service.searchInterestRegion(map);
 		
-		if(list.size() > 0) {
-			session.setAttribute("irList", list);
-		}
-		
+		HashMap<String, Object> ret = new HashMap<>();
+
+		ret.put("list", list);
+	
 		if(n > 10) {
 			PageNavigation pageNavigation = 
-					PageNavigation.makePageNavigation(pg, 10, n, "_ir_");
-			session.setAttribute("irPaging", pageNavigation);
+					PageNavigation.makePageNavigation(pg, 10, n);
+			ret.put("hasPaging", true);
+			ret.put("paging", pageNavigation.getNavigator());
+		} else {
+			ret.put("hasPaging", false);
 		}
 		
-		return "interestlist";
+		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
-	@GetMapping("/remove.do")
-	private String interestRemove(Model model, int no) {
-		service.deleteInterestRegion(no);
-		return  "redirect:/interest/list.do";
+	@ApiOperation(value = "관심지역 삭제")
+	@ResponseBody
+	@DeleteMapping("/delete/{no}")
+	private ResponseEntity<Boolean> deleteInterestRegion(@PathVariable int no) {
+		return new ResponseEntity<Boolean>(service.deleteInterestRegion(no), HttpStatus.OK);
 	}
 }

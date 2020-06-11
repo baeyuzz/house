@@ -40,7 +40,6 @@ text-align: center;
 </style>
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class="container">
 	
 		<h4>비밀번호 찾기</h4>

@@ -49,7 +49,6 @@ text-align: center;
 
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class = "container">
 		<c:choose>
 			<c:when test="${infoUnmatch}">

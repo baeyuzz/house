@@ -42,7 +42,6 @@
 
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class="container" align="center">
 
 		<h3>회원가입</h3>

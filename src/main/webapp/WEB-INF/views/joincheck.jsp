@@ -55,7 +55,6 @@ table tr th, table tr td {
 </style>
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class="container center-block" align="center">
 		<h3>회원 정보 확인</h3>
 		<div class="col-lg-3"></div>

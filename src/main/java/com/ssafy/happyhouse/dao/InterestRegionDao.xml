@@ -10,7 +10,7 @@
 		select
 			*
 		from
-			InterestRegion
+			interestregion
 		where
 			id = #{id}
 		limit
@@ -22,21 +22,21 @@
 		select
 			count(*)
 		from
-			InterestRegion
+			interestregion
 		where
 			id = #{value}
 	</select>
 	
 	<insert id="addInterestRegion">
 		insert into
-			InterestRegion(province, city, dong, id)
+			interestregion(province, city, dong, id)
 		values
 			(#{province}, #{city}, #{dong}, #{id})
 	</insert>
 
 	<delete id="deleteInterestRegion">
 		delete from
-			InterestRegion
+			interestregion
 		where
 			no = #{value}
 	</delete>

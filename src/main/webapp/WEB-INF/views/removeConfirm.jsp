@@ -38,7 +38,6 @@
 </style>
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class="container mt-3" align="center">
 		<h4>탈퇴 하시겠습니까?</h4>
 		<div id = "answer">

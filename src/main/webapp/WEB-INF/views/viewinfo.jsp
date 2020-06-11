@@ -70,7 +70,6 @@ table tr th, table tr td {
 </style>
 </head>
 <body>
-	<jsp:include page="top_menu.jsp" />
 	<div class="container">
 		<div class="col-md-4"></div>
 		

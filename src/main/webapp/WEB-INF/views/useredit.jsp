@@ -59,7 +59,6 @@
 
 
 <body>
-	<jsp:include page="top_menu.jsp" />
 
 	<div class="container">
 		<div id="mypage" class="mt-3 mb-3">
