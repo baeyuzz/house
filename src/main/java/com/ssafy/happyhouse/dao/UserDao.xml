@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.ssafy.happyhouse.dao.UserDao">
+
+	<select id="login" resultType="String">
+		select
+			username
+		from
+			ssafy_member
+		where
+			userid = #{userid}
+			and userpwd = #{userpwd}
+	</select>
+	
+	<select id="searchAll" resultType="UserInfo">
+		select
+			*
+		from
+			ssafy_member
+	</select>
+	
+	<select id="search"  resultType="UserInfo">
+		select
+			*
+		from
+			ssafy_member
+		where
+			userid = #{value}
+	</select>
+	
+	<insert id="addUser">
+		insert into 
+			ssafy_member(
+				userid
+				,username
+				,userpwd
+				,email
+				,address
+				)
+		values(
+			#{userid}
+			,#{username}
+			,#{userpwd}
+			,#{email}
+			,#{address}
+			)
+	</insert>
+	
+	<update id="modifyUser">
+		update
+			ssafy_member
+		set
+			userpwd		= #{userpwd}
+			,username	= #{username}
+			,address	= #{address}
+			,email		= #{email}
+		where
+			userid = #{userid}
+	</update>
+	
+	<delete id="deleteUser">
+		delete from
+			ssafy_member
+		where
+			userid = #{value}
+	</delete>
+	
+</mapper>

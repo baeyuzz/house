@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.ssafy.happyhouse.dao.ShopDao">
+
+	<select id="searchAll" resultType="ShopInfo">
+		select
+			*
+		from
+			ShopInfo
+		where
+			city		= #{city}
+			and gu		= #{gu}
+			and dong	= #{dong}
+		limit
+			${start}, ${interval}
+	</select>
+	
+	<select id="countShop" resultType="int">
+		select
+			count(*)
+		from
+			ShopInfo
+		where
+			city		= #{city}
+			and gu		= #{gu}
+			and dong	= #{dong}
+	</select>
+	<!-- 상가정보 추가, 수정, 삭제가 이 프로젝트에서 일어나지 않을 것 같습니다.
+	<insert id="addShop">
+	</insert>
+	<update id="modifyShop">
+	</update>
+	
+	<delete id="deleteShop">
+		delete from
+			ShopInfo
+		where
+			no = #{value}
+	</delete>
+	-->
+</mapper>

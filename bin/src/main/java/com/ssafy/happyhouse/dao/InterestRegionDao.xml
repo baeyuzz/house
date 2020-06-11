@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.ssafy.happyhouse.dao.InterestRegionDao">
+
+	<select id="search"
+		resultType="InterestRegion">
+		select
+			*
+		from
+			InterestRegion
+		where
+			id = #{id}
+		limit
+			${start}, ${interval}
+	</select>
+	
+	<select id="countRegion"
+		resultType="int">
+		select
+			count(*)
+		from
+			InterestRegion
+		where
+			id = #{value}
+	</select>
+	
+	<insert id="addInterestRegion">
+		insert into
+			InterestRegion(province, city, dong, id)
+		values
+			(#{province}, #{city}, #{dong}, #{id})
+	</insert>
+
+	<delete id="deleteInterestRegion">
+		delete from
+			InterestRegion
+		where
+			no = #{value}
+	</delete>
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.ssafy.happyhouse.dao.HouseDao">
+
+	<select id="searchAll"
+		parameterType="HousePageBean"
+		resultType="HouseDeal">
+		select
+			d.no 			as no
+    		,d.dong			as dong
+    		,d.aptname		as aptName
+    		,d.code			as code
+    		,d.dealamount	as dealAmount
+    		,d.buildyear	as buildYear
+    		,d.dealyear		as dealYear
+    		,d.dealmonth	as dealMonth
+    		,d.dealday		as dealDay
+    		,d.area			as area
+    		,d.floor		as floor
+    		,d.jibun		as jibun
+    		,d.type			as type
+    		,d.rentmoney	as rentMoney
+    		,i.img			as img
+		from
+			housedeal d join houseinfo i
+    		on d.dong = i.dong
+    		and d.aptname = i.aptname
+		where
+			type in(${typeInStr})
+			<if test="dong != null">
+				and d.dong like concat('%', #{dong}, '%')
+			</if>
+			<if test="aptname != null">
+	    		and d.aptname like concat('%', #{aptname}, '%')
+			</if>
+		order by
+			${orderBy} ${orderType}
+		limit
+			${start}, ${interval}
+	</select>
+	
+	<select id="search"
+		resultType="HouseDeal">
+		select
+			d.no 			as no
+    		,d.dong			as dong
+    		,d.aptname		as aptName
+    		,d.code			as code
+    		,d.dealamount	as dealAmount
+    		,d.buildyear	as buildYear
+    		,d.dealyear		as dealYear
+    		,d.dealmonth	as dealMonth
+    		,d.dealday		as dealDay
+    		,d.area			as area
+    		,d.floor		as floor
+    		,d.jibun		as jibun
+    		,d.type			as type
+    		,d.rentmoney	as rentMoney
+    		,i.img			as img
+		from
+			housedeal d join houseinfo i
+    		on d.dong = i.dong
+    		and d.aptname = i.aptname
+		where
+			d.no = #{value}
+
+	</select>
+	
+	<select id="numberOfData"
+		parameterType="HousePageBean"
+		resultType="int">
+		select
+			count(*) as cnt
+		from
+			housedeal d join houseinfo i
+    		on d.dong = i.dong
+    		and d.aptname = i.aptname
+    	<where>
+    		type in(${typeInStr})
+			<if test="dong != null">
+				and d.dong like concat('%', #{dong}, '%')
+			</if>
+			<if test="aptname != null">
+	    		and d.aptname like concat('%', #{aptname}, '%')
+			</if>
+    	</where>
+	</select>
+</mapper>

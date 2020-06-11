@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+.search-form {
+	text-align: center;
+	padding: 10px;
+}
+
+.sms-form-center {
+	justify-content: center;
+}
+
+.information {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.table {
+	margin-top: 20px;
+	table-layout: fixed;
+}
+
+th {
+	background: skyblue;
+	cursor: pointer;
+}
+
+th, td {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+th > i {
+	visibility: hidden;
+}
+
+.pagination a {
+	display: inline-block;
+	cursor: pointer;
+}
+
+.nav {
+	display: inline-block;
+}
+
+#nav-container {
+	text-align: center;
+}
