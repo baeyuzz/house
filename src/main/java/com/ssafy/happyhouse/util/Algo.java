@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.ssafy.happyhouse.dto.Notice;
+import com.ssafy.happyhouse.dto.QnA;
 
 public class Algo {
 
@@ -47,6 +48,19 @@ public class Algo {
 			String title = notice.getTitle();
 			if(find(title, pattern, pi)) {
 				ret.add(notice);
+			}
+		}
+		
+		return ret;
+	}
+	public static List<QnA> KMP2(List<QnA> list, String pattern) {
+		int[] pi = getPi(pattern);
+		
+		List<QnA> ret = new LinkedList<QnA>();
+		for(QnA qna : list) {
+			String title = qna.getQna_title();
+			if(find(title, pattern, pi)) {
+				ret.add(qna);
 			}
 		}
 		

@@ -1,35 +1,31 @@
 <template>
-    <div>
-    <table>
-      <tbody>
-        <tr>
-          <td>작성자</td>
-          <td>
-            <input type="text" v-model="id" readonly/>
-          </td>
-        </tr>
-        <tr>
-          <td>제목</td>
-          <td>
-            <input type="text" v-model="qna.qna_title" />
-          </td>
-        </tr>
-        <tr>
-          <td>내용</td>
-          <td>
-            <input type="text" v-model="qna.qna_content" />
-          </td>
-        </tr>
-         <tr>
-          <td colspan="2">
-            <span class="addContainer addBtn" @click="addQna">등록
-            </span>
-          </td> 
-        </tr>
-      </tbody>
-    </table>
-    </div>
+  <div>
+    <section class="content-box">
+     <h2>Q&A</h2>
+      <div class="article-box">
+        <table class="table table-borderless shadow-lg p-3 rounded">
+          <tr>
+            <td class="border border-dark">제목</td>
+            <td class="border border-dark"> 
+              <input type="text" v-model="qna.qna_title"/>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td id="content-cell" class="border border-top-0 border-dark text-left" colspan="2">
+              <textarea v-model="qna.qna_content" />
+            </td>
+          </tr>
+        </table>
+        <div class="d-flex justify-content-end">
+          <router-link class="btn btn-primary m-2" to="/qna" title="목록으로">
+            <i class="fas fa-clipboard-list"></i>
+          </router-link>
+          <span class="btn btn-primary m-2" @click="addQna">등록</span>
 
+        </div>
+      </div>
+    </section>
+  </div>
 
 </template>
 
@@ -76,131 +72,16 @@ export default {
 
 
 <style scoped>
-input:focus {
-  outline: none;
-}
-.inputBox {
-  background: white;
-  height: 50px;
-  line-height: 50px;
-  border-radius: 5px;
-}
-.inputBox input {
-  border-style: none;
-  font-size: 0.9rem;
-}
 
-.addContainer{
-  background: linear-gradient(to right, #647811, #527810);
-  display: inline-block;
-  width: 3rem;
-  border-radius: 5px 5px 5px 5px;
-}
-.modifyBtn, .addBtn {
-  color: white;
-  vertical-align: middle;
-}
-
-table {
-  margin: 10px auto;
-  border-collapse: collapse;
-  border: 2px solid #996;
-  font: normal 90%/140% verdana, arial, helvetica, sans-serif;
-  color: #333;
-  background: #fffff0;
-}
-
-.caption {
-  background-color: #222;
-  vertical-align: middle;
-  text-align: center;
-  padding: 15px;
-  font-size: 20px;
-  color: #fff;
-}
-
-td,
-th {
-  border: 1px solid #cc9;
-  padding: 0.3em;
-}
-thead th,
-tfoot th {
-  background-color: "#f5deb3";
-  border: 1px solid #cc9;
-  text-align: center;
-  font-size: 1em;
-  font-weight: bold;
-  color: #444;
-  background: #dbd9c0;
-}
-tbody td a {
-  background: transparent;
-  color: #72724c;
-  text-decoration: none;
-  border-bottom: 1px dotted #cc9;
-}
-tbody td a:hover {
-  background: transparent;
-  color: #666;
-  border-bottom: 1px dotted #72724c;
-}
-tbody th a {
-  background: transparent;
-  color: #72724c;
-  text-decoration: none;
-  font-weight: bold;
-  border-bottom: 1px dotted #cc9;
-}
-tbody th a:hover {
-  background: transparent;
-  color: #666;
-  border-bottom: 1px dotted #72724c;
-}
-tbody th,
-tbody td {
-  vertical-align: top;
+.content-box {
   text-align: center;
 }
-tfoot td {
-  border: 1px solid #996;
+.article-box {
+  width: 700px;
+  margin: auto;
 }
-.odd {
-  color: #333;
-  background: #f7f5dc;
-}
-tbody tr:hover {
-  color: #333;
-  background: #fff;
-}
-tbody tr:hover th,
-tbody tr.odd:hover th {
-  color: #333;
-  background: #ddd59b;
-}
-
-tbody tr {
-  height: 50px;
-  line-height: 50px;
-}
-ul {
-  padding: 22px 50px 50px 490px;
-  width: 940px;
-  list-style: none;
-}
-#gnb li {
-  display: inline;
-}
-#gnb li a {
-  display: inline-block;
-  background: #222;
-  color: #fff;
-  width: 150px;
-  height: 23px;
-  padding-top: 3px;
-  text-align: center;
-}
-#gnb li a:hover {
-  background: #900;
+#content-cell {
+  max-height: 700px;
+  overflow: scroll;
 }
 </style>

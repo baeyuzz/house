@@ -1,4 +1,4 @@
-# vue-board
+# happy-house
 
 ## Project setup
 ```

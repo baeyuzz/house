@@ -4,10 +4,10 @@
       <div id="user-box">
         <div v-if="name.length > 0" class="sheader">
           <span id="welcome" class="text-white mr-2">{{name}}님 안녕하세요</span>
-          <router-link class="mr-2" to="/user/info">
+          <a href="#" class="mr-2" @click.prevent="mypage">
             <i class="fas fa-user"></i>
             회원정보
-          </router-link>
+          </a>
           <a href="#" class="mr-2" @click.prevent="logout">
             <i class="fas fa-sign-out-alt"></i>
             로그아웃
@@ -86,6 +86,11 @@ export default {
         .catch(error => {
           alert("Error: ", error);
         });
+    },
+    mypage(){
+      
+        this.$router.push("/user/mypage/" + this.$store.state.id);
+ 
     }
   }
 };
