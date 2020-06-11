@@ -8,7 +8,7 @@
 	<select id="searchAll"
 		parameterType="HousePageBean"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
     		,d.dong			as dong
     		,d.aptname		as aptName
@@ -44,7 +44,7 @@
 	
 	<select id="search"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
     		,d.dong			as dong
     		,d.aptname		as aptName
