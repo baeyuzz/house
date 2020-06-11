@@ -1,34 +1,4 @@
 <template>
-    <!-- <div>
-    <table>
-      <tbody>
-        <tr>
-          <td>작성자</td>
-          <td>
-            <input type="text" v-model="id" readonly/>
-          </td>
-        </tr>
-        <tr>
-          <td>제목</td>
-          <td>
-            <input type="text" v-model="qna.qna_title" />
-          </td>
-        </tr>
-        <tr>
-          <td>내용</td>
-          <td>
-            <input type="text" v-model="qna.qna_content" />
-          </td>
-        </tr>
-         <tr>
-          <td colspan="2">
-            <span class="addContainer addBtn" @click="addQna">등록
-            </span>
-          </td> 
-        </tr>
-      </tbody>
-    </table>
-    </div> -->
   <div>
     <section class="content-box">
      <h2>Q&A</h2>

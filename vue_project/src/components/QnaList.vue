@@ -42,10 +42,8 @@
 </template>
 
 	<script>
-import Constant from '../Constant';
 import http from "@/http-common.js";
 
-// import { mapActions } from 'vuex'
     export default {
       data(){
         return {
@@ -62,9 +60,10 @@ import http from "@/http-common.js";
           }
         },
       created(){
-        console.log("created");
-        this.$store.dispatch(Constant.GET_QNALIST);
-        },
+		http.get("/qna")
+		.then(response => {this.searchlist = response.data;})
+		.catch(error => {alert("Error: ", error);});
+		},
       methods: {
         searchQna() {
           console.log('click search');
