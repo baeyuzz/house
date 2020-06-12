@@ -1,8 +1,34 @@
 <template>
   <div>
     <div class="row">
-      <div class="map-box col-4">Map 이 들어갈 자리</div>
-      <div class="content-box col-2">
+      <div class="map-box col-4">Map 이 들어갈 자리
+      <!-- NEWS -->
+      <div style="text-align : left">
+        <button
+          data-toggle="collapse"
+          href="#news"
+          aria-expanded="false"
+          aria-controls="news"
+          class="btn"
+        >관련 뉴스 보기</button>
+      </div>
+      <div class="collapse" id="news">
+        <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
+          <ul>
+            <li>
+              <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
+              <div id="description">{{n.description}}</div>
+              <div class="pubDate">
+                <span class="pubDate">{{n.pubDate}}</span>
+              </div>
+            </li>
+            <hr />
+          </ul>
+        </div>
+      </div>
+      </div>
+    <!-- </div> -->
+      <div class="content-box col-3">
         <div class="info-box table-responsive">
           <table class="table">
             <thead>
@@ -57,39 +83,16 @@
           <router-link class="btn btn-info" to="/">메인으로 돌아가기</router-link>
         </div>
       </div>
-      <div class="container chart-box col-5">
+      <!-- <div class="col-2"></div> -->
+
+      <div class="container chart-box col-4">
         <canvas class="chart-canvas row" id="chart-area"></canvas>
         <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
       </div>
     </div>
     <hr />
     <br />
-    <div class="news-area">
-      <!-- NEWS -->
-      <div style="text-align : left">
-        <button
-          data-toggle="collapse"
-          href="#news"
-          aria-expanded="false"
-          aria-controls="news"
-          class="btn"
-        >관련 뉴스 보기</button>
-      </div>
-      <div class="collapse" id="news">
-        <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
-          <ul>
-            <li>
-              <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-              <div id="description">{{n.description}}</div>
-              <div class="pubDate">
-                <span class="pubDate">{{n.pubDate}}</span>
-              </div>
-            </li>
-            <hr />
-          </ul>
-        </div>
-      </div>
-    </div>
+    
   </div>
 </template>
 
