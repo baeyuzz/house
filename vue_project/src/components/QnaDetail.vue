@@ -68,10 +68,6 @@ export default {
     }
   },
   methods: {
-  
-    // movePage() {
-    //   this.$router.push('/qna');
-    // }, 
     update(no) {
       this.$router.push('/update/'+no); 
     }

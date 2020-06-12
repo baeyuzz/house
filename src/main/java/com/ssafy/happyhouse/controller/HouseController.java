@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.happyhouse.dto.HouseDeal;
 import com.ssafy.happyhouse.dto.HousePageBean;
+import com.ssafy.happyhouse.news.NaverNewsApi;
+import com.ssafy.happyhouse.news.News;
 import com.ssafy.happyhouse.service.HouseService;
 import com.ssafy.happyhouse.util.PageNavigation;
 
@@ -119,9 +121,17 @@ public class HouseController {
 	@ApiOperation(value = "Rest 아파트/주택 거래 상세 정보 조회")
 	@ResponseBody
 	@GetMapping("/detail/{no}")
-	private ResponseEntity<HouseDeal> houseDetail(@PathVariable int no, HttpSession session) {
+	private ResponseEntity<Map<String, Object>> houseDetail(@PathVariable int no, HttpSession session) {
+		HashMap<String, Object> map = new HashMap<>();
 		HouseDeal house = service.search(no);
-		return new ResponseEntity<HouseDeal>(house, HttpStatus.OK);
+		List<News> news = NaverNewsApi.searchNews(house.getAptName());
+		
+		
+		map.put("house", house);
+		map.put("news", news);
+		
+//		return new ResponseEntity<HouseDeal>(house, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "Rest 메인 페이지 이동시 아파트/주택 거래정보 채우기")
