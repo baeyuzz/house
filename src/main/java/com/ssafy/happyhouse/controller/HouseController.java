@@ -129,6 +129,7 @@ public class HouseController {
 		
 		map.put("house", house);
 		map.put("news", news);
+		map.put("state", true);
 		
 //		return new ResponseEntity<HouseDeal>(house, HttpStatus.OK);
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
