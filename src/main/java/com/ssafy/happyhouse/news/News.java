@@ -1,21 +1,18 @@
 package com.ssafy.happyhouse.news;
 
 public class News {
-
+	
+	int no;
 	String title;
 	String link;
 	String description;
 	String pubDate;
-	
-	
-	public News(String title, String link, String description, String pubDate) {
-		super();
-		this.title = title;
-		this.link = link;
-		this.description = description;
-		this.pubDate = pubDate;
+	public int getNo() {
+		return no;
 	}
-	
+	public void setNo(int no) {
+		this.no = no;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -40,11 +37,19 @@ public class News {
 	public void setPubDate(String pubDate) {
 		this.pubDate = pubDate;
 	}
-	
 	@Override
 	public String toString() {
-		return "News [title=" + title + ", link=" + link + ", description=" + description + ", pubDate=" + pubDate
-				+ "]";
+		return "News [no=" + no + ", title=" + title + ", link=" + link + ", description=" + description + ", pubDate="
+				+ pubDate + "]";
 	}
+	public News(int no, String title, String link, String description, String pubDate) {
+		super();
+		this.no = no;
+		this.title = title;
+		this.link = link;
+		this.description = description;
+		this.pubDate = pubDate;
+	}
+	
 	
 }

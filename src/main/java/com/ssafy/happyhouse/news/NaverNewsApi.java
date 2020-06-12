@@ -21,6 +21,7 @@ public class NaverNewsApi {
 	public static List<News> searchNews(String apt) {
 		String clientId = "qsbJOPl6cmDXhTYFqzhS";// 애플리케이션 클라이언트 아이디값";
 		String clientSecret = "YqMQQyENb4";// 애플리케이션 클라이언트 시크릿값";
+		StringBuffer response = new StringBuffer();
 		try {
 			String text = URLEncoder.encode(apt, "UTF-8"); // 검색어";
 			String apiURL = "https://openapi.naver.com/v1/search/news.json?query=" + text
@@ -40,11 +41,10 @@ public class NaverNewsApi {
 				br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
 			}
 			String inputLine;
-			StringBuffer response = new StringBuffer();
 			while ((inputLine = br.readLine()) != null) {
 				response.append(inputLine);
-				response.append("\n");
 			}
+			System.out.println(response.toString());
 			br.close();
 		} catch (Exception e) {
 			System.out.println(e);
@@ -55,25 +55,26 @@ public class NaverNewsApi {
 		List<News> news = new ArrayList<News>();
 
 		JSONParser parser = new JSONParser();
-		JSONObject itmesObj;
+		JSONObject itemsObj;
 		try {
-			itmesObj = (JSONObject) parser.parse(apt);
-			JSONArray items = (JSONArray) itmesObj.get("items");
-			for (int i = 0; i < 5; i++) {
+			itemsObj = (JSONObject) parser.parse(response.toString());
+			JSONArray items = (JSONArray) itemsObj.get("items");
+			for (int i = 0; i < items.size(); i++) {
 				JSONObject item = (JSONObject) items.get(i);
+				int no = i+1;
 				String title = item.get("title").toString();
 				String link = item.get("link").toString();
 				String description = item.get("description").toString();
 				String pubDate = item.get("pubDate").toString();
 
-				news.add(new News(title, link, description, pubDate));
+				news.add(new News(no,title, link, description, pubDate));
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < news.size(); i++) {
 			System.out.println(news.get(i).getTitle());
 			System.out.println(news.get(i).getDescription());
 			System.out.println(news.get(i).getPubDate());
