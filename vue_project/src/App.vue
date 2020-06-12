@@ -13,6 +13,7 @@ import VueRouter from 'vue-router';
 import NavHeader from '@/components/NavHeader.vue';
 import MainPage from './components/MainPage.vue';
 import HouseDetail from '@/components/HouseDetail.vue';
+import HouseChart from '@/components/HouseChart.vue';
 
 import NoticeList from '@/components/NoticeList.vue';
 import NoticeDetail from '@/components/NoticeDetail.vue';
@@ -44,6 +45,7 @@ const router = new VueRouter({
     {path: '/', component: MainPage, alias: '/index.html'}
 
     , {path: '/house/detail/:no', component: HouseDetail}
+    , {path: '/house/chart/:dong/:aptname/:type', component: HouseChart}
     
     , {path: '/notice/list', component: NoticeList}
     , {path: '/notice/detail/:no', component: NoticeDetail}
