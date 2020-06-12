@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.happyhouse.dto.HouseDeal;
 import com.ssafy.happyhouse.dto.HousePageBean;
@@ -25,4 +26,6 @@ public interface HouseService {
 	 * @return 검색될 데이터의 수
 	 */
 	public int numberOfData(HousePageBean bean);
+	
+	public List<HouseDeal> chartData(Map<String, Object> param);
 }
