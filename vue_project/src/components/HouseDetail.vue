@@ -71,8 +71,7 @@
 			<div class="collapse" id="news">
 				<div v-for="(n) in news" v-bind:key="n.link">
           <ul>
-            <li><a :title="n.title" href=n.link>{{n.title}}</a></li>
-            <!-- 여기 외부 링크로 나가는 거 설정하기.. -->
+            <li><a :title="n.title" v-bind:href="n.link" target="_blank"> {{n.title}}</a></li>
             <li>{{n.description}}</li>
             <li>{{n.pubDate}}</li>
           </ul>
