@@ -63,6 +63,8 @@ public class NaverNewsApi {
 				JSONObject item = (JSONObject) items.get(i);
 				int no = i+1;
 				String title = item.get("title").toString();
+				title = title.replace("<b>","");
+				title = title.replace("</b>","");
 				String link = item.get("link").toString();
 				String description = item.get("description").toString();
 				description = description.replace("<b>","");
