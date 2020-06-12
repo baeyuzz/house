@@ -92,11 +92,12 @@
 	<select id="chartData"
 		resultType="HouseDeal">
 		select
-    		dealamount
-    		, dealyear
-    		, dealmonth
-    		, dealday
-    		, rentmoney
+			no
+    		, dealAmount
+    		, dealYear
+    		, dealMonth
+    		, dealDay
+    		, rentMoney
 		from
 			housedeal
 		where
@@ -104,8 +105,8 @@
 			and aptname	= #{aptname}
 			and type	= #{type}
 		order by 
-			cast(dealyear as decimal)
-			, cast(dealmonth as decimal)
-			, cast(dealday as decimal)
+			cast(dealYear as decimal)
+			, cast(dealMonth as decimal)
+			, cast(dealDay as decimal)
 	</select>
 </mapper>

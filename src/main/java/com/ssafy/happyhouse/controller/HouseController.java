@@ -276,8 +276,12 @@ public class HouseController {
 	public ResponseEntity<Map<String, Object>> getChartData(@RequestBody Map<String, Object> param) {
 		List<HouseDeal> list = service.chartData(param);
 		
+		boolean isRent = ("3".equals(param.get("type")) || "4".equals(param.get("type")));
+		
 		List<String> labels = new ArrayList<String>();
 		List<Integer> data = new ArrayList<Integer>();
+		List<Integer> rent = new ArrayList<Integer>();
+		List<Integer> nos = new ArrayList<Integer>();
 		
 		for(HouseDeal deal : list) {
 			String dealYMD = 
@@ -290,11 +294,23 @@ public class HouseController {
 			if(dealAmount == null) dealAmount = "0";
 			dealAmount = dealAmount.replace(",", "");
 			data.add(Integer.parseInt(dealAmount));
+			
+			if(isRent) {
+				String rentMoney = deal.getRentMoney();
+				if(rentMoney == null) rentMoney = "0";
+				rentMoney = rentMoney.replace(",", "");
+				rent.add(Integer.parseInt(rentMoney));
+			}
+			
+			nos.add(deal.getNo());
 		}
 		
 		HashMap<String, Object> ret = new HashMap<>();
 		ret.put("labels", labels);
 		ret.put("data", data);
+		ret.put("nos", nos);
+		
+		if(isRent) ret.put("rent", rent);
 		
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
