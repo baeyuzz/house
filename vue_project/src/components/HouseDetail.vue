@@ -87,7 +87,8 @@
 
       <div class="container chart-box col-4">
         <canvas class="chart-canvas row" id="chart-area"></canvas>
-        <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
+        <canvas v-if="isRent" class="chart-canvas row" id="chart-area-rent"></canvas>
+        <canvas class="chart-canvas row" id="crime-chart"></canvas>
       </div>
     </div>
     <hr />
@@ -107,7 +108,8 @@ export default {
       no: 0,
       house: {},
       news: [],
-      nos: []
+      nos: [],
+      isRent : false,
     };
   },
   computed: {
@@ -142,15 +144,24 @@ export default {
           .catch(error => {
             alert("Error: " + error);
           });
+
+          http
+          .post("/house/crime", {
+            code : this.house.code
+          })
+          .then(response => {
+            // this.nos = response.data.nos;
+            this.crimeChart(response.data);
+          })
+          .catch(error => {
+            alert("Error: " + error);
+          });
       })
       .catch(error => {
         alert("Error: ", error);
       });
   },
   methods: {
-    newsLink() {
-      location.href = this.news.link;
-    },
     makeChart(data) {
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
@@ -166,7 +177,7 @@ export default {
               pointBackgroundColor: "#003d66"
             }
           ]
-        }
+        },
       });
       ctx.click(e => {
         let activePoints = chartObject.getElementsAtEvent(e);
@@ -181,6 +192,7 @@ export default {
 
       // 월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
       if (this.house.type == "3" || this.house.type == "4") {
+        this.isRent = true;
         let ctx_rent = $("#chart-area-rent");
         let chartObject_rent = new Chart(ctx_rent, {
           type: "line",
@@ -208,6 +220,58 @@ export default {
           }
         });
       }
+    },
+    crimeChart(data) {
+      let ctx = $("#crime-chart");
+      let chartObject = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              data: data.data,
+              label: "해당 구 강력 범죄 발생횟수",
+              backgroundColor: "#ccebff",
+              borderColor: "#0099ff",
+              pointBackgroundColor: "#003d66"
+            }
+          ]
+        },
+        options: {
+			responsive: true,
+			tooltips: {
+				enabled: false
+			},
+			hover: {
+				animationDuration: 0
+			},
+			animation: {
+				// duration: 1,
+				onComplete: function () {
+					var chartInstance = this.chart,
+						ctx = chartInstance.ctx;
+					ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+					ctx.fillStyle = 'black';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'bottom';
+
+					this.data.datasets.forEach(function (dataset, i) {
+						var meta = chartInstance.controller.getDatasetMeta(i);
+						meta.data.forEach(function (bar, index) {
+							var data = dataset.data[index];							
+							ctx.fillText(data, bar._model.x, bar._model.y - 5);
+						});
+					});
+				}
+			},
+		}
+      });
+      ctx.click(e => {
+        let activePoints = chartObject.getElementsAtEvent(e);
+        if (activePoints.length > 0) {
+          activePoints[0]._index;
+        }
+      });  
     },
     resetDetail(no) {
       this.no = no;
