@@ -62,18 +62,27 @@
 
       <hr>
       <br>
-			<!-- 여기에 뉴스 넣기 -->
-			<div>
-				<button data-toggle="collapse" href="#news"
-					aria-expanded="false" aria-controls="news" class = "btn">
-          관련 뉴스 보기</button>
+
+      
+			<!-- NEWS -->
+			<div style="text-align : left">
+				<button data-toggle="collapse" href="#news" aria-expanded="false" aria-controls="news" class = "btn">
+          관련 뉴스 보기
+        </button>
 			</div>
 			<div class="collapse" id="news">
-				<div v-for="(n) in news" v-bind:key="n.link">
+				<div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
           <ul>
-            <li><a :title="n.title" v-bind:href="n.link" target="_blank"> {{n.title}}</a></li>
-            <li>{{n.description}}</li>
-            <li>{{n.pubDate}}</li>
+            <li>
+              <a :title="n.link" v-bind:href="n.link" target="_blank"> {{n.title}}</a>
+              <div id="description">
+                {{n.description}}
+              </div>
+              <div class="pubDate">
+                <span class="pubDate">{{n.pubDate}}</span>
+              </div>
+            </li>
+            <hr>
           </ul>
 				</div>
 			</div>
@@ -106,8 +115,6 @@ export default {
       .then(response => {
         this.house = response.data.house;
         this.news = response.data.news;
-        console.log(this.house);
-        console.log(this.news.length);
       })
       .catch(error => {
         alert("Error: ", error);
@@ -142,5 +149,12 @@ export default {
 }
 li {
   list-style: none;
+}
+#description {
+  font-size : 15px;
+}
+.pubDate {
+  font-size : 12px;
+  text-align : right;
 }
 </style>

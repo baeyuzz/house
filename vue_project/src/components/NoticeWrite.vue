@@ -5,7 +5,7 @@
       <form method="post" action="#">
         <table class="table table-borderless shadow-lg p-3 rounded">
           <tr>
-            <td class="border border-dark"></td>
+            <td class="border border-dark">제목</td>
             <td class="border border-dark bg-white">
               <input v-model.trim="title" ref="title" type="text" name="title" placeholder="제목을 입력하세요" />
             </td>
