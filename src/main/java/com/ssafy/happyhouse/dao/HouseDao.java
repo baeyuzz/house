@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,11 @@ public interface HouseDao {
 	 * @return 이 조건으로 조회할 수 있는 데이터의 수
 	 */
 	public int numberOfData(HousePageBean bean);
+	
+	/**
+	 * 아파트의 거래 일 별 거래금액 그래프를 그려주기 위한 데이터 반환
+	 * @param param 검색 조건이 담긴 맵 객체
+	 * @return 검색된 데이터 리스트
+	 */
+	public List<HouseDeal> chartData(Map<String, Object> param);
 }

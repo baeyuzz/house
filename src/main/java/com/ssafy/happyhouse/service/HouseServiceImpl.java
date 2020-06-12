@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,11 @@ public class HouseServiceImpl implements HouseService{
 	@Override
 	public int numberOfData(HousePageBean bean) {
 		return dao.numberOfData(bean);
+	}
+
+	@Override
+	public List<HouseDeal> chartData(Map<String, Object> param) {
+		return dao.chartData(param);
 	}
 
 }

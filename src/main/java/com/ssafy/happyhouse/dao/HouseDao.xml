@@ -88,4 +88,24 @@
 			</if>
     	</where>
 	</select>
+	
+	<select id="chartData"
+		resultType="HouseDeal">
+		select
+    		dealamount
+    		, dealyear
+    		, dealmonth
+    		, dealday
+    		, rentmoney
+		from
+			housedeal
+		where
+			dong		= #{dong}
+			and aptname	= #{aptname}
+			and type	= #{type}
+		order by 
+			cast(dealyear as decimal)
+			, cast(dealmonth as decimal)
+			, cast(dealday as decimal)
+	</select>
 </mapper>

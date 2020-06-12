@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -256,5 +257,34 @@ public class HouseController {
 		}
 		
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "그래프를 그려주기 위한 데이터 조회")
+	@ResponseBody
+	@PostMapping("/chart")
+	public ResponseEntity<Map<String, Object>> getChartData(@RequestBody Map<String, Object> param) {
+		List<HouseDeal> list = service.chartData(param);
+		
+		List<String> labels = new ArrayList<String>();
+		List<Integer> data = new ArrayList<Integer>();
+		
+		for(HouseDeal deal : list) {
+			String dealYMD = 
+					deal.getDealYear().substring(2, 4)  + "." +
+					deal.getDealMonth() + "." +
+					deal.getDealDay()   + ".";
+			labels.add(dealYMD);
+			
+			String dealAmount = deal.getDealAmount().trim();
+			if(dealAmount == null) dealAmount = "0";
+			dealAmount = dealAmount.replace(",", "");
+			data.add(Integer.parseInt(dealAmount));
+		}
+		
+		HashMap<String, Object> ret = new HashMap<>();
+		ret.put("labels", labels);
+		ret.put("data", data);
+		
+		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 }
