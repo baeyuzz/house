@@ -23,6 +23,8 @@
     		,d.jibun		as jibun
     		,d.type			as type
     		,d.rentmoney	as rentMoney
+    		,d.province		as province
+    		,d.city			as city
     		,i.img			as img
 		from
 			housedeal d join houseinfo i
@@ -59,6 +61,8 @@
     		,d.jibun		as jibun
     		,d.type			as type
     		,d.rentmoney	as rentMoney
+    		,d.province		as province
+    		,d.city			as city
     		,i.img			as img
 		from
 			housedeal d join houseinfo i

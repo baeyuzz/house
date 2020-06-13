@@ -31,6 +31,10 @@ public class HouseDeal implements Serializable, Comparable<HouseDeal> {
 	private String floor;
 	/**지번*/
 	private String jibun;
+	
+	private String province;
+	private String city;
+	
 	/**type
 	 * 1 : 아파트 매매
 	 * 2 : 연립 다세세 매매
@@ -163,6 +167,18 @@ public class HouseDeal implements Serializable, Comparable<HouseDeal> {
 		this.img = img;
 	}
 
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
 	public int compareTo(HouseDeal o) {
 		if(o!=null && o.dong != null&&dong!=null) {
 			return dong.compareTo(o.dong);

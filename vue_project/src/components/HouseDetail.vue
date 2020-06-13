@@ -1,33 +1,35 @@
 <template>
   <div>
     <div class="row">
-      <div class="map-box col-4">Map 이 들어갈 자리
-      <!-- NEWS -->
-      <div style="text-align : left">
-        <button
-          data-toggle="collapse"
-          href="#news"
-          aria-expanded="false"
-          aria-controls="news"
-          class="btn"
-        >관련 뉴스 보기</button>
-      </div>
-      <div class="collapse" id="news">
-        <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
-          <ul>
-            <li>
-              <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-              <div id="description">{{n.description}}</div>
-              <div class="pubDate">
-                <span class="pubDate">{{n.pubDate}}</span>
-              </div>
-            </li>
-            <hr />
-          </ul>
+      <div class="map-news-box col-4">
+        <div id="map" ></div>
+        <button class="btn btn-primary" @click="reposition">건물 위치로 이동</button>
+        <!-- NEWS -->
+        <div style="text-align : left">
+          <button
+            data-toggle="collapse"
+            href="#news"
+            aria-expanded="false"
+            aria-controls="news"
+            class="btn"
+          >관련 뉴스 보기</button>
+        </div>
+        <div class="collapse" id="news">
+          <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
+            <ul>
+              <li>
+                <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
+                <div id="description">{{n.description}}</div>
+                <div class="pubDate">
+                  <span class="pubDate">{{n.pubDate}}</span>
+                </div>
+              </li>
+              <hr />
+            </ul>
+          </div>
         </div>
       </div>
-      </div>
-    <!-- </div> -->
+      <!-- </div> -->
       <div class="content-box col-3">
         <div class="info-box table-responsive">
           <table class="table">
@@ -93,7 +95,6 @@
     </div>
     <hr />
     <br />
-    
   </div>
 </template>
 
@@ -109,14 +110,21 @@ export default {
       house: {},
       news: [],
       nos: [],
-      isRent : false,
+      isRent: false,
+
+      map: {},
+      currentPos: {},
+      address: '',
+      mapCreated: false
     };
   },
   computed: {
     dateString() {
-      let ret = 
-        this.house.dealYear + '.' + 
-        this.house.dealMonth + '.' + 
+      let ret =
+        this.house.dealYear +
+        "." +
+        this.house.dealMonth +
+        "." +
         this.house.dealDay;
       return ret;
     }
@@ -129,6 +137,12 @@ export default {
       .then(response => {
         this.house = response.data.house;
         this.news = response.data.news;
+
+        // house 정보를 잘 가져왔다면 좌표값을 얻기 위한 address 설정
+        this.address = this.house.province + ' ' + 
+                   this.house.city + ' ' + 
+                   this.house.dong + ' ' +
+                   this.house.jibun;
 
         // house 정보를 잘 가져왔다면 chart 만들기 위한 정보 가져오기
         http
@@ -145,9 +159,10 @@ export default {
             alert("Error: " + error);
           });
 
-          http
+        /* 이거 왜 컨트롤러에 없어 ㅠ
+        http
           .post("/house/crime", {
-            code : this.house.code
+            code: this.house.code
           })
           .then(response => {
             // this.nos = response.data.nos;
@@ -156,12 +171,102 @@ export default {
           .catch(error => {
             alert("Error: " + error);
           });
+        */
       })
       .catch(error => {
         alert("Error: ", error);
       });
   },
+  mounted() {
+    if (window.kakao && window.kakao.maps) {
+      if(this.address.length > 0) {
+        console.log('initMap in mounted is Called!');
+        this.initMap();
+        this.mapCreated = true;
+      }
+    } else {
+      /* global kakao */
+      const script = document.createElement("script");
+      script.onload = () => kakao.maps.load(this.initMap);
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=c0153be2e7c8003d17fd11e5d2f1dcfe&libraries=services";
+      document.head.appendChild(script);
+    }
+  },
+  watch: {
+    address() {
+      if(!this.mapCreated) {
+        console.log('init map in address watcher called!');
+        this.initMap();
+      }
+    }
+  },
   methods: {
+    initMap() {
+      // 주소-좌표 변환 객체를 생성합니다
+      var geocoder = new kakao.maps.services.Geocoder();
+
+      // 주소로 좌표를 검색합니다
+      console.log(this.address);
+      let vue = this;
+      geocoder.addressSearch(this.address, function(
+        result,
+        status
+      ) {
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
+          console.log('Kakao Map API - 주소로 좌표 검색 성공');
+          vue.setMap(new kakao.maps.LatLng(result[0].y, result[0].x));
+        } else {
+          console.log('Kakao Map API - 주소로 좌표 검색 실패!!');
+          vue.setMap(new kakao.maps.LatLng(33.450705, 126.570677));
+        }
+      });
+    },
+    setMap(coords) {
+      this.currentPos = coords;
+      
+      // 지도를 담을 컨테이너를 가져옵니다
+      var container = document.getElementById("map");
+
+      // 지도에 옵션을 설정합니다
+      var options = {
+        // 처음 표시될 좌표
+        center: coords,
+        // 처음 표시될 확대/축소 레벨
+        level: 3
+      };
+
+      // 지도를 만들어 컨테이너에 붙입니다.
+      var map = new kakao.maps.Map(container, options);
+      console.log('Make and attach map Complete');
+
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      var mapTypeControl = new kakao.maps.MapTypeControl();
+
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      var zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      console.log('Add control to map Complete');
+
+      // 마커 생성
+      new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: this.currentPos // 마커의 위치
+        });
+      console.log('Add marker to map Complete');
+
+      console.dir(map);
+      this.map = map;
+    },
+    reposition() {
+      console.dir(this.map);
+      this.map.panTo(this.currentPos);
+    },
     makeChart(data) {
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
@@ -177,7 +282,7 @@ export default {
               pointBackgroundColor: "#003d66"
             }
           ]
-        },
+        }
       });
       ctx.click(e => {
         let activePoints = chartObject.getElementsAtEvent(e);
@@ -247,22 +352,22 @@ export default {
             animationDuration: 0
           },
           animation: {
-            onComplete: function () {
+            onComplete: function() {
               var chartInstance = this.chart,
                 ctx = chartInstance.ctx;
-              ctx.fillStyle = 'black';
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'bottom';
+              ctx.fillStyle = "black";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "bottom";
 
-              this.data.datasets.forEach(function (dataset, i) {
+              this.data.datasets.forEach(function(dataset, i) {
                 var meta = chartInstance.controller.getDatasetMeta(i);
-                meta.data.forEach(function (bar, index) {
-                  var data = dataset.data[index];							
+                meta.data.forEach(function(bar, index) {
+                  var data = dataset.data[index];
                   ctx.fillText(data, bar._model.x, bar._model.y - 5);
                 });
               });
             }
-          },
+          }
         }
       });
     },
@@ -312,5 +417,9 @@ li {
 }
 .chart-canvas {
   margin-top: 20px;
+}
+#map {
+  width: 500px;
+  height: 400px;
 }
 </style>

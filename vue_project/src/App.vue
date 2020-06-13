@@ -11,7 +11,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import NavHeader from '@/components/NavHeader.vue';
-// import MainPage from './components/MainPage.vue';
+import MainPage from './components/MainPage.vue';
 import HouseDetail from '@/components/HouseDetail.vue';
 
 import NoticeList from '@/components/NoticeList.vue';
@@ -36,15 +36,12 @@ import QnaDetail from './components/QnaDetail.vue';
 import QnaAdd from './components/QnaAdd.vue';
 import QnaModify from './components/QnaModify.vue';
 
-import MapTest from '@/components/MapTest.vue';
-
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode : 'history',
   routes : [
-    //{path: '/', component: MainPage, alias: '/index.html'}
-    {path: '/', component: MapTest, alias: '/index.html'}
+    {path: '/', component: MainPage, alias: '/index.html'}
 
     , {path: '/house/detail/:no', component: HouseDetail}
     
