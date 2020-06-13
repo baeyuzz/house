@@ -1,8 +1,34 @@
 <template>
   <div>
     <div class="row">
-      <div class="map-box col-4">Map 이 들어갈 자리</div>
-      <div class="content-box col-2">
+      <div class="map-box col-4">Map 이 들어갈 자리
+      <!-- NEWS -->
+      <div style="text-align : left">
+        <button
+          data-toggle="collapse"
+          href="#news"
+          aria-expanded="false"
+          aria-controls="news"
+          class="btn"
+        >관련 뉴스 보기</button>
+      </div>
+      <div class="collapse" id="news">
+        <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
+          <ul>
+            <li>
+              <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
+              <div id="description">{{n.description}}</div>
+              <div class="pubDate">
+                <span class="pubDate">{{n.pubDate}}</span>
+              </div>
+            </li>
+            <hr />
+          </ul>
+        </div>
+      </div>
+      </div>
+    <!-- </div> -->
+      <div class="content-box col-3">
         <div class="info-box table-responsive">
           <table class="table">
             <thead>
@@ -57,39 +83,17 @@
           <router-link class="btn btn-info" to="/">메인으로 돌아가기</router-link>
         </div>
       </div>
-      <div class="container chart-box col-5">
+      <!-- <div class="col-2"></div> -->
+
+      <div class="container chart-box col-4">
         <canvas class="chart-canvas row" id="chart-area"></canvas>
-        <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
+        <canvas v-if="isRent" class="chart-canvas row" id="chart-area-rent"></canvas>
+        <canvas class="chart-canvas row" id="crime-chart"></canvas>
       </div>
     </div>
     <hr />
     <br />
-    <div class="news-area">
-      <!-- NEWS -->
-      <div style="text-align : left">
-        <button
-          data-toggle="collapse"
-          href="#news"
-          aria-expanded="false"
-          aria-controls="news"
-          class="btn"
-        >관련 뉴스 보기</button>
-      </div>
-      <div class="collapse" id="news">
-        <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
-          <ul>
-            <li>
-              <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-              <div id="description">{{n.description}}</div>
-              <div class="pubDate">
-                <span class="pubDate">{{n.pubDate}}</span>
-              </div>
-            </li>
-            <hr />
-          </ul>
-        </div>
-      </div>
-    </div>
+    
   </div>
 </template>
 
@@ -104,7 +108,8 @@ export default {
       no: 0,
       house: {},
       news: [],
-      nos: []
+      nos: [],
+      isRent : false,
     };
   },
   computed: {
@@ -139,15 +144,24 @@ export default {
           .catch(error => {
             alert("Error: " + error);
           });
+
+          http
+          .post("/house/crime", {
+            code : this.house.code
+          })
+          .then(response => {
+            // this.nos = response.data.nos;
+            this.crimeChart(response.data);
+          })
+          .catch(error => {
+            alert("Error: " + error);
+          });
       })
       .catch(error => {
         alert("Error: ", error);
       });
   },
   methods: {
-    newsLink() {
-      location.href = this.news.link;
-    },
     makeChart(data) {
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
@@ -163,7 +177,7 @@ export default {
               pointBackgroundColor: "#003d66"
             }
           ]
-        }
+        },
       });
       ctx.click(e => {
         let activePoints = chartObject.getElementsAtEvent(e);
@@ -178,6 +192,7 @@ export default {
 
       // 월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
       if (this.house.type == "3" || this.house.type == "4") {
+        this.isRent = true;
         let ctx_rent = $("#chart-area-rent");
         let chartObject_rent = new Chart(ctx_rent, {
           type: "line",
@@ -205,6 +220,51 @@ export default {
           }
         });
       }
+    },
+    // 범죄 발생 그래프
+    crimeChart(data) {
+      let ctx = $("#crime-chart");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              data: data.data,
+              label: "해당 구 강력 범죄 발생횟수 (2018년)",
+              backgroundColor: "#ccebff",
+              borderColor: "#0099ff",
+              pointBackgroundColor: "#003d66"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          tooltips: {
+            enabled: false
+          },
+          hover: {
+            animationDuration: 0
+          },
+          animation: {
+            onComplete: function () {
+              var chartInstance = this.chart,
+                ctx = chartInstance.ctx;
+              ctx.fillStyle = 'black';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function (dataset, i) {
+                var meta = chartInstance.controller.getDatasetMeta(i);
+                meta.data.forEach(function (bar, index) {
+                  var data = dataset.data[index];							
+                  ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                });
+              });
+            }
+          },
+        }
+      });
     },
     resetDetail(no) {
       this.no = no;
