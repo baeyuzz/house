@@ -198,7 +198,7 @@ public class HouseController {
 		bean.setSearchType(type);
 		
 		String address = (String) params.get("address");
-		String aptName = (String) params.get("aptname");
+		String aptName = (String) params.get("aptName");
 				
 		if(address != null && address.length() > 0)
 			bean.setAddress(address);
@@ -249,8 +249,6 @@ public class HouseController {
 	public ResponseEntity<Map<String, Object>> getChartData(@RequestBody Map<String, Object> param) {
 		List<HouseDeal> list = service.chartData(param);
 		
-		boolean isRent = ("3".equals(param.get("type")) || "4".equals(param.get("type")));
-		
 		List<String> labels = new ArrayList<String>();
 		List<Integer> data = new ArrayList<Integer>();
 		List<Integer> rent = new ArrayList<Integer>();
@@ -258,13 +256,8 @@ public class HouseController {
 		
 		for(HouseDeal deal : list) {
 			labels.add(deal.getDealDate());
-			
 			data.add(deal.getDealAmount());
-			
-			if(isRent) {
-				rent.add(deal.getRentMoney());
-			}
-			
+			rent.add(deal.getRentMoney());
 			nos.add(deal.getNo());
 		}
 		
@@ -272,8 +265,7 @@ public class HouseController {
 		ret.put("labels", labels);
 		ret.put("data", data);
 		ret.put("nos", nos);
-		
-		if(isRent) ret.put("rent", rent);
+		ret.put("rent", rent);
 		
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}

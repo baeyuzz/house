@@ -8,7 +8,7 @@
 	<select id="searchAll"
 		parameterType="HousePageBean"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
 			,d.address		as address
 			,d.dealDate		as dealDate
@@ -19,6 +19,8 @@
     		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
     		,d.type			as type
+    		,i.lat			as lat
+    		,i.lng			as lng
 		from
 			housedeal d join houseinfo i
     		on d.address = i.address
@@ -39,7 +41,7 @@
 	
 	<select id="search"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
 			,d.address		as address
 			,d.dealDate		as dealDate
@@ -50,6 +52,8 @@
     		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
     		,d.type			as type
+    		,i.lat			as lat
+    		,i.lng			as lng
 		from
 			housedeal d join houseinfo i
     		on d.address = i.address
@@ -81,7 +85,7 @@
 	
 	<select id="chartData"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
 			,d.dealDate		as dealDate
     		,d.dealAmount	as dealAmount

@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="map-news-box col-4">
-        <div id="map" ></div>
+        <div id="map"></div>
         <button class="btn btn-primary" @click="reposition">건물 위치로 이동</button>
         <!-- NEWS -->
         <div style="text-align : left">
@@ -44,8 +44,8 @@
             </thead>
             <tbody>
               <tr>
-                <th>동</th>
-                <td :title="house.dong">{{house.dong}}</td>
+                <th>주소</th>
+                <td :title="house.address">{{house.address}}</td>
               </tr>
               <tr>
                 <th>아파트 이름</th>
@@ -77,7 +77,7 @@
               </tr>
               <tr>
                 <th>거래 날짜</th>
-                <td :title="dateString">{{dateString}}</td>
+                <td :title="house.dealDate">{{house.dealDate}}</td>
               </tr>
             </tbody>
           </table>
@@ -88,8 +88,8 @@
       <!-- <div class="col-2"></div> -->
 
       <div class="container chart-box col-4">
-        <canvas class="chart-canvas row" id="chart-area"></canvas>
-        <canvas v-if="isRent" class="chart-canvas row" id="chart-area-rent"></canvas>
+        <div class="chart-container"><canvas class="chart-canvas row" id="chart-area"></canvas></div>
+        <div class="chart-container"><canvas class="chart-canvas row" id="chart-area-rent"></canvas></div>
         <canvas class="chart-canvas row" id="crime-chart"></canvas>
       </div>
     </div>
@@ -108,26 +108,17 @@ export default {
     return {
       no: 0,
       house: {},
+
       news: [],
+
       nos: [],
       isRent: false,
 
       map: {},
       currentPos: {},
-      address: '',
+      address: "",
       mapCreated: false
     };
-  },
-  computed: {
-    dateString() {
-      let ret =
-        this.house.dealYear +
-        "." +
-        this.house.dealMonth +
-        "." +
-        this.house.dealDay;
-      return ret;
-    }
   },
   created() {
     console.log("Detail created() called!");
@@ -138,17 +129,14 @@ export default {
         this.house = response.data.house;
         this.news = response.data.news;
 
-        // house 정보를 잘 가져왔다면 좌표값을 얻기 위한 address 설정
-        this.address = this.house.province + ' ' + 
-                   this.house.city + ' ' + 
-                   this.house.dong + ' ' +
-                   this.house.jibun;
+        // address watcher 를 부르기 위해서(카카오 맵 어려워)
+        this.address = this.house.address;
 
         // house 정보를 잘 가져왔다면 chart 만들기 위한 정보 가져오기
         http
           .post("/house/chart", {
-            dong: this.house.dong,
-            aptname: this.house.aptName,
+            address: this.house.address,
+            aptName: this.house.aptName,
             type: this.house.type
           })
           .then(response => {
@@ -179,8 +167,8 @@ export default {
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
-      if(this.address.length > 0) {
-        console.log('initMap in mounted is Called!');
+      if (this.address.length > 0) {
+        console.log("initMap in mounted is Called!");
         this.initMap();
         this.mapCreated = true;
       }
@@ -195,14 +183,15 @@ export default {
   },
   watch: {
     address() {
-      if(!this.mapCreated) {
-        console.log('init map in address watcher called!');
+      if (!this.mapCreated) {
+        console.log("init map in address watcher called!");
         this.initMap();
       }
     }
   },
   methods: {
     initMap() {
+      /*
       // 주소-좌표 변환 객체를 생성합니다
       var geocoder = new kakao.maps.services.Geocoder();
 
@@ -222,10 +211,13 @@ export default {
           vue.setMap(new kakao.maps.LatLng(33.450705, 126.570677));
         }
       });
+      */
+      // 그냥 DB에 좌표 값을 가지고 있는게 편함
+      this.setMap(new kakao.maps.LatLng(this.house.lat, this.house.lng));
     },
     setMap(coords) {
       this.currentPos = coords;
-      
+
       // 지도를 담을 컨테이너를 가져옵니다
       var container = document.getElementById("map");
 
@@ -239,7 +231,7 @@ export default {
 
       // 지도를 만들어 컨테이너에 붙입니다.
       var map = new kakao.maps.Map(container, options);
-      console.log('Make and attach map Complete');
+      console.log("Make and attach map Complete");
 
       // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
       var mapTypeControl = new kakao.maps.MapTypeControl();
@@ -251,14 +243,14 @@ export default {
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       var zoomControl = new kakao.maps.ZoomControl();
       map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-      console.log('Add control to map Complete');
+      console.log("Add control to map Complete");
 
       // 마커 생성
       new kakao.maps.Marker({
-          map: map, // 마커를 표시할 지도
-          position: this.currentPos // 마커의 위치
-        });
-      console.log('Add marker to map Complete');
+        map: map, // 마커를 표시할 지도
+        position: this.currentPos // 마커의 위치
+      });
+      console.log("Add marker to map Complete");
 
       console.dir(map);
       this.map = map;
@@ -268,6 +260,19 @@ export default {
       this.map.panTo(this.currentPos);
     },
     makeChart(data) {
+      // 축 범위 지정을 위해 계산좀
+      let min = 999999999;
+      let max = 0;
+      for(let d of data.data) {
+        if(d < min) min = d;
+        if(d > max) max = d;
+      }
+
+      min -= 2000;
+      max += 2000;
+
+      if(min < 0) min = 0;
+
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
         type: "line",
@@ -282,6 +287,16 @@ export default {
               pointBackgroundColor: "#003d66"
             }
           ]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                min: min
+                , max: max
+              }
+            }]
+          }
         }
       });
       ctx.click(e => {
@@ -296,7 +311,7 @@ export default {
       });
 
       // 월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
-      if (this.house.type == "3" || this.house.type == "4") {
+      if (this.house.type == 3 || this.house.type == 4) {
         this.isRent = true;
         let ctx_rent = $("#chart-area-rent");
         let chartObject_rent = new Chart(ctx_rent, {
@@ -417,6 +432,9 @@ li {
 }
 .chart-canvas {
   margin-top: 20px;
+}
+.chart-container {
+  overflow: auto;
 }
 #map {
   width: 500px;

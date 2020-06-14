@@ -51,6 +51,14 @@
               </div>
             </div>
             <div class="form-group form-inline sms-form-center">
+              <label for="dong" class="mr-sm-2">구 이름:</label>
+              <input
+                v-model="gu"
+                type="text"
+                class="form-control mr-sm-2"
+                name="gu"
+                placeholder="구 이름을 입력해주세요"
+              />
               <label for="dong" class="mr-sm-2">동 이름:</label>
               <input
                 v-model="dong"
@@ -59,12 +67,12 @@
                 name="dong"
                 placeholder="동 이름을 입력해주세요"
               />
-              <label for="aptname" class="mr-sm-2">아파트 이름:</label>
+              <label for="aptName" class="mr-sm-2">아파트 이름:</label>
               <input
-                v-model="aptname"
+                v-model="aptName"
                 type="text"
                 class="form-control mr-sm-2"
-                name="aptname"
+                name="aptName"
                 placeholder="아파트 이름을 입력해주세요"
               />
               <button @click.prevent="search" class="btn btn-primary">검색</button>
@@ -80,23 +88,14 @@
             <th @click="clickSort('no');" title="번호">
               <i class="fas fa-angle-down"></i>번호
             </th>
-            <th @click="clickSort('dong');" title="동 이름">
-              <i class="fas fa-angle-down"></i>동 이름
+            <th @click="clickSort('address');" title="주소">
+              <i class="fas fa-angle-down"></i>주소
             </th>
-            <th @click="clickSort('AptName');" title="아파트 이름">
+            <th @click="clickSort('aptName');" title="아파트 이름">
               <i class="fas fa-angle-down"></i>아파트 이름
             </th>
             <th @click="clickSort('buildYear');" title="건축 년도">
               <i class="fas fa-angle-down"></i>건축 년도
-            </th>
-            <th @click="clickSort('dealAmount');" title="거래 금액">
-              <i class="fas fa-angle-down"></i>거래 금액
-            </th>
-            <th @click="clickSort('dealYear');" title="거래 년도">
-              <i class="fas fa-angle-down"></i>거래 년도
-            </th>
-            <th @click="clickSort('dealMonth');" title="거래 월">
-              <i class="fas fa-angle-down"></i>거래 월
             </th>
             <th @click="clickSort('area');" title="면적">
               <i class="fas fa-angle-down"></i>면적
@@ -104,27 +103,32 @@
             <th @click="clickSort('floor');" title="층수">
               <i class="fas fa-angle-down"></i>층수
             </th>
-            <th @click="clickSort('type');" title="거래 유형">
-              <i class="fas fa-angle-down"></i>거래 유형
+            <th @click="clickSort('dealDate');" title="거래일">
+              <i class="fas fa-angle-down"></i>거래일
+            </th>
+            <th @click="clickSort('dealAmount');" title="거래 금액(보증금)">
+              <i class="fas fa-angle-down"></i>거래 금액(보증금)
             </th>
             <th @click="clickSort('rentMoney');" title="월세">
               <i class="fas fa-angle-down"></i>월세
+            </th>
+            <th @click="clickSort('type');" title="거래 유형">
+              <i class="fas fa-angle-down"></i>거래 유형
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="deal in list" v-bind:key="deal.no" @click="goDetail(deal.no)">
             <td :title="deal.no">{{deal.no}}</td>
-            <td :title="deal.dong">{{deal.dong}}</td>
+            <td :title="deal.address">{{deal.address}}</td>
             <td :title="deal.aptName">{{deal.aptName}}</td>
             <td :title="deal.buildYear">{{deal.buildYear}}</td>
-            <td :title="deal.dealAmount">{{deal.dealAmount}}</td>
-            <td :title="deal.dealYear">{{deal.dealYear}}</td>
-            <td :title="deal.dealMonth">{{deal.dealMonth}}</td>
             <td :title="deal.area">{{deal.area}}</td>
             <td :title="deal.floor">{{deal.floor}}</td>
-            <td :title="deal.typeString">{{deal.typeString}}</td>
+            <td :title="deal.dealDate">{{deal.dealDate}}</td>
+            <td :title="deal.dealAmount">{{deal.dealAmount}}</td>
             <td :title="deal.rentMoney">{{deal.rentMoney}}</td>
+            <td :title="deal.typeString">{{deal.typeString}}</td>
           </tr>
         </tbody>
       </table>
@@ -146,8 +150,11 @@ export default {
       housedeal: true,
       aptrent: true,
       houserent: true,
+
+      gu: "",
       dong: "",
-      aptname: "",
+      aptName: "",
+
       list: [],
       nav: ""
     };
@@ -157,7 +164,7 @@ export default {
     this.initialSearch();
   },
   updated() {
-	let vue = this;
+    let vue = this;
     $("#house-page a").on("click", function(e) {
       let n = $(this).attr("id");
       e.preventDefault();
@@ -170,8 +177,7 @@ export default {
         })
         .catch(error => {
           alert("Error: " + error);
-		});
-		
+        });
     });
   },
   methods: {
@@ -229,14 +235,20 @@ export default {
         return;
       }
 
+      let addr = ('서울특별시 ' + this.gu + ' ' + this.dong)
+      if(this.gu.length == 0 || this.dong.length == 0) {
+        addr = '';
+      }
+
       http
         .post("/house/list", {
           aptdeal: this.aptdeal,
           housedeal: this.housedeal,
           aptrent: this.aptrent,
           houserent: this.houserent,
-          dong: this.dong,
-          aptname: this.aptname
+
+          address: addr,
+          aptName: this.aptName
         })
         .then(response => {
           this.list = response.data.list;
@@ -266,7 +278,7 @@ export default {
 
 .table {
   margin-top: 20px;
-  table-layout: fixed;
+  
 }
 
 th {
