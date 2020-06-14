@@ -51,22 +51,21 @@
               </div>
             </div>
             <div class="form-group form-inline sms-form-center">
-              <label for="dong" class="mr-sm-2">구 이름:</label>
-              <input
-                v-model="gu"
-                type="text"
-                class="form-control mr-sm-2"
-                name="gu"
-                placeholder="구 이름을 입력해주세요"
-              />
-              <label for="dong" class="mr-sm-2">동 이름:</label>
-              <input
-                v-model="dong"
-                type="text"
-                class="form-control mr-sm-2"
-                name="dong"
-                placeholder="동 이름을 입력해주세요"
-              />
+              <label for="sido" class="mr-sm-2">시/도</label>
+              <select v-model="sido" class="form-control mr-sm-2" name="sido" id="sido">
+                <option v-for="sido in sidoList" :key="sido" :value="sido">{{sido}}</option>
+              </select>
+
+              <label for="sigungu" class="mr-sm-2">시/군/구</label>
+              <select v-model="sigungu" class="form-control mr-sm-2" name="sigungu" id="sigungu">
+                <option v-for="sigungu in sigunguList" :key="sigungu" :value="sigungu">{{sigungu}}</option>
+              </select>
+
+              <label for="dong" class="mr-sm-2">동</label>
+              <select v-model="dong" class="form-control mr-sm-2" name="dong" id="dong">
+                <option v-for="dong in dongList" :key="dong" :value="dong">{{dong}}</option>
+              </select>
+
               <label for="aptName" class="mr-sm-2">아파트 이름:</label>
               <input
                 v-model="aptName"
@@ -154,9 +153,14 @@ export default {
       aptrent: true,
       houserent: true,
 
-      gu: "",
+      sido: "",
+      sigungu: "",
       dong: "",
       aptName: "",
+
+      sidoList: [],
+      sigunguList: [],
+      dongList: [],
 
       list: [],
       nav: "",
@@ -167,16 +171,32 @@ export default {
   },
   watch: {
     list() {
-      if(!this.mapCreated) {
-        console.log("init map in list watcher called!");
-        this.initMap();
-      }
+      console.log("init map in list watcher called!");
+      this.initMap();
+      this.mapCreated = true;
+    },
+    sido() {
+      this.setGugunName();
+    },
+    sigungu() {
+      this.setDongName();
     }
   },
   // Created : 처음 데이터들을 불러오기 위함
   created() {
     console.log("created called!!");
     this.initialSearch();
+
+    // 검색 옵션 설정을 위해 시/도 이름들 가져오기
+    http
+      .get("/rest/house/sidoname")
+      .then(response => {
+        this.sidoList = response.data;
+        this.sido = this.sidoList[0];
+      })
+      .catch(error => {
+        alert("Error: " + error);
+      });
   },
   // Updated : 페이징 요소에 클릭 이벤트를 설정하기 위함
   updated() {
@@ -199,7 +219,7 @@ export default {
   // Mounted : 카카오 맵 API 를 사용하기 위함
   mounted() {
     if (window.kakao && window.kakao.maps) {
-      if (this.list.length > 0) {
+      if (!this.mapCreated && this.list.length > 0) {
         console.log("initMap in mounted is Called!");
         this.initMap();
         this.mapCreated = true;
@@ -215,13 +235,15 @@ export default {
   },
   methods: {
     initMap() {
-
       // 지도를 담을 컨테이너를 가져옵니다
       var container = document.getElementById("house-map");
       // 지도에 옵션을 설정합니다
-      var options = {level: 3};
-      if(this.list.length > 0) {
-        options.center = new kakao.maps.LatLng(this.list[0].lat, this.list[0].lng);
+      var options = { level: 3 };
+      if (this.list.length > 0) {
+        options.center = new kakao.maps.LatLng(
+          this.list[0].lat,
+          this.list[0].lng
+        );
       }
 
       // 지도를 만들어 컨테이너에 붙입니다.
@@ -244,15 +266,15 @@ export default {
 
       let positions = [];
 
-      for(let deal of this.list) {
+      for (let deal of this.list) {
         let obj = {};
         obj.latlng = new kakao.maps.LatLng(deal.lat, deal.lng);
-        obj.content = "<div>" + deal.aptName + "</div>"
+        obj.content = "<div>" + deal.aptName + "</div>";
 
         positions.push(obj);
       }
 
-      for(let i = 0; i < positions.length; i++) {
+      for (let i = 0; i < positions.length; i++) {
         // 마커를 생성합니다
         let marker = new kakao.maps.Marker({
           map: map, // 마커를 표시할 지도
@@ -280,7 +302,8 @@ export default {
         kakao.maps.event.addListener(
           marker,
           "click",
-          this.makeClickListener(infowindow));
+          this.makeClickListener(infowindow)
+        );
       }
       console.log("Add all marker complete");
     },
@@ -353,10 +376,12 @@ export default {
         return;
       }
 
-      let addr = ('서울특별시 ' + this.gu + ' ' + this.dong)
-      if(this.gu.length == 0 || this.dong.length == 0) {
-        addr = '';
+      if(this.sido != "서울특별시") {
+        alert("현재는 서울 특별시의 정보만 제공됩니다!");
+        return;
       }
+
+      let addr = this.sido + ' ' + this.sigungu + ' ' + this.dong;
 
       http
         .post("/rest/house/list", {
@@ -371,6 +396,28 @@ export default {
         .then(response => {
           this.list = response.data.list;
           this.nav = response.data.nav;
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+    },
+    setGugunName() {
+      http
+        .get("/rest/house/gugunname/" + this.sido)
+        .then(response => {
+          this.sigunguList = response.data;
+          this.sigungu = this.sigunguList[0];
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+    },
+    setDongName() {
+      http
+        .get("/rest/house/dongname/" + this.sigungu)
+        .then(response => {
+          this.dongList = response.data;
+          this.dong = this.dongList[0];
         })
         .catch(error => {
           alert("Error: " + error);
@@ -396,7 +443,6 @@ export default {
 
 .table {
   margin-top: 20px;
-  
 }
 
 th {

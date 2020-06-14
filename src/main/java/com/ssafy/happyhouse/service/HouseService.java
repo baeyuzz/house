@@ -15,7 +15,10 @@ public interface HouseService {
 	
 	public List<HouseDeal> chartData(Map<String, Object> param);
 	
-	public List<String> address();
+	public List<String> sidoName();
+	public List<String> gugunName(String sidoName);
+	public List<String> dongName(String gugunName);
 	
+	public List<String> address();
 	public boolean addrToLng(Map<String, Object> param);
 }

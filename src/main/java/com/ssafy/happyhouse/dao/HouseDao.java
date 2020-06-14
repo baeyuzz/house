@@ -41,6 +41,10 @@ public interface HouseDao {
 	 */
 	public List<HouseDeal> chartData(Map<String, Object> param);
 	
+	public List<String> sidoName();
+	public List<String> gugunName(String sidoName);
+	public List<String> dongName(String gugunName);
+	
 	/**
 	 * 아래 두개는 데이터베이스에 좌표값을 구해서 넣기 위해 필요했던 것
 	 */

@@ -270,6 +270,24 @@ public class HouseController {
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
+	@GetMapping("/sidoname")
+	@ResponseBody
+	private ResponseEntity<List<String>> getSidoName() {
+		return new ResponseEntity<List<String>>(service.sidoName(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/gugunname/{sido}")
+	@ResponseBody
+	private ResponseEntity<List<String>> getGugunName(@PathVariable String sido) {
+		return new ResponseEntity<List<String>>(service.gugunName(sido), HttpStatus.OK);
+	}
+	
+	@GetMapping("/dongname/{gugun}")
+	@ResponseBody
+	private ResponseEntity<List<String>> getDongName(@PathVariable String gugun) {
+		return new ResponseEntity<List<String>>(service.dongName(gugun), HttpStatus.OK);
+	}
+	
 	// 아래 두개는 DB 에 좌표를 넣기 위한 것
 	@GetMapping("/houseaddress")
 	@ResponseBody

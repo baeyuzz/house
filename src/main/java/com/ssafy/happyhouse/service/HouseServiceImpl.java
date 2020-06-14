@@ -50,6 +50,21 @@ public class HouseServiceImpl implements HouseService{
 		return dao.addrToLng(param) > 0;
 	}
 
+	@Override
+	public List<String> gugunName(String sidoName) {
+		return dao.gugunName(sidoName);
+	}
+
+	@Override
+	public List<String> dongName(String gugunName) {
+		return dao.dongName(gugunName);
+	}
+
+	@Override
+	public List<String> sidoName() {
+		return dao.sidoName();
+	}
+
 }
 
 

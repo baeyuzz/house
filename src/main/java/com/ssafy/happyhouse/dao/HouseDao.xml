@@ -102,6 +102,38 @@
 			dealDate
 	</select>
 	
+	<!-- 도/시, 시/군/구 Select 에 따라 Data 가져오기 위한 Query -->
+	<select id="sidoName" resultType="String">
+	select distinct
+		sido_name
+	from
+		sidocode;
+	</select>
+	
+	<select id="gugunName" resultType="String">
+		select distinct
+			g.gugun_name as gugun_name
+		from
+			sidocode s join guguncode g
+			on left(s.sido_code, 2) = left(g.gugun_code, 2)
+		where
+			s.sido_name = #{value}
+		order by
+			gugun_name
+	</select>
+	
+	<select id="dongName" resultType="String">
+		select distinct
+			d.dong as dong
+		from
+			guguncode g join dongcode d
+    		on left(g.gugun_code, 5) = d.dongcode
+		where
+			g.gugun_name = #{value}
+		order by
+			dong;
+	</select>
+	
 	<!-- 이 아래는 데이터베이스에 좌표값을 넣기 위해 필요했던 것 -->
 	<select id="address" resultType="String">
 		select
