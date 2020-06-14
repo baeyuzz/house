@@ -5,27 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.happyhouse.dto.Crime;
-import com.ssafy.happyhouse.dto.HouseDeal;
-import com.ssafy.happyhouse.dto.HousePageBean;
-import com.ssafy.happyhouse.news.NaverNewsApi;
-import com.ssafy.happyhouse.news.News;
-import com.ssafy.happyhouse.service.HouseService;
-import com.ssafy.happyhouse.util.PageNavigation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Crime Controller")
 @Controller
-@RequestMapping("/house")
+//@RequestMapping("/house")
 public class CrimeController {
 	
 	private CrimeService service;

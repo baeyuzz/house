@@ -8,35 +8,28 @@
 	<select id="searchAll"
 		parameterType="HousePageBean"
 		resultType="HouseDeal">
-		select distinct
+		select
 			d.no 			as no
-    		,d.dong			as dong
-    		,d.aptname		as aptName
-    		,d.code			as code
-    		,d.dealamount	as dealAmount
-    		,d.buildyear	as buildYear
-    		,d.dealyear		as dealYear
-    		,d.dealmonth	as dealMonth
-    		,d.dealday		as dealDay
+			,d.address		as address
+			,d.dealDate		as dealDate
+    		,d.aptName		as aptName
     		,d.area			as area
     		,d.floor		as floor
-    		,d.jibun		as jibun
-    		,d.type			as type
+    		,d.buildYear	as buildYear
+    		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
-    		,d.province		as province
-    		,d.city			as city
-    		,i.img			as img
+    		,d.type			as type
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
 		where
 			type in(${typeInStr})
-			<if test="dong != null">
-				and d.dong like concat('%', #{dong}, '%')
+			<if test="address != null">
+				and d.address like concat('%', #{address}, '%')
 			</if>
-			<if test="aptname != null">
-	    		and d.aptname like concat('%', #{aptname}, '%')
+			<if test="aptName != null">
+	    		and d.aptName like concat('%', #{aptName}, '%')
 			</if>
 		order by
 			${orderBy} ${orderType}
@@ -46,28 +39,21 @@
 	
 	<select id="search"
 		resultType="HouseDeal">
-		select distinct
+		select
 			d.no 			as no
-    		,d.dong			as dong
-    		,d.aptname		as aptName
-    		,d.code			as code
-    		,d.dealamount	as dealAmount
-    		,d.buildyear	as buildYear
-    		,d.dealyear		as dealYear
-    		,d.dealmonth	as dealMonth
-    		,d.dealday		as dealDay
+			,d.address		as address
+			,d.dealDate		as dealDate
+    		,d.aptName		as aptName
     		,d.area			as area
     		,d.floor		as floor
-    		,d.jibun		as jibun
-    		,d.type			as type
+    		,d.buildYear	as buildYear
+    		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
-    		,d.province		as province
-    		,d.city			as city
-    		,i.img			as img
+    		,d.type			as type
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
 		where
 			d.no = #{value}
 
@@ -80,15 +66,15 @@
 			count(*) as cnt
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
     	<where>
     		type in(${typeInStr})
-			<if test="dong != null">
-				and d.dong like concat('%', #{dong}, '%')
+			<if test="address != null">
+				and d.address like concat('%', #{address}, '%')
 			</if>
-			<if test="aptname != null">
-	    		and d.aptname like concat('%', #{aptname}, '%')
+			<if test="aptName != null">
+	    		and d.aptName like concat('%', #{aptName}, '%')
 			</if>
     	</where>
 	</select>
@@ -96,21 +82,37 @@
 	<select id="chartData"
 		resultType="HouseDeal">
 		select
-			no
-    		, dealAmount
-    		, dealYear
-    		, dealMonth
-    		, dealDay
-    		, rentMoney
+			d.no 			as no
+			,d.dealDate		as dealDate
+    		,d.dealAmount	as dealAmount
+    		,d.rentmoney	as rentMoney
 		from
-			housedeal
+			housedeal d join houseinfo i
+    		on d.address = i.address
+    		and d.aptName = i.aptName
 		where
-			dong		= #{dong}
-			and aptname	= #{aptname}
-			and type	= #{type}
+			d.address		= #{address}
+			and d.aptName	= #{aptName}
+			and d.type		= #{type}
 		order by 
-			cast(dealYear as decimal)
-			, cast(dealMonth as decimal)
-			, cast(dealDay as decimal)
+			dealDate
 	</select>
+	
+	<!-- 이 아래는 데이터베이스에 좌표값을 넣기 위해 필요했던 것 -->
+	<select id="address" resultType="String">
+		select
+			address
+		from
+			houseinfo
+	</select>
+	
+	<update id="addrToLng">
+		update
+			houseinfo
+		set
+			lat 	= #{lat}
+			, lng 	= #{lng}
+		where
+			address = #{address}
+	</update>
 </mapper>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -79,7 +80,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "Rest 아파트/주택 정보 테이블 정렬")
+	@ApiOperation(value = "아파트/주택 정보 테이블 정렬")
 	@ResponseBody
 	@GetMapping("/sort/{by}")
 	private ResponseEntity<Map<String, Object>> houseSort(@PathVariable String by, HttpSession session) {
@@ -109,7 +110,7 @@ public class HouseController {
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("list", dealList);
 		
-		if(n > HousePageBean.INTERVAL) {			
+		if(n > HousePageBean.INTERVAL) {
 			map.put("nav", pageNavigation.getNavigator());
 		} else {
 			map.put("nav", "");
@@ -118,7 +119,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "Rest 아파트/주택 거래 상세 정보 조회")
+	@ApiOperation(value = "아파트/주택 거래 상세 정보 조회")
 	@ResponseBody
 	@GetMapping("/detail/{no}")
 	private ResponseEntity<Map<String, Object>> houseDetail(@PathVariable int no, HttpSession session) {
@@ -126,16 +127,14 @@ public class HouseController {
 		HouseDeal house = service.search(no);
 		List<News> news = NaverNewsApi.searchNews(house.getAptName());
 		
-		
 		map.put("house", house);
 		map.put("news", news);
 		map.put("state", true);
 		
-//		return new ResponseEntity<HouseDeal>(house, HttpStatus.OK);
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "Rest 메인 페이지 이동시 아파트/주택 거래정보 채우기")
+	@ApiOperation(value = "메인 페이지 이동시 아파트/주택 거래정보 채우기")
 	@ResponseBody
 	@GetMapping("/init")
 	public ResponseEntity<Map<String, Object>> initInfo(HttpSession session) {
@@ -154,16 +153,6 @@ public class HouseController {
 				
 		// 첫 접속일 경우
 		HousePageBean bean = HousePageBean.getInstance();
-				
-		// 체크박스 체크상태 유지를 위해 세션에 설정해주기
-		if(bean.getSearchType()[0]) session.setAttribute("adck", "checked");
-		else						session.setAttribute("adck", "");
-		if(bean.getSearchType()[1]) session.setAttribute("hdck", "checked");
-		else						session.setAttribute("hdck", "");
-		if(bean.getSearchType()[2]) session.setAttribute("arck", "checked");
-		else						session.setAttribute("arck", "");
-		if(bean.getSearchType()[3]) session.setAttribute("hrck", "checked");
-		else						session.setAttribute("hrck", "");
 				
 		// 조회할 데이터의 수 검색
 		int n = service.numberOfData(bean);
@@ -193,7 +182,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "Rest 아파트/주택 거래정보 검색")
+	@ApiOperation(value = "아파트/주택 거래정보 검색")
 	@ResponseBody
 	@PostMapping("/list")
 	public ResponseEntity<Map<String, Object>> searchHouseDeal(@RequestBody Map<String, Object> params
@@ -208,34 +197,18 @@ public class HouseController {
 		type[3] = (params.get("houserent") != null)? (boolean)params.get("houserent"): false;
 		bean.setSearchType(type);
 		
-		String dong = (String) params.get("dong");
+		String address = (String) params.get("address");
 		String aptName = (String) params.get("aptname");
 				
-		if(dong != null && dong.length() > 0)
-			bean.setDong(dong);
+		if(address != null && address.length() > 0)
+			bean.setAddress(address);
 		else
-			bean.setDong(null);
+			bean.setAddress(null);
 				
 		if(aptName != null && aptName.length() > 0)
-			bean.setAptname(aptName);
+			bean.setAptName(aptName);
 		else
-			bean.setAptname(null);
-				
-		// 체크박스 체크상태 유지를 위해 세션에 설정해주기
-		if(bean.getSearchType()[0]) session.setAttribute("adck", "checked");
-		else						session.setAttribute("adck", "");
-		if(bean.getSearchType()[1]) session.setAttribute("hdck", "checked");
-		else						session.setAttribute("hdck", "");
-		if(bean.getSearchType()[2]) session.setAttribute("arck", "checked");
-		else						session.setAttribute("arck", "");
-		if(bean.getSearchType()[3]) session.setAttribute("hrck", "checked");
-		else						session.setAttribute("hrck", "");
-						
-		// 검색 인풋박스 유지를 위해 세션에 설정해주기
-		if(bean.getDong() != null)		session.setAttribute("donginp", bean.getDong());
-		else							session.setAttribute("donginp", "");
-		if(bean.getAptname() != null)	session.setAttribute("aptinp", bean.getAptname());
-		else							session.setAttribute("aptinp", "");
+			bean.setAptName(null);
 				
 		// 검색 결과는 0번부터 보여줌
 		bean.setStart(0);
@@ -261,7 +234,7 @@ public class HouseController {
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("list", dealList);
 		
-		if(n > HousePageBean.INTERVAL) {			
+		if(n > HousePageBean.INTERVAL) {
 			map.put("nav", pageNavigation.getNavigator());
 		} else {
 			map.put("nav", "");
@@ -284,22 +257,12 @@ public class HouseController {
 		List<Integer> nos = new ArrayList<Integer>();
 		
 		for(HouseDeal deal : list) {
-			String dealYMD = 
-					deal.getDealYear().substring(2, 4)  + "." +
-					deal.getDealMonth() + "." +
-					deal.getDealDay()   + ".";
-			labels.add(dealYMD);
+			labels.add(deal.getDealDate());
 			
-			String dealAmount = deal.getDealAmount().trim();
-			if(dealAmount == null) dealAmount = "0";
-			dealAmount = dealAmount.replace(",", "");
-			data.add(Integer.parseInt(dealAmount));
+			data.add(deal.getDealAmount());
 			
 			if(isRent) {
-				String rentMoney = deal.getRentMoney();
-				if(rentMoney == null) rentMoney = "0";
-				rentMoney = rentMoney.replace(",", "");
-				rent.add(Integer.parseInt(rentMoney));
+				rent.add(deal.getRentMoney());
 			}
 			
 			nos.add(deal.getNo());
@@ -313,5 +276,18 @@ public class HouseController {
 		if(isRent) ret.put("rent", rent);
 		
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
+	}
+	
+	// 아래 두개는 DB 에 좌표를 넣기 위한 것
+	@GetMapping("/houseaddress")
+	@ResponseBody
+	private ResponseEntity<List<String>> getAddresses() {
+		return new ResponseEntity<List<String>>(service.address(), HttpStatus.OK);
+	}
+	
+	@PutMapping("/addrtolng")
+	@ResponseBody
+	private ResponseEntity<Boolean> addrToLng(@RequestBody Map<String, Object> param) {
+		return new ResponseEntity<Boolean>(service.addrToLng(param), HttpStatus.OK);
 	}
 }

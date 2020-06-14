@@ -59,6 +59,12 @@
             <li v-if="name.length > 0" class="nav-item">
               <router-link class="nav-link" to="/interest/list">관심지역 보기</router-link>
             </li>
+
+            <!-- DB 테이블에 주소를 좌표로 변환해 넣기 위한 페이지
+            <li class="nav-item">
+              <router-link class="nav-link" to="/house/addr">asdfasdf</router-link>
+            </li>
+            -->
           </ul>
         </div>
       </nav>

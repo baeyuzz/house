@@ -40,6 +40,16 @@ public class HouseServiceImpl implements HouseService{
 		return dao.chartData(param);
 	}
 
+	@Override
+	public List<String> address() {
+		return dao.address();
+	}
+
+	@Override
+	public boolean addrToLng(Map<String, Object> param) {
+		return dao.addrToLng(param) > 0;
+	}
+
 }
 
 

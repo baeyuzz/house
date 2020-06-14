@@ -36,6 +36,8 @@ import QnaDetail from './components/QnaDetail.vue';
 import QnaAdd from './components/QnaAdd.vue';
 import QnaModify from './components/QnaModify.vue';
 
+// import HouseAddr from '@/components/HouseAddr.vue';
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -65,6 +67,8 @@ const router = new VueRouter({
     , {path:'/qna/:no',component:QnaDetail}
     , {path:'/addQna',component:QnaAdd}
     , {path:'/update/:no',component:QnaModify}
+
+    // , {path: '/house/addr', component: HouseAddr}
   ]
 });
 
