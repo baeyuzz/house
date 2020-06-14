@@ -54,7 +54,7 @@ export default {
                 return;
             }
             
-            http.post('/notice/write', {
+            http.post('/rest/notice/write', {
                 title: this.title
                 , content: this.content
                 , userid: this.id

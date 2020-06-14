@@ -69,7 +69,7 @@ export default {
   },
   created() {
     http
-      .get("/notice/list")
+      .get("/rest/notice/list")
       .then(response => {
         this.noticeList = response.data;
       })
@@ -80,7 +80,7 @@ export default {
   methods: {
     searchNotice() {
       http
-        .post("/notice/search", {
+        .post("/rest/notice/search", {
             title: this.title
         })
         .then(response => {

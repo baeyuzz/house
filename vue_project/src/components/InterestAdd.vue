@@ -77,7 +77,7 @@ export default {
       }
 
       http
-        .post("/interest/add", {
+        .post("/rest/interest", {
           province: this.province,
           city: this.city,
           dong: this.dong,

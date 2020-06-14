@@ -124,7 +124,9 @@ export default {
 
       city: "",
       gu: "",
-      dong: ""
+      dong: "",
+
+      curNo: -1
     };
   },
   computed: {
@@ -142,7 +144,7 @@ export default {
       e.preventDefault();
 
       http
-        .post("/interest/pagenav", {
+        .post("/rest/interest/pagenav", {
           id: vue.id,
           pg: n
         })
@@ -165,7 +167,7 @@ export default {
       e.preventDefault();
 
       http
-        .post("/env/pagenav", {
+        .post("/rest/env/pagenav", {
           dong: vue.dong,
           pg: n
         })
@@ -188,7 +190,7 @@ export default {
       e.preventDefault();
 
       http
-        .post("/shop/pagenav", {
+        .post("/rest/shop/pagenav", {
           city: vue.city,
           gu: vue.gu,
           dong: vue.dong,
@@ -211,9 +213,9 @@ export default {
   methods: {
     searchEnv(index) {
       this.dong = this.regions[index].dong;
-
+      this.curNo = this.regions[index].no;
       http
-        .post("/env", {
+        .post("/rest/env", {
           dong: this.dong
         })
         .then(response => {
@@ -235,9 +237,9 @@ export default {
       this.city = this.regions[index].province;
       this.gu = this.regions[index].city;
       this.dong = this.regions[index].dong;
-
+      this.curNo = this.regions[index].no;
       http
-        .post("/shop", {
+        .post("/rest/shop", {
           city: this.city,
           gu: this.gu,
           dong: this.dong
@@ -258,8 +260,15 @@ export default {
         });
     },
     removeRegion(no) {
+      if(no == this.curNo) {
+        this.envs = [];
+        this.shops = [];
+        this.envPaging = "";
+        this.shopPaging = "";
+      }
+      
       http
-        .delete("/interest/delete/" + no)
+        .delete("/rest/interest/" + no)
         .then(response => {
           if (response.data) {
             alert("관심지역이 삭제되었습니다");
@@ -274,7 +283,7 @@ export default {
     },
     getRegionList() {
       http
-        .get("/interest/list/" + this.id)
+        .get("/rest/interest/" + this.id)
         .then(response => {
           this.regions = response.data.list;
 

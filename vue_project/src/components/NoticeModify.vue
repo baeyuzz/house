@@ -36,9 +36,14 @@ export default {
         notice: {}
     };
   },
+  computed: {
+    admin() {
+      return this.$store.state.admin;
+    }
+  },
   created() {
     http
-      .get("/notice/detail/" + this.$route.params.no)
+      .get("/rest/notice/detail/" + this.$route.params.no + "/" + this.admin)
       .then(response => {
         this.notice = response.data;
       })
@@ -60,7 +65,7 @@ export default {
               return;
           }
           http
-            .put('/notice/modify', {
+            .put('/rest/notice/modify', {
                 no: this.notice.no
                 , title: this.notice.title
                 , content: this.notice.content

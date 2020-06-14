@@ -33,7 +33,7 @@ export default {
     },
     addr() {
       http
-        .get("/house/houseaddress")
+        .get("/rest/house/houseaddress")
         .then(response => {
           let list = response.data;
 
@@ -57,7 +57,7 @@ export default {
           let lng = result[0].x;
 
           http
-            .put("/house/addrtolng", {
+            .put("/rest/house/addrtolng", {
               lat: lat,
               lng: lng,
               address: list[index]

@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("User Controller")
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/rest/user")
 public class UserController {
 	private UserService service;
 
@@ -54,10 +54,6 @@ public class UserController {
 			System.out.println("로그인 성공");
 			session.setAttribute("id", userid);
 			session.setAttribute("name", name);
-			// 유저 == 관리자라면 추가적인 설정
-			if (userid.equals("admin")) {
-				session.setAttribute("isAdmin", true);
-			}
 
 			ret.put("state", true);
 			ret.put("name", name);
@@ -200,7 +196,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 	
-	
+	@ResponseBody
 	@GetMapping("/closeAccount/{userid}")
 	private ResponseEntity<Map<String, Object>> close(@PathVariable String userid, HttpSession session) {
 		HashMap<String, Object> ret = new HashMap<>();
@@ -211,5 +207,27 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 
-
+	@ApiOperation(value = "세션에 로그인 정보 있는지 확인")
+	@ResponseBody
+	@GetMapping("/session")
+	private ResponseEntity<Map<String, Object>> confirmSession(HttpSession session) {
+		Object id = session.getAttribute("id");
+		Object name = session.getAttribute("name");
+		
+		HashMap<String, Object> ret = new HashMap<>();
+		if(id != null && name != null) {
+			ret.put("state", true);
+			ret.put("id", id);
+			ret.put("name", name);
+			
+			System.out.println("Session has a login info");
+		} else {
+			ret.put("state", false);
+			
+			System.out.println("Session don't has a login info");
+		}
+		
+		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
+	}
+	
 }

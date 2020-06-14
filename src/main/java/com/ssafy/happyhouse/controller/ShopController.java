@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Shop Controller")
-@RequestMapping("/shop")
+@RequestMapping("/rest/shop")
 @Controller
 public class ShopController {
 

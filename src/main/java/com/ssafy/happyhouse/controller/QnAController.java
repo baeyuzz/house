@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("QnA Controller")
 @Controller
-@RequestMapping("/qna")
+@RequestMapping("/rest/qna")
 public class QnAController {
 
 	private QnAService service;

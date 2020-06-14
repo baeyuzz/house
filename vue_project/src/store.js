@@ -14,7 +14,7 @@ const store = new Vuex.Store({
     },
     actions: {
         [Constant.GET_QNALIST]: store => {
-            http.get('/qna')
+            http.get('/rest/qna')
                 .then(response => {store.commit(Constant.GET_QNALIST, { qnaItems: response.data });
                     console.log("qnalist")
             }
@@ -22,13 +22,13 @@ const store = new Vuex.Store({
                 .catch(exp => alert('getQnAList처리에 실패하였습니다.' + exp));
         },
         [Constant.GET_QNA]: (store, payload) => {
-            http.get('/qna/' + payload.no)
+            http.get('/rest/qna/' + payload.no)
                 .then(response => store.commit(Constant.GET_QNA, { qna: response.data }))
                 .catch(exp => alert('getQnA처리에 실패하였습니다.' + exp));
 
         },
         [Constant.ADD_QNA]: (store, payload) => {
-            http.post('/qna', {
+            http.post('/rest/qna', {
                     qna_userid: payload.qna.qna_userid,
                     qna_title: payload.qna.qna_title,
                     qna_content: payload.qna.qna_content
@@ -40,7 +40,7 @@ const store = new Vuex.Store({
                 .catch(exp => alert('추가 처리에 실패하였습니다.' + exp));
         },
         [Constant.MODIFY_QNA]: (store, payload) => {
-            http.put('/qna/qna', {
+            http.put('/rest/qna/qna', {
                 qna_no: payload.qna.qna_no,
                 qna_title: payload.qna.qna_title,
                 qna_content: payload.qna.qna_content   

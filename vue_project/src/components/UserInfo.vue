@@ -54,7 +54,7 @@ export default {
   },
   created() {
     http
-      .get("/user/mypage/" + this.userid )
+      .get("/rest/user/mypage/" + this.userid )
       .then(response => {
         this.username = response.data.username;
         this.userpwd = response.data.userpwd;

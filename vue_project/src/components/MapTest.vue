@@ -112,7 +112,10 @@ export default {
           "mouseout",
           this.makeOutListener(infowindow)
         );
-        kakao.maps.event.addListener(marker, "click", this.makeClickListener());
+        kakao.maps.event.addListener(
+          marker,
+          "click",
+          this.makeClickListener());
       }
 
       //   // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다

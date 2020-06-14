@@ -66,7 +66,7 @@ export default {
   },
   created() {
     http
-      .get("/user/mypage/" + this.userid )
+      .get("/rest/user/mypage/" + this.userid )
       .then(response => {
         this.username = response.data.username;
         this.userpwd = response.data.userpwd;
@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     update() {
-     http.post('/user/update', {
+     http.post('/rest/user/update', {
 				userid : this.userid,
 				username : this.username,
 				userpwd : this.userpwd,

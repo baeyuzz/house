@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Notice Controller")
 @Controller
-@RequestMapping("/notice")
+@RequestMapping("/rest/notice")
 public class NoticeController {
 
 	NoticeService service;

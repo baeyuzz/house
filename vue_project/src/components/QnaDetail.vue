@@ -72,7 +72,7 @@ export default {
       this.$router.push('/update/'+no); 
     }
     , deleteQnA(no) {
-      http.delete('/qna/' + no)
+      http.delete('/rest/qna/' + no)
       .then(() => {
         this.$router.push('/qna');
       })

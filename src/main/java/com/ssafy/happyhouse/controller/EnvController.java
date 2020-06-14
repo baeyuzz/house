@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Env Controller")
-@RequestMapping("/env")
+@RequestMapping("/rest/env")
 @Controller
 public class EnvController {
 

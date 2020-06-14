@@ -83,7 +83,7 @@ export default {
                 return;
             }
 
-            http.post('/user/join', {
+            http.post('/rest/user/join', {
                 userid: this.userid
                 , userpwd: this.userpwd
                 , username: this.username

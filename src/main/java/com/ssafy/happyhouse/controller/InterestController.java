@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @Api("Interest Controller")
 @Controller
-@RequestMapping("/interest")
+@RequestMapping("/rest/interest")
 public class InterestController {
 	private InterestRegionService service;
 
@@ -38,14 +38,14 @@ public class InterestController {
 	
 	@ApiOperation(value = "관심지역 추가")
 	@ResponseBody
-	@PostMapping("/add")
+	@PostMapping
 	private ResponseEntity<Boolean> interestRegionAdd(@RequestBody InterestRegion region) {
 		return new ResponseEntity<Boolean>(service.addInterestRegion(region), HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "관심지역 리스트 조회")
 	@ResponseBody
-	@GetMapping("/list/{id}")
+	@GetMapping("{id}")
 	private ResponseEntity<Map<String, Object>> interestRegionList(@PathVariable String id) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("id", id);
@@ -57,9 +57,7 @@ public class InterestController {
 		List<InterestRegion> list = service.searchInterestRegion(map);
 		
 		HashMap<String, Object> ret = new HashMap<>();
-		if(list.size() > 0) {
-			ret.put("list", list);
-		}
+		ret.put("list", list);
 		
 		if(n > 10) {
 			PageNavigation pageNavigation = 
@@ -106,7 +104,7 @@ public class InterestController {
 	
 	@ApiOperation(value = "관심지역 삭제")
 	@ResponseBody
-	@DeleteMapping("/delete/{no}")
+	@DeleteMapping("{no}")
 	private ResponseEntity<Boolean> deleteInterestRegion(@PathVariable int no) {
 		return new ResponseEntity<Boolean>(service.deleteInterestRegion(no), HttpStatus.OK);
 	}

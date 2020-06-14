@@ -61,7 +61,7 @@ export default {
                 return;
             }
 
-            http.post('/user/login', {
+            http.post('/rest/user/login', {
                 userid: this.userid
                 , userpwd: this.userpwd
             })

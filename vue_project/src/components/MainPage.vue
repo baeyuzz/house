@@ -81,6 +81,9 @@
         </form>
       </div>
     </section>
+    <section class="container">
+      <div id="house-map"></div>
+    </section>
     <section class="information">
       <table class="table table-hover table-bordered">
         <thead>
@@ -156,13 +159,26 @@ export default {
       aptName: "",
 
       list: [],
-      nav: ""
+      nav: "",
+
+      map: {},
+      mapCreated: false
     };
   },
+  watch: {
+    list() {
+      if(!this.mapCreated) {
+        console.log("init map in list watcher called!");
+        this.initMap();
+      }
+    }
+  },
+  // Created : 처음 데이터들을 불러오기 위함
   created() {
     console.log("created called!!");
     this.initialSearch();
   },
+  // Updated : 페이징 요소에 클릭 이벤트를 설정하기 위함
   updated() {
     let vue = this;
     $("#house-page a").on("click", function(e) {
@@ -170,7 +186,7 @@ export default {
       e.preventDefault();
 
       http
-        .get("/house/pagenav/" + n)
+        .get("/rest/house/pagenav/" + n)
         .then(response => {
           vue.list = response.data.list;
           vue.nav = response.data.nav;
@@ -180,7 +196,109 @@ export default {
         });
     });
   },
+  // Mounted : 카카오 맵 API 를 사용하기 위함
+  mounted() {
+    if (window.kakao && window.kakao.maps) {
+      if (this.list.length > 0) {
+        console.log("initMap in mounted is Called!");
+        this.initMap();
+        this.mapCreated = true;
+      }
+    } else {
+      /* global kakao */
+      const script = document.createElement("script");
+      script.onload = () => kakao.maps.load(this.initMap);
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=c0153be2e7c8003d17fd11e5d2f1dcfe&libraries=services";
+      document.head.appendChild(script);
+    }
+  },
   methods: {
+    initMap() {
+
+      // 지도를 담을 컨테이너를 가져옵니다
+      var container = document.getElementById("house-map");
+      // 지도에 옵션을 설정합니다
+      var options = {level: 3};
+      if(this.list.length > 0) {
+        options.center = new kakao.maps.LatLng(this.list[0].lat, this.list[0].lng);
+      }
+
+      // 지도를 만들어 컨테이너에 붙입니다.
+      var map = new kakao.maps.Map(container, options);
+      console.log("Add map on dom complete");
+
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      var mapTypeControl = new kakao.maps.MapTypeControl();
+
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      var zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      console.log("Add control on map complete");
+
+      this.map = map;
+
+      let positions = [];
+
+      for(let deal of this.list) {
+        let obj = {};
+        obj.latlng = new kakao.maps.LatLng(deal.lat, deal.lng);
+        obj.content = "<div>" + deal.aptName + "</div>"
+
+        positions.push(obj);
+      }
+
+      for(let i = 0; i < positions.length; i++) {
+        // 마커를 생성합니다
+        let marker = new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: positions[i].latlng // 마커의 위치
+        });
+
+        // 마커에 표시할 인포윈도우를 생성합니다
+        var infowindow = new kakao.maps.InfoWindow({
+          content: positions[i].content // 인포윈도우에 표시할 내용
+        });
+
+        // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+        // 이벤트 리스너로는 클로저를 만들어 등록합니다
+        // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+        kakao.maps.event.addListener(
+          marker,
+          "mouseover",
+          this.makeOverListener(map, marker, infowindow)
+        );
+        kakao.maps.event.addListener(
+          marker,
+          "mouseout",
+          this.makeOutListener(infowindow)
+        );
+        kakao.maps.event.addListener(
+          marker,
+          "click",
+          this.makeClickListener(infowindow));
+      }
+      console.log("Add all marker complete");
+    },
+    makeOverListener(map, marker, infowindow) {
+      return function() {
+        infowindow.open(map, marker);
+      };
+    },
+    makeOutListener(infowindow) {
+      return function() {
+        infowindow.close();
+      };
+    },
+    makeClickListener(infowindow) {
+      return function() {
+        console.dir(infowindow);
+      };
+    },
     goDetail(no) {
       console.log(no);
       this.$router.push("/house/detail/" + no);
@@ -188,7 +306,7 @@ export default {
     pageMove(page) {
       console.log(page);
       http
-        .get("/house/pagenav/" + page)
+        .get("/rest/house/pagenav/" + page)
         .then(response => {
           this.list = response.data.list;
           this.nav = response.data.nav;
@@ -200,7 +318,7 @@ export default {
     clickSort(param) {
       console.log(param);
       http
-        .get("/house/sort/" + param)
+        .get("/rest/house/sort/" + param)
         .then(response => {
           this.list = response.data.list;
           this.nav = response.data.nav;
@@ -212,7 +330,7 @@ export default {
     initialSearch() {
       console.log("initialSearch() called!!");
       http
-        .get("/house/init")
+        .get("/rest/house/init")
         .then(response => {
           this.list = response.data.list;
           this.nav = response.data.nav;
@@ -241,7 +359,7 @@ export default {
       }
 
       http
-        .post("/house/list", {
+        .post("/rest/house/list", {
           aptdeal: this.aptdeal,
           housedeal: this.housedeal,
           aptrent: this.aptrent,
@@ -308,5 +426,10 @@ th > i {
 
 #nav-container {
   text-align: center;
+}
+
+#house-map {
+  widows: 1000px;
+  height: 800px;
 }
 </style>

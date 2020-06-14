@@ -74,7 +74,7 @@ export default {
     searchQna() {
       console.log("click search");
       http
-        .post("/qna/search/", {
+        .post("/rest/qna/search/", {
           title: this.title
         })
         .then(response => {

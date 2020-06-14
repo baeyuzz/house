@@ -81,16 +81,36 @@ export default {
       return this.$store.state.name;
     }
   },
+  created() {
+    console.log("NavHeader Created() Called");
+    http
+      .get("/rest/user/session")
+      .then(response => {
+        console.log("/rest/user/session success");
+        if(response.data.state) {
+          console.log("Session has a data: " + 
+                        response.data.name + ", " + 
+                        response.data.id);
+          this.$store.commit('setname', {name: response.data.name,
+                                        id: response.data.id});
+        } else {
+          console.log("Session don't has a data");
+        }
+      })
+      .catch(error => {
+        alert("Error: " + error);
+      });
+  },
   methods: {
     logout() {
       http
-        .get("/user/logout")
+        .get("/rest/user/logout")
         .then(() => {
           this.$store.commit("resetname");
           this.$router.push("/");
         })
         .catch(error => {
-          alert("Error: ", error);
+          alert("Error: " + error);
         });
     }
     , mypage() {

@@ -124,7 +124,7 @@ export default {
     console.log("Detail created() called!");
     this.no = this.$route.params.no;
     http
-      .get("/house/detail/" + this.no)
+      .get("/rest/house/detail/" + this.no)
       .then(response => {
         this.house = response.data.house;
         this.news = response.data.news;
@@ -134,7 +134,7 @@ export default {
 
         // house 정보를 잘 가져왔다면 chart 만들기 위한 정보 가져오기
         http
-          .post("/house/chart", {
+          .post("/rest/house/chart", {
             address: this.house.address,
             aptName: this.house.aptName,
             type: this.house.type
@@ -147,19 +147,17 @@ export default {
             alert("Error: " + error);
           });
 
-        /* 이거 왜 컨트롤러에 없어 ㅠ
         http
-          .post("/house/crime", {
+          .post("/rest/crime", {
             code: this.house.code
           })
           .then(response => {
-            // this.nos = response.data.nos;
             this.crimeChart(response.data);
           })
           .catch(error => {
             alert("Error: " + error);
           });
-        */
+        
       })
       .catch(error => {
         alert("Error: ", error);
@@ -389,7 +387,7 @@ export default {
     resetDetail(no) {
       this.no = no;
       http
-        .get("/house/detail/" + no)
+        .get("/rest/house/detail/" + no)
         .then(response => {
           this.house = response.data.house;
         })

@@ -36,7 +36,7 @@ export default {
     },
     methods: {
         resetpw () {
-            http.post('/user/resetpw/'+this.$route.params.userid, {
+            http.post('/rest/user/resetpw/'+this.$route.params.userid, {
                 pw1: this.pw1
                 , pw2: this.pw2
             })
