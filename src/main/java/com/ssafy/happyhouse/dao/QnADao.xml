@@ -57,11 +57,13 @@
 				, qna_content
 				, qna_userid
 				, hitcount
+				, replycnt
 			)
 		values(
 				#{qna_title}
 				, #{qna_content}
 				, #{qna_userid}
+				, 0
 				, 0
 			)
 	</insert>
