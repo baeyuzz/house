@@ -2,6 +2,7 @@
   <div id="app">
     <nav-header></nav-header>
     <router-view></router-view>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import Footer from '@/components/Footer.vue';
 import NavHeader from '@/components/NavHeader.vue';
 import MainPage from './components/MainPage.vue';
 import HouseDetail from '@/components/HouseDetail.vue';
@@ -75,6 +77,7 @@ const router = new VueRouter({
 export default {
   name : 'app',
   components: {
+    Footer,
     NavHeader
   },
   router
