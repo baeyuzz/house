@@ -8,33 +8,30 @@
 	<select id="searchAll"
 		parameterType="HousePageBean"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
-    		,d.dong			as dong
-    		,d.aptname		as aptName
-    		,d.code			as code
-    		,d.dealamount	as dealAmount
-    		,d.buildyear	as buildYear
-    		,d.dealyear		as dealYear
-    		,d.dealmonth	as dealMonth
-    		,d.dealday		as dealDay
+			,d.address		as address
+			,d.dealDate		as dealDate
+    		,d.aptName		as aptName
     		,d.area			as area
     		,d.floor		as floor
-    		,d.jibun		as jibun
-    		,d.type			as type
+    		,d.buildYear	as buildYear
+    		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
-    		,i.img			as img
+    		,d.type			as type
+    		,i.lat			as lat
+    		,i.lng			as lng
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
 		where
 			type in(${typeInStr})
-			<if test="dong != null">
-				and d.dong like concat('%', #{dong}, '%')
+			<if test="address != null">
+				and d.address like concat('%', #{address}, '%')
 			</if>
-			<if test="aptname != null">
-	    		and d.aptname like concat('%', #{aptname}, '%')
+			<if test="aptName != null">
+	    		and d.aptName like concat('%', #{aptName}, '%')
 			</if>
 		order by
 			${orderBy} ${orderType}
@@ -44,26 +41,23 @@
 	
 	<select id="search"
 		resultType="HouseDeal">
-		select
+		select distinct
 			d.no 			as no
-    		,d.dong			as dong
-    		,d.aptname		as aptName
-    		,d.code			as code
-    		,d.dealamount	as dealAmount
-    		,d.buildyear	as buildYear
-    		,d.dealyear		as dealYear
-    		,d.dealmonth	as dealMonth
-    		,d.dealday		as dealDay
+			,d.address		as address
+			,d.dealDate		as dealDate
+    		,d.aptName		as aptName
     		,d.area			as area
     		,d.floor		as floor
-    		,d.jibun		as jibun
-    		,d.type			as type
+    		,d.buildYear	as buildYear
+    		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
-    		,i.img			as img
+    		,d.type			as type
+    		,i.lat			as lat
+    		,i.lng			as lng
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
 		where
 			d.no = #{value}
 
@@ -76,16 +70,85 @@
 			count(*) as cnt
 		from
 			housedeal d join houseinfo i
-    		on d.dong = i.dong
-    		and d.aptname = i.aptname
+    		on d.address = i.address
+    		and d.aptName = i.aptName
     	<where>
     		type in(${typeInStr})
-			<if test="dong != null">
-				and d.dong like concat('%', #{dong}, '%')
+			<if test="address != null">
+				and d.address like concat('%', #{address}, '%')
 			</if>
-			<if test="aptname != null">
-	    		and d.aptname like concat('%', #{aptname}, '%')
+			<if test="aptName != null">
+	    		and d.aptName like concat('%', #{aptName}, '%')
 			</if>
     	</where>
 	</select>
+	
+	<select id="chartData"
+		resultType="HouseDeal">
+		select distinct
+			d.no 			as no
+			,d.dealDate		as dealDate
+    		,d.dealAmount	as dealAmount
+    		,d.rentmoney	as rentMoney
+		from
+			housedeal d join houseinfo i
+    		on d.address = i.address
+    		and d.aptName = i.aptName
+		where
+			d.address		= #{address}
+			and d.aptName	= #{aptName}
+			and d.type		= #{type}
+		order by 
+			dealDate
+	</select>
+	
+	<!-- 도/시, 시/군/구 Select 에 따라 Data 가져오기 위한 Query -->
+	<select id="sidoName" resultType="String">
+	select distinct
+		sido_name
+	from
+		sidocode;
+	</select>
+	
+	<select id="gugunName" resultType="String">
+		select distinct
+			g.gugun_name as gugun_name
+		from
+			sidocode s join guguncode g
+			on left(s.sido_code, 2) = left(g.gugun_code, 2)
+		where
+			s.sido_name = #{value}
+		order by
+			gugun_name
+	</select>
+	
+	<select id="dongName" resultType="String">
+		select distinct
+			d.dong as dong
+		from
+			guguncode g join dongcode d
+    		on left(g.gugun_code, 5) = d.dongcode
+		where
+			g.gugun_name = #{value}
+		order by
+			dong;
+	</select>
+	
+	<!-- 이 아래는 데이터베이스에 좌표값을 넣기 위해 필요했던 것 -->
+	<select id="address" resultType="String">
+		select
+			address
+		from
+			houseinfo
+	</select>
+	
+	<update id="addrToLng">
+		update
+			houseinfo
+		set
+			lat 	= #{lat}
+			, lng 	= #{lng}
+		where
+			address = #{address}
+	</update>
 </mapper>
