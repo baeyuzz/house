@@ -283,7 +283,22 @@ export default {
       for (let deal of this.mapList) {
         let obj = {};
         obj.latlng = new kakao.maps.LatLng(deal.lat, deal.lng);
-        obj.content = "<div>" + deal.aptName + "</div>";
+        obj.content = 
+            '<div class="kakao-wrap">' + 
+            '    <input id="kakao-no" type="hidden" value=' + deal.no + '/>' + 
+            '    <div class="kakao-info">' + 
+            '        <div class="kakao-title">' + 
+                          deal.aptName + 
+            '        </div>' + 
+            '        <div class="kakao-body">' + 
+            '            <div class="kakao-desc">' + 
+            '                <div class="kakao-ellipsis">' + deal.address + '</div>' + 
+            '                <div class="kakao-ellipsis kakao-red">클릭시 상세 정보로 이동</div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>';
+        obj.trickVal = deal.no;
 
         positions.push(obj);
         bounds.extend(obj.latlng);
@@ -303,6 +318,7 @@ export default {
         var infowindow = new kakao.maps.InfoWindow({
           content: positions[i].content // 인포윈도우에 표시할 내용
         });
+        infowindow.trickVal = positions[i].trickVal;
 
         // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
         // 이벤트 리스너로는 클로저를 만들어 등록합니다
@@ -336,8 +352,10 @@ export default {
       };
     },
     makeClickListener(infowindow) {
+      let vue = this;
       return function() {
-        console.dir(infowindow);
+        console.log(infowindow.trickVal);
+        vue.goDetail(infowindow.trickVal);
       };
     },
     goDetail(no) {
@@ -478,4 +496,5 @@ th > i {
   widows: 1000px;
   height: 800px;
 }
+
 </style>
