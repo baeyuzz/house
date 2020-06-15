@@ -5,13 +5,16 @@
         <div id="map"></div>
         <button class="btn btn-primary" @click="reposition">건물 위치로 이동</button>
         <!-- NEWS -->
+
+        
         <div style="text-align : left">
+          <br>
           <button
             data-toggle="collapse"
             href="#news"
             aria-expanded="false"
             aria-controls="news"
-            class="btn"
+            class="btn btn-warning"
           >관련 뉴스 보기</button>
         </div>
         <div class="collapse" id="news">
@@ -89,7 +92,10 @@
 
       <div class="container chart-box col-4">
         <div class="chart-container"><canvas class="chart-canvas row" id="chart-area"></canvas></div>
+        <span>평균 매매가 : {{this.avgDeal}} 천원</span>
         <div class="chart-container"><canvas class="chart-canvas row" id="chart-area-rent"></canvas></div>
+        <span>평균 보증금 : {{this.avgRent1}} 천원 </span>
+        <span> / 평균 월세 :   {{this.avgRent2}} 만원</span>
         <canvas class="chart-canvas row" id="crime-chart"></canvas>
       </div>
     </div>
@@ -112,12 +118,14 @@ export default {
       news: [],
 
       nos: [],
-      isRent: false,
+      avgDeal : '',
+      avgRent1 : '',
+      avgRent2 : '',
 
       map: {},
       currentPos: {},
       address: "",
-      mapCreated: false
+      mapCreated: false,
     };
   },
   created() {
@@ -142,6 +150,10 @@ export default {
           .then(response => {
             this.nos = response.data.nos;
             this.makeChart(response.data);
+            this.avgDeal = response.data.avgDeal;
+            this.avgRent1 = response.data.avgRent1;
+            this.avgRent2 = response.data.avgRent2;
+            
           })
           .catch(error => {
             alert("Error: " + error);
@@ -310,12 +322,11 @@ export default {
 
       // 월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
       if (this.house.type == 3 || this.house.type == 4) {
-        this.isRent = true;
         let ctx_rent = $("#chart-area-rent");
         let chartObject_rent = new Chart(ctx_rent, {
           type: "line",
           data: {
-            labels: data.labels,
+            labels: data.labels2,
             datasets: [
               {
                 data: data.rent,
