@@ -10,16 +10,58 @@
             <td class="border border-dark">작성자 : {{qna.qna_userid}}</td>
             <td class="border border-dark">작성일 : {{qna.qna_datetime}}</td>
           </tr>
-          <!-- <tr class="border border-bottom-0 border-dark bg-white">
-            <td colspan="2"></td>
-            <td class="text-muted">조회수: {{notice.hitCount}}</td>
-          </tr> -->
+          <tr class="border border-bottom-0 border-dark bg-white">
+            <td colspan="3"></td>
+            <td class="text-muted" style="text-align : right">조회수: {{qna.hitCount}}</td>
+          </tr>
           <tr class="bg-white">
             <td id="content-cell" class="border border-top-0 border-dark text-left" colspan="4">
               {{qna.qna_content}}
             </td>
           </tr>
         </table>
+        <br>
+         <div style="text-align : left">
+          <button
+            data-toggle="collapse"
+            href="#news"
+            aria-expanded="false"
+            aria-controls="news"
+            class="btn btn-primary"
+          >답변 보기</button>
+        </div>
+        <div class="collapse" id="news">
+          <div class="container" v-if="name.length > 0">
+            <hr>
+              <div class="input-group">
+              <label for="content"> comment </label>
+               <input v-model = "comment" type="text" class="form-control" placeholder="내용을 입력하세요.">
+               <span>
+                    <button @click.prevent="regComment" class="btn-warning btn">등록</button>
+               </span>
+              </div>
+            <br>
+          </div>
+          <table class="table text-left" style="font-size : 14px">
+            <tr v-for="reply in replies" v-bind:key = "reply.no">
+              <td colspan="2">
+              {{reply.comment}}
+              </td>
+              <td style="text-align : right">
+               {{reply.writer}}  /  {{reply.reg_date}}
+                    <span v-if="nowid == reply.writer">
+                      <button
+                        class="btn btn-danger m-2"
+                        @click="deleteReply(reply.no)"
+                        title="삭제하기">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </span>
+              </td>
+            </tr>
+          </table> 
+        </div>
+
         <div class="d-flex justify-content-end">
           <router-link class="btn btn-primary m-2" to="/qna" title="목록으로">
             <i class="fas fa-clipboard-list"></i>
@@ -51,13 +93,19 @@ import http from '@/http-common.js'
 export default {
   data: function() {
     return {
-      item: {},
+      replies : [],
+      writer : '',
+      comment : '',
+      qno : '',
+      name : this.$store.state.name,
+      nowid : this.$store.state.id,
     };
   },
   created() {
     let no = this.$route.params.no;
+    this.qno = no;
     this.$store.dispatch(Constant.GET_QNA, { no });
-
+    this.getReplies(no);
   },
   computed: {
     qna() {
@@ -79,6 +127,40 @@ export default {
       .catch((error) => {
         alert('Error: ' + error);
       });
+    },
+    getReplies(no){
+      http.get('rest/qna/reply/'+no)
+      .then((response)=>{
+        this.replies = response.data;
+      })
+      .catch((err) =>{
+        alert('Reply Error ! '+ err)
+      })
+    },
+    regComment(){
+      http.post('rest/qna/reply',{
+        qno : this.qno,
+        writer : this.$store.state.id,
+        comment : this.comment,
+      })
+      .then(()=>{
+        this.getReplies(this.qno);
+
+      })
+      .catch(()=>{
+        console.log(this.qno);
+        console.log(this.$store.state.id);
+        console.log(this.comment);
+      })
+    },
+    deleteReply(no){
+      http.get('rest/qna/reply/del/'+no)
+      .then(()=>{
+        this.getReplies(this.qno);
+      })
+      .catch((err)=>{
+        alert("댓글 지우기 실패 " + err)
+      })
     }
   }
 }

@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.happyhouse.dto.Notice;
@@ -15,7 +16,9 @@ public interface NoticeService {
 
 	boolean deleteNotice(int no);
 
-	List<Notice> getNoticeList();
+	List<Notice> getNoticeList(HashMap<String, Object> map);
 
 	Notice getNotice(int no);
+
+	int countNotice();
 }

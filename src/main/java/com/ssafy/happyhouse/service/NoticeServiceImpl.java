@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,20 @@ public class NoticeServiceImpl implements NoticeService {
 	}
 
 	@Override
-	public List<Notice> getNoticeList() {
-		return noticeDao.getNoticeList();
+	public Notice getNotice(int no) {
+		return noticeDao.getNotice(no);
 	}
 
 	@Override
-	public Notice getNotice(int no) {
-		return noticeDao.getNotice(no);
+	public int countNotice() {
+		// TODO Auto-generated method stub
+		return noticeDao.countNotice();
+	}
+
+	@Override
+	public List<Notice> getNoticeList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		return noticeDao.getNoticeList(map);
 	}
 
 }
