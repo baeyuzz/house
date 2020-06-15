@@ -141,7 +141,9 @@ public class HouseController {
 	private ResponseEntity<Map<String, Object>> houseDetail(@PathVariable int no, HttpSession session) {
 		HashMap<String, Object> map = new HashMap<>();
 		HouseDeal house = service.search(no);
-		List<News> news = NaverNewsApi.searchNews(house.getAptName());
+		String addrArr[] = house.getAddress().split(" ");
+		String addr = addrArr[1]+house.getAptName();
+		List<News> news = NaverNewsApi.searchNews(addr);
 		
 		map.put("house", house);
 		map.put("news", news);
@@ -236,22 +238,46 @@ public class HouseController {
 		List<HouseDeal> list = service.chartData(param);
 		
 		List<String> labels = new ArrayList<String>();
+		List<String> labels2 = new ArrayList<String>();
 		List<Integer> data = new ArrayList<Integer>();
 		List<Integer> rent = new ArrayList<Integer>();
 		List<Integer> nos = new ArrayList<Integer>();
 		
+		int avgDeal = 0;
+		int avgRent1 = 0;
+		int avgRent2 = 0;
+		int totalDeal = 0;
+		int totalRent = 0;
 		for(HouseDeal deal : list) {
+			if(deal.getType()==1 || deal.getType()==2) {
 			labels.add(deal.getDealDate());
 			data.add(deal.getDealAmount());
+			avgDeal+=deal.getDealAmount();
+			totalDeal++;
+			}
+			else {
 			rent.add(deal.getRentMoney());
+			String l2 = deal.getDealDate() + "\n보증금 " +deal.getDealAmount();
+			labels2.add(l2);
+			avgRent1 += deal.getDealAmount();
+			avgRent2 += deal.getRentMoney();
+			totalRent++;
+			}
 			nos.add(deal.getNo());
 		}
+		avgDeal/=totalDeal;
+		avgRent1/=totalRent;
+		avgRent2/=totalRent;
 		
 		HashMap<String, Object> ret = new HashMap<>();
 		ret.put("labels", labels);
 		ret.put("data", data);
 		ret.put("nos", nos);
 		ret.put("rent", rent);
+		ret.put("labels2",labels2);
+		ret.put("avgDeal", avgDeal);
+		ret.put("avgRent1", avgRent1);
+		ret.put("avgRent2", avgRent2);
 		
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}

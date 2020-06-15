@@ -88,6 +88,7 @@
 			,d.dealDate		as dealDate
     		,d.dealAmount	as dealAmount
     		,d.rentmoney	as rentMoney
+    		,d.type as type
 		from
 			housedeal d join houseinfo i
     		on d.address = i.address
@@ -95,7 +96,6 @@
 		where
 			d.address		= #{address}
 			and d.aptName	= #{aptName}
-			and d.type		= #{type}
 		order by 
 			dealDate
 	</select>
