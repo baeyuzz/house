@@ -10,6 +10,10 @@
 			*
 		from
 			qna_board
+		order by
+			qna_no desc
+		limit
+			${start}, ${interval}
 	</select>
 	
 	<select id="selectOne" resultType="QnA">
@@ -20,6 +24,31 @@
 		where
 			qna_no = #{value}
 	</select>
+	<select id="countQna" resultType="int">
+		select
+			count(*)
+		from
+			qna_board	
+	</select>
+	<select id="searchQna" resultType="qna">
+		select *
+		from 
+			qna_board
+		where
+			qna_title like concat('%', #{qna_title}, '%')
+		limit
+			${start}, ${interval}
+	</select>
+	
+	<select id="replyList" resultType="reply">
+		select
+			reply.*
+		from
+			reply, qna_board
+		where
+			qna_board.qna_no = reply.qno
+			and qna_board.qna_no = #{qno}
+	</select>
 	
 	<insert id="insertQnA">
 		insert into
@@ -27,11 +56,13 @@
 				qna_title
 				, qna_content
 				, qna_userid
+				, hitcount
 			)
 		values(
 				#{qna_title}
 				, #{qna_content}
 				, #{qna_userid}
+				, 0
 			)
 	</insert>
 	
@@ -52,14 +83,41 @@
 			qna_no = #{value}
 	</delete>
 	
-	<update id="setReply">
+	<insert id="setReply">
+		insert into
+			reply (qno, comment, writer, reg_date)
+		values(
+			#{qno}
+			, #{comment}
+			, #{writer}
+			, now())
+			
+		
+	</insert>
+	<update id="updateReplyCnt">
+		update qna_board
+		set replycnt = replycnt+1
+		where qna_no = #{value}
+	</update>
+	
+	<delete id="deleteReply">
+		delete from
+			reply
+		where
+			no = #{value}
+	</delete>
+	
+	<update id="updateHitCount">
 		update
 			qna_board
 		set
-			reply_content = #{reply_content}
-			, reply_userid = #{reply_userid}
-			, reply_datetime = now()
+			hitCount = hitCount + 1
 		where
-			qna_no = #{qna_no}
+			qna_no = #{value}
 	</update>
+	<update id="minusReplyCnt">
+	update qna_board
+ 	set replycnt = replycnt-1
+ 	where qna_no = (select qno from reply where no = #{value})
+ 	</update>
 </mapper>

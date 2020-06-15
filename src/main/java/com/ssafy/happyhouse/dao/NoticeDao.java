@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -18,7 +19,9 @@ public interface NoticeDao {
 
 	int deleteNotice(int no);
 
-	List<Notice> getNoticeList();
+	List<Notice> getNoticeList(HashMap<String, Object> map);
 
 	Notice getNotice(int no);
+
+	int countNotice();
 }

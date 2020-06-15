@@ -48,18 +48,25 @@
         </div>
       </div>
       <!-- 시간 될 때 여기에 Paging 추가 -->
+      <template v-if="paging.length > 0">
+            <nav id="notice-page" v-html="paging"></nav>
+      </template>
     </section>
   </div>
 </template>
 
 <script>
 import http from "@/http-common.js";
+import $ from "jquery";
+
 
 export default {
   data() {
     return {
       title: "",
-      noticeList: []
+      noticeList: [],
+      paging : '',
+
     };
   },
   computed: {
@@ -71,11 +78,34 @@ export default {
     http
       .get("/rest/notice/list")
       .then(response => {
-        this.noticeList = response.data;
+        this.noticeList = response.data.list;
+        if(response.data.hasPaging){
+          this.paging = response.data.paging;
+        }
       })
       .catch(error => {
         alert("Error: ", error);
       });
+  },
+   updated() {
+    let vue = this;
+    $("#notice-page a").on("click", function(e) {
+      let n = $(this).attr("id");
+      e.preventDefault();
+
+      http
+        .get("rest/notice/pagenav/" + n )
+        .then(response => {
+          vue.noticeList = response.data.list;
+          vue.paging = response.data.paging;
+          if (response.data.hasPaging) {
+            vue.paging = response.data.paging;
+          }
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+    });
   },
   methods: {
     searchNotice() {
@@ -84,7 +114,8 @@ export default {
             title: this.title
         })
         .then(response => {
-          this.noticeList = response.data;
+          this.noticeList = response.data.list;
+          this.paging = response.data.paging
         })
         .catch(error => {
           alert("Error: ", error);

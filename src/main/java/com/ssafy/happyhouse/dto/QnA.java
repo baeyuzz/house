@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.dto;
 
 public class QnA {
+	private int hitCount;
 	private int qna_no;
 	private String qna_title;
 	private String qna_content;
@@ -9,11 +10,20 @@ public class QnA {
 	private String reply_content;
 	private String reply_datetime;
 	private String reply_userid;
-	
-	public QnA() {}
+	private int replyCnt;
 
-	public QnA(int qna_no, String qna_title, String qna_content, String qna_userid, String qna_datetime,
-			String reply_content, String reply_datetime, String reply_userid) {
+	public int getReplyCnt() {
+		return replyCnt;
+	}
+
+	public void setReplyCnt(int replyCnt) {
+		this.replyCnt = replyCnt;
+	}
+
+	public QnA(int hitCount, int qna_no, String qna_title, String qna_content, String qna_userid, String qna_datetime,
+			String reply_content, String reply_datetime, String reply_userid, int replyCnt) {
+		super();
+		this.hitCount = hitCount;
 		this.qna_no = qna_no;
 		this.qna_title = qna_title;
 		this.qna_content = qna_content;
@@ -22,6 +32,23 @@ public class QnA {
 		this.reply_content = reply_content;
 		this.reply_datetime = reply_datetime;
 		this.reply_userid = reply_userid;
+		this.replyCnt = replyCnt;
+	}
+
+	public QnA() {
+	}
+
+	public QnA(int qna_no, String qna_title, String qna_content, String qna_userid, String qna_datetime,
+			String reply_content, String reply_datetime, String reply_userid, int hitCount) {
+		this.qna_no = qna_no;
+		this.qna_title = qna_title;
+		this.qna_content = qna_content;
+		this.qna_userid = qna_userid;
+		this.qna_datetime = qna_datetime;
+		this.reply_content = reply_content;
+		this.reply_datetime = reply_datetime;
+		this.reply_userid = reply_userid;
+		this.hitCount = hitCount;
 	}
 
 	public int getQna_no() {
@@ -94,5 +121,13 @@ public class QnA {
 				+ qna_userid + ", qna_datetime=" + qna_datetime + ", reply_content=" + reply_content
 				+ ", reply_datetime=" + reply_datetime + ", reply_userid=" + reply_userid + "]";
 	}
-	
+
+	public int getHitCount() {
+		return hitCount;
+	}
+
+	public void setHitCount(int hitCount) {
+		this.hitCount = hitCount;
+	}
+
 }

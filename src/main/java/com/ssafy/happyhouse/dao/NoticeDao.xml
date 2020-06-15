@@ -10,6 +10,9 @@
 			*
 		from
 			notice
+		order by
+			no desc
+		limit ${start}, ${interval}
 	</select>
 	
 	<select id="getNotice" resultType="Notice">
@@ -19,6 +22,10 @@
 			notice
 		where
 			no = #{value}
+	</select>
+	
+	<select id="countNotice" resultType="int">
+		select count(*) from notice
 	</select>
 	
 	<insert id="insertNotice">
