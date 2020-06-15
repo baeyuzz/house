@@ -35,8 +35,6 @@
 			</if>
 		order by
 			${orderBy} ${orderType}
-		limit
-			${start}, ${interval}
 	</select>
 	
 	<select id="search"
@@ -67,7 +65,7 @@
 		parameterType="HousePageBean"
 		resultType="int">
 		select
-			count(*) as cnt
+			count(distinct d.no) as cnt
 		from
 			housedeal d join houseinfo i
     		on d.address = i.address

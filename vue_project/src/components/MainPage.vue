@@ -82,58 +82,54 @@
     </section>
     <section class="container">
       <div id="house-map"></div>
-    </section>
-    <section class="information">
-      <table class="table table-hover table-bordered">
-        <thead>
-          <tr id="head-row">
-            <th @click="clickSort('no');" title="번호">
-              <i class="fas fa-angle-down"></i>번호
-            </th>
-            <th @click="clickSort('address');" title="주소">
-              <i class="fas fa-angle-down"></i>주소
-            </th>
-            <th @click="clickSort('aptName');" title="아파트 이름">
-              <i class="fas fa-angle-down"></i>아파트 이름
-            </th>
-            <th @click="clickSort('buildYear');" title="건축 년도">
-              <i class="fas fa-angle-down"></i>건축 년도
-            </th>
-            <th @click="clickSort('area');" title="면적">
-              <i class="fas fa-angle-down"></i>면적
-            </th>
-            <th @click="clickSort('floor');" title="층수">
-              <i class="fas fa-angle-down"></i>층수
-            </th>
-            <th @click="clickSort('dealDate');" title="거래일">
-              <i class="fas fa-angle-down"></i>거래일
-            </th>
-            <th @click="clickSort('dealAmount');" title="거래 금액(보증금)">
-              <i class="fas fa-angle-down"></i>거래 금액(보증금)
-            </th>
-            <th @click="clickSort('rentMoney');" title="월세">
-              <i class="fas fa-angle-down"></i>월세
-            </th>
-            <th @click="clickSort('type');" title="거래 유형">
-              <i class="fas fa-angle-down"></i>거래 유형
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="deal in list" v-bind:key="deal.no" @click="goDetail(deal.no)">
-            <td :title="deal.no">{{deal.no}}</td>
-            <td :title="deal.address">{{deal.address}}</td>
-            <td :title="deal.aptName">{{deal.aptName}}</td>
-            <td :title="deal.buildYear">{{deal.buildYear}}</td>
-            <td :title="deal.area">{{deal.area}}</td>
-            <td :title="deal.floor">{{deal.floor}}</td>
-            <td :title="deal.dealDate">{{deal.dealDate}}</td>
-            <td :title="deal.dealAmount">{{deal.dealAmount}}</td>
-            <td :title="deal.rentMoney">{{deal.rentMoney}}</td>
-            <td :title="deal.typeString">{{deal.typeString}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr id="head-row">
+              <th @click="clickSort('address');" title="주소">
+                <i class="fas fa-angle-down"></i>주소
+              </th>
+              <th @click="clickSort('aptName');" title="아파트 이름">
+                <i class="fas fa-angle-down"></i>아파트 이름
+              </th>
+              <th @click="clickSort('buildYear');" title="건축 년도">
+                <i class="fas fa-angle-down"></i>건축 년도
+              </th>
+              <th @click="clickSort('area');" title="면적">
+                <i class="fas fa-angle-down"></i>면적
+              </th>
+              <th @click="clickSort('floor');" title="층수">
+                <i class="fas fa-angle-down"></i>층수
+              </th>
+              <th @click="clickSort('dealDate');" title="거래일">
+                <i class="fas fa-angle-down"></i>거래일
+              </th>
+              <th @click="clickSort('dealAmount');" title="거래 금액(보증금)">
+                <i class="fas fa-angle-down"></i>거래 금액(보증금)
+              </th>
+              <th @click="clickSort('rentMoney');" title="월세">
+                <i class="fas fa-angle-down"></i>월세
+              </th>
+              <th @click="clickSort('type');" title="거래 유형">
+                <i class="fas fa-angle-down"></i>거래 유형
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="deal in tableList" v-bind:key="deal.no" @click="goDetail(deal.no)">
+              <td :title="deal.address">{{deal.address}}</td>
+              <td :title="deal.aptName">{{deal.aptName}}</td>
+              <td :title="deal.buildYear">{{deal.buildYear}}</td>
+              <td :title="deal.area">{{deal.area}}</td>
+              <td :title="deal.floor">{{deal.floor}}</td>
+              <td :title="deal.dealDate">{{deal.dealDate}}</td>
+              <td :title="deal.dealAmount">{{deal.dealAmount}}</td>
+              <td :title="deal.rentMoney">{{deal.rentMoney}}</td>
+              <td :title="deal.typeString">{{deal.typeString}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- 페이징 처리 부분 -->
       <nav id="house-page" v-html="nav"></nav>
@@ -162,16 +158,21 @@ export default {
       sigunguList: [],
       dongList: [],
 
+      mapList: [],
+      tableList: [],
       list: [],
       nav: "",
+      nod: 0,
+      listCreated: false,
 
       map: {},
-      mapCreated: false
+      mapCreated: false,
+      mapCreate: 0
     };
   },
   watch: {
-    list() {
-      console.log("init map in list watcher called!");
+    mapCreate() {
+      console.log("init map in mapCreate watcher called!");
       this.initMap();
       this.mapCreated = true;
     },
@@ -180,12 +181,17 @@ export default {
     },
     sigungu() {
       this.setDongName();
+    },
+    dong() {
+      if (!this.listCreated) {
+        this.listCreated = true;
+        this.search();
+      }
     }
   },
   // Created : 처음 데이터들을 불러오기 위함
   created() {
     console.log("created called!!");
-    this.initialSearch();
 
     // 검색 옵션 설정을 위해 시/도 이름들 가져오기
     http
@@ -202,13 +208,17 @@ export default {
   updated() {
     let vue = this;
     $("#house-page a").on("click", function(e) {
-      let n = $(this).attr("id");
+      let n = parseInt($(this).attr("id"));
       e.preventDefault();
 
       http
-        .get("/rest/house/pagenav/" + n)
+        .post("/rest/house/pagenav", {
+          pg: n
+          , nod: vue.nod
+          , list: vue.list
+        })
         .then(response => {
-          vue.list = response.data.list;
+          vue.tableList = response.data.tableList;
           vue.nav = response.data.nav;
         })
         .catch(error => {
@@ -219,7 +229,7 @@ export default {
   // Mounted : 카카오 맵 API 를 사용하기 위함
   mounted() {
     if (window.kakao && window.kakao.maps) {
-      if (!this.mapCreated && this.list.length > 0) {
+      if (!this.mapCreated && this.mapList.length > 0) {
         console.log("initMap in mounted is Called!");
         this.initMap();
         this.mapCreated = true;
@@ -239,10 +249,10 @@ export default {
       var container = document.getElementById("house-map");
       // 지도에 옵션을 설정합니다
       var options = { level: 3 };
-      if (this.list.length > 0) {
+      if (this.mapList.length > 0) {
         options.center = new kakao.maps.LatLng(
-          this.list[0].lat,
-          this.list[0].lng
+          this.mapList[0].lat,
+          this.mapList[0].lng
         );
       }
 
@@ -266,13 +276,21 @@ export default {
 
       let positions = [];
 
-      for (let deal of this.list) {
+      // 지도를 재설정할 범위정보를 가지고 있을 LatLngBounds 객체를 생성합니다
+      // 지도에 모든 Marker 가 보이게 하기 위함
+      var bounds = new kakao.maps.LatLngBounds();
+
+      for (let deal of this.mapList) {
         let obj = {};
         obj.latlng = new kakao.maps.LatLng(deal.lat, deal.lng);
         obj.content = "<div>" + deal.aptName + "</div>";
 
         positions.push(obj);
+        bounds.extend(obj.latlng);
       }
+
+      // 모든 마커가 보이게 지도 중심과 범위를 재 설정합니다
+      map.setBounds(bounds);
 
       for (let i = 0; i < positions.length; i++) {
         // 마커를 생성합니다
@@ -326,36 +344,17 @@ export default {
       console.log(no);
       this.$router.push("/house/detail/" + no);
     },
-    pageMove(page) {
-      console.log(page);
+    clickSort(by) {
+      console.log(by);
       http
-        .get("/rest/house/pagenav/" + page)
-        .then(response => {
-          this.list = response.data.list;
-          this.nav = response.data.nav;
+        .post("/rest/house/sort", {
+          by: by
+          ,nod: this.nod
+          ,list: this.list
         })
-        .catch(error => {
-          alert("Error: " + error);
-        });
-    },
-    clickSort(param) {
-      console.log(param);
-      http
-        .get("/rest/house/sort/" + param)
         .then(response => {
           this.list = response.data.list;
-          this.nav = response.data.nav;
-        })
-        .catch(error => {
-          alert("Error: " + error);
-        });
-    },
-    initialSearch() {
-      console.log("initialSearch() called!!");
-      http
-        .get("/rest/house/init")
-        .then(response => {
-          this.list = response.data.list;
+          this.tableList = response.data.tableList;
           this.nav = response.data.nav;
         })
         .catch(error => {
@@ -376,12 +375,12 @@ export default {
         return;
       }
 
-      if(this.sido != "서울특별시") {
+      if (this.sido != "서울특별시") {
         alert("현재는 서울 특별시의 정보만 제공됩니다!");
         return;
       }
 
-      let addr = this.sido + ' ' + this.sigungu + ' ' + this.dong;
+      let addr = this.sido + " " + this.sigungu + " " + this.dong;
 
       http
         .post("/rest/house/list", {
@@ -395,7 +394,13 @@ export default {
         })
         .then(response => {
           this.list = response.data.list;
+          this.tableList = response.data.tableList;
+          this.mapList = response.data.mapList;
           this.nav = response.data.nav;
+          this.nod = response.data.nod;
+
+          // 이걸 watch 하는 방식으로 지도 새로 만들기!
+          this.mapCreate++;
         })
         .catch(error => {
           alert("Error: " + error);
@@ -434,11 +439,6 @@ export default {
 
 .sms-form-center {
   justify-content: center;
-}
-
-.information {
-  margin-left: 20px;
-  margin-right: 20px;
 }
 
 .table {

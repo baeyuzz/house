@@ -1,7 +1,10 @@
 package com.ssafy.happyhouse.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.happyhouse.dto.HouseDeal;
+import com.ssafy.happyhouse.dto.HouseInfo;
 import com.ssafy.happyhouse.dto.HousePageBean;
 import com.ssafy.happyhouse.news.NaverNewsApi;
 import com.ssafy.happyhouse.news.News;
 import com.ssafy.happyhouse.service.HouseService;
+import com.ssafy.happyhouse.util.HouseComparator;
 import com.ssafy.happyhouse.util.PageNavigation;
 
 import io.swagger.annotations.Api;
@@ -44,32 +49,36 @@ public class HouseController {
 	
 	@ApiOperation(value = "아파트/주택 거래 테이블 페이지 이동")
 	@ResponseBody
-	@GetMapping("/pagenav/{pg}")
-	private ResponseEntity<Map<String, Object>> pageNav(@PathVariable int pg, HttpSession session) {
-		HousePageBean bean = HousePageBean.getInstance();
-		// 조회할 데이터의 수 검색
-		int n = service.numberOfData(bean);
-		System.out.println("Number Of Data: " + n);
+	@PostMapping("/pagenav")
+	private ResponseEntity<Map<String, Object>> pageNav(@RequestBody Map<String, Object> param,
+												HttpSession session) {
 		
+		int pg = (Integer)param.get("pg");
+		int n = (Integer)param.get("nod");
 		// 클릭한 페이지
 		int currentPage = pg;
 
 		// 조회할 데이터의 시작 위치 계산
 		int start = (currentPage - 1) * HousePageBean.INTERVAL;
-		bean.setStart(start);
+		// 조회할 데이터의 마지막 위치 계산
+		int end = start + HousePageBean.INTERVAL;
+		if(end > n) end = n;
 		
 		// 페이지 네비게이션 만들기
 		PageNavigation pageNavigation = 
 				PageNavigation.makePageNavigation(currentPage, HousePageBean.INTERVAL, n);
 
-		// 둘다 세션에 넣기
-		List<HouseDeal> dealList = service.searchAll(bean);
+		// 전체 리스트 가져오기
+		List<LinkedHashMap<String, Object>> dealList = (List<LinkedHashMap<String, Object>>)param.get("list");
+		
+		// nav 세션에 넣기
 		session.setAttribute("navigation", pageNavigation);
-		session.setAttribute("dealList", dealList);
 		
 		// Map 에 네비게이션과 데이터 넣기
 		HashMap<String, Object> map = new HashMap<>();
-		map.put("list", dealList);
+		int subIdx = HousePageBean.INTERVAL;
+		if(subIdx > n) subIdx = n;
+		map.put("tableList", dealList.subList(start, end));
 		
 		if(n > HousePageBean.INTERVAL) {			
 			map.put("nav", pageNavigation.getNavigator());
@@ -82,25 +91,28 @@ public class HouseController {
 	
 	@ApiOperation(value = "아파트/주택 정보 테이블 정렬")
 	@ResponseBody
-	@GetMapping("/sort/{by}")
-	private ResponseEntity<Map<String, Object>> houseSort(@PathVariable String by, HttpSession session) {
-		// 검색 조건에서 정렬 방식 재설정 
-		HousePageBean bean = HousePageBean.getInstance();
-		bean.setStart(0);
-		bean.setOrderBy(by);
-				
-		// 조회할 데이터의 수 검색
-		int n = service.numberOfData(bean);
-
+	@PostMapping("/sort")
+	private ResponseEntity<Map<String, Object>> houseSort(@RequestBody Map<String, Object> param,
+										HttpSession session) {
+		
 		// 검색했을때 첫 화면은 1페이지부터 보여줌
 		int currentPage = 1;
 
+		// 리스트의 전체 데이터 수
+		int n = (Integer) param.get("nod");
+		
 		// 페이지 네비게이션 만들기
 		PageNavigation pageNavigation = 
 				PageNavigation.makePageNavigation(currentPage, HousePageBean.INTERVAL, n);
 
 		// 데이터 조회
-		List<HouseDeal> dealList = service.searchAll(bean);
+		List<LinkedHashMap<String, Object>> dealList = (List<LinkedHashMap<String, Object>>)param.get("list");
+
+		// 정렬 기준 조회(9개)
+		String by = (String)param.get("by");
+		
+		// 정렬
+		Collections.sort(dealList, HouseComparator.getComparator(by));
 
 		// session 에 네비게이션과 데이터 넣기
 		session.setAttribute("navigation", pageNavigation);
@@ -109,6 +121,10 @@ public class HouseController {
 		// Map 에 네비게이션과 데이터 넣기
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("list", dealList);
+		
+		int subIdx = HousePageBean.INTERVAL;
+		if(subIdx > n) subIdx = n;
+		map.put("tableList", dealList.subList(0, subIdx));
 		
 		if(n > HousePageBean.INTERVAL) {
 			map.put("nav", pageNavigation.getNavigator());
@@ -134,54 +150,6 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "메인 페이지 이동시 아파트/주택 거래정보 채우기")
-	@ResponseBody
-	@GetMapping("/init")
-	public ResponseEntity<Map<String, Object>> initInfo(HttpSession session) {
-		// 세션에 이미 저장된 데이터가 있으면 그거 그대로 보여주면 됨
-		if(session.getAttribute("dealList") != null) {
-			HashMap<String, Object> map = new HashMap<>();
-			map.put("list", session.getAttribute("dealList"));
-			if(session.getAttribute("navigation") != null) {				
-				// Map 에 네비게이션과 데이터 넣기
-				map.put("nav", ((PageNavigation)session.getAttribute("navigation")).getNavigator());
-			} else {
-				map.put("nav", "");
-			}
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		}
-				
-		// 첫 접속일 경우
-		HousePageBean bean = HousePageBean.getInstance();
-				
-		// 조회할 데이터의 수 검색
-		int n = service.numberOfData(bean);
-
-		// 검색했을때 첫 화면은 1페이지부터 보여줌
-		int currentPage = 1;
-		bean.setStart(0);
-				
-		// 페이지 네비게이션 만들기
-		PageNavigation pageNavigation = 
-				PageNavigation.makePageNavigation(currentPage, HousePageBean.INTERVAL, n);
-				
-		List<HouseDeal> dealList = service.searchAll(bean);
-		session.setAttribute("navigation", pageNavigation);
-		session.setAttribute("dealList", dealList);
-		
-		// Map 에 네비게이션과 데이터 넣기
-		HashMap<String, Object> map = new HashMap<>();
-		map.put("list", dealList);
-		
-		if(n > HousePageBean.INTERVAL) {			
-			map.put("nav", pageNavigation.getNavigator());
-		} else {
-			map.put("nav", "");
-		}
-				
-		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-	}
-	
 	@ApiOperation(value = "아파트/주택 거래정보 검색")
 	@ResponseBody
 	@PostMapping("/list")
@@ -190,6 +158,7 @@ public class HouseController {
 		// 검색조건 수정하기
 		HousePageBean bean = HousePageBean.getInstance();
 		
+		// 검색할 정보 타입
 		boolean[] type = new boolean[4];
 		type[0] = (params.get("aptdeal") != null)? (boolean)params.get("aptdeal"): false;
 		type[1] = (params.get("housedeal") != null)? (boolean)params.get("housedeal"): false;
@@ -197,6 +166,7 @@ public class HouseController {
 		type[3] = (params.get("houserent") != null)? (boolean)params.get("houserent"): false;
 		bean.setSearchType(type);
 		
+		// 검색할 주소와 아파트 이름
 		String address = (String) params.get("address");
 		String aptName = (String) params.get("aptName");
 				
@@ -213,8 +183,22 @@ public class HouseController {
 		// 검색 결과는 0번부터 보여줌
 		bean.setStart(0);
 				
+		// 데이터 조회
+		List<HouseDeal> dealList = service.searchAll(bean);
+		
+		// 마커 전용 데이터 만들기
+		HashSet<HouseDeal> set = new HashSet<HouseDeal>();
+		for(HouseDeal deal : dealList) {
+			set.add(new HouseDeal(deal.getNo(), deal.getAddress(), deal.getAptName(), deal.getLat(), deal.getLng()));
+		}
+		
+		HouseDeal[] listForMap = set.toArray(new HouseDeal[set.size()]);
+		System.out.println(dealList.size());
+		System.out.println(listForMap.length);
+		
 		// 조회할 데이터의 수 검색
-		int n = service.numberOfData(bean);
+		// int n = service.numberOfData(bean);
+		int n = dealList.size();
 
 		// 검색했을때 첫 화면은 1페이지부터 보여줌
 		int currentPage = 1;
@@ -223,9 +207,6 @@ public class HouseController {
 		PageNavigation pageNavigation = 
 				PageNavigation.makePageNavigation(currentPage, HousePageBean.INTERVAL, n);
 
-		// 데이터 조회
-		List<HouseDeal> dealList = service.searchAll(bean);
-
 		// session 에 네비게이션과 데이터 넣기
 		session.setAttribute("navigation", pageNavigation);
 		session.setAttribute("dealList", dealList);
@@ -233,6 +214,11 @@ public class HouseController {
 		// Map 에 네비게이션과 데이터 넣기
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("list", dealList);
+		int subIdx = HousePageBean.INTERVAL;
+		if(subIdx > n) subIdx = n;
+		map.put("tableList", dealList.subList(0, subIdx));
+		map.put("mapList", listForMap);
+		map.put("nod", n);
 		
 		if(n > HousePageBean.INTERVAL) {
 			map.put("nav", pageNavigation.getNavigator());
@@ -270,6 +256,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
+	// 아래 세 개는 검색에 필요한 select 를 설정하기 위해 있는 것
 	@GetMapping("/sidoname")
 	@ResponseBody
 	private ResponseEntity<List<String>> getSidoName() {

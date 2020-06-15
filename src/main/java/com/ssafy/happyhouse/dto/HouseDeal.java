@@ -51,6 +51,14 @@ public class HouseDeal implements Serializable {
 		this.no = no;
 	}
 
+	public HouseDeal(int no, String address, String aptName, String lat, String lng) {
+		this.no = no;
+		this.address = address;
+		this.aptName = aptName;
+		this.lat = lat;
+		this.lng = lng;
+	}
+	
 	/** getter, setter */
 	public int getNo() {
 		return no;
@@ -163,5 +171,21 @@ public class HouseDeal implements Serializable {
 				+ ", area=" + area + ", floor=" + floor + ", buildYear=" + buildYear + ", dealAmount=" + dealAmount
 				+ ", rentMoney=" + rentMoney + ", type=" + type + ", typeString=" + typeString + ", lat=" + lat
 				+ ", lng=" + lng + "]";
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof HouseDeal) {
+			HouseDeal d = (HouseDeal)obj;
+            return this.hashCode() == d.hashCode(); 
+            
+        }
+        return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return this.address.hashCode();
 	}
 }

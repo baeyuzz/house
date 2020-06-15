@@ -28,7 +28,7 @@ public class HousePageBean implements Serializable {
 			searchType[i] = true;
 		}
 		
-		orderBy = "no";
+		orderBy = "address";
 		orderType = "ASC";
 		
 		start = 0;
