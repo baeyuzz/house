@@ -149,7 +149,7 @@ export default {
 
         http
           .post("/rest/crime", {
-            code: this.house.code
+            address: this.house.address
           })
           .then(response => {
             this.crimeChart(response.data);

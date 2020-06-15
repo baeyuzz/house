@@ -2,10 +2,11 @@ package com.ssafy.happyhouse.dto;
 
 public class Crime {
 
-	int code;
-	String crime;
-	int count;
-	String year;
+	private int code;
+	private String crime;
+	private String arrest;
+	private int count;
+	private String year;
 
 	public int getCode() {
 		return code;
@@ -39,15 +40,24 @@ public class Crime {
 		this.year = year;
 	}
 
+	public String getArrest() {
+		return arrest;
+	}
+
+	public void setArrest(String arrest) {
+		this.arrest = arrest;
+	}
+
 	@Override
 	public String toString() {
 		return "Crime [code=" + code + ", crime=" + crime + ", count=" + count + ", year=" + year + "]";
 	}
 
-	public Crime(int code, String crime, int count, String year) {
+	public Crime(int code, String crime, String arrest, int count, String year) {
 		super();
 		this.code = code;
 		this.crime = crime;
+		this.arrest = arrest;
 		this.count = count;
 		this.year = year;
 	}

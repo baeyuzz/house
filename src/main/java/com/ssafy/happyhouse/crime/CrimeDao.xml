@@ -12,7 +12,7 @@
 		from
 			crime
 		where
-			code = #{code}
+			gu = #{gu}
 			and year = 2018
 	</select>
 </mapper>

@@ -37,6 +37,12 @@ public class CrimeController {
 	@ResponseBody
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> getChartData(@RequestBody Map<String, Object> param) {
+		String addr = (String)param.get("address");
+		String[] addrs = addr.split(" ");
+		String guAddr = addrs[0] + " " + addrs[1];
+		System.out.println(guAddr);
+		param.put("gu", guAddr);
+		
 		List<Crime> list = service.searchCrime(param);
 		
 		List<String> labels = new ArrayList<String>();
