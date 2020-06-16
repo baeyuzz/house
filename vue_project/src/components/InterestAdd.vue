@@ -76,12 +76,14 @@ export default {
         return;
       }
 
+      let sigungu = this.province + ' ' + 
+                    this.city + ' ' + 
+                    this.dong;
+
       http
         .post("/rest/interest", {
-          province: this.province,
-          city: this.city,
-          dong: this.dong,
-          id: this.id
+          sigungu: sigungu
+          , userid: this.id
         })
         .then(response => {
           if (response.data) {

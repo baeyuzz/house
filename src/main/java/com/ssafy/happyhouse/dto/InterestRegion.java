@@ -1,73 +1,38 @@
 package com.ssafy.happyhouse.dto;
 
 public class InterestRegion {
-	private int no;
-	private String province;
-	private String city;
-	private String dong;
-	private String id;
-
-	public InterestRegion(int no, String province, String city, String dong, String id) {
-		this.no = no;
-		this.province = province;
-		this.city = city;
-		this.dong = dong;
-		this.id = id;
-	}
 	
-	public InterestRegion(String province, String city, String dong, String id) {
-		this.province = province;
-		this.city = city;
-		this.dong = dong;
-		this.id = id;
-	}
-
+	private String sigungu;
+	private String userid;
+	
 	public InterestRegion() {
 	}
 
-	public int getNo() {
-		return no;
+	public InterestRegion(String sigungu, String userid) {
+		super();
+		this.sigungu = sigungu;
+		this.userid = userid;
 	}
 
-	public void setNo(int no) {
-		this.no = no;
+	public String getSigungu() {
+		return sigungu;
 	}
 
-	public String getProvince() {
-		return province;
+	public void setSigungu(String sigungu) {
+		this.sigungu = sigungu;
 	}
 
-	public void setProvince(String province) {
-		this.province = province;
+	public String getUserid() {
+		return userid;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getDong() {
-		return dong;
-	}
-
-	public void setDong(String dong) {
-		this.dong = dong;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
 
 	@Override
 	public String toString() {
-		return "InterestRegion [no=" + no + ", province=" + province + ", city=" + city + ", dong=" + dong + ", id="
-				+ id + "]";
+		return "InterestRegion [sigungu=" + sigungu + ", userid=" + userid + "]";
 	}
+
 }

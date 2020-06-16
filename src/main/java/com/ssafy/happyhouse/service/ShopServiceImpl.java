@@ -1,12 +1,12 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.happyhouse.dao.ShopDao;
+import com.ssafy.happyhouse.dto.ShopChartData;
 import com.ssafy.happyhouse.dto.ShopInfo;
 
 @Service
@@ -20,13 +20,13 @@ public class ShopServiceImpl implements ShopService{
 	}
 
 	@Override
-	public List<ShopInfo> searchAllShop(Map<String, Object> map) {
-		return dao.searchAll(map);
+	public List<ShopInfo> searchAllShop(String sigudong) {
+		return dao.searchAll(sigudong);
 	}
 
 	@Override
-	public int countShop(Map<String, Object> map) {
-		return dao.countShop(map);
+	public List<ShopChartData> chartData(String sigudong) {
+		return dao.chartData(sigudong);
 	}
 	
 }

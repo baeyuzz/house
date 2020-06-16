@@ -1,7 +1,6 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,25 +19,20 @@ public class InterestRegionServiceImpl implements InterestRegionService{
 	}
 
 	@Override
-	public List<InterestRegion> searchInterestRegion(Map<String, Object> map) {
-		return dao.search(map);
+	public List<InterestRegion> searchInterestRegion(String userid) {
+		return dao.search(userid);
 	}
 
 	@Override
 	public boolean addInterestRegion(InterestRegion ir) {
-		int n = dao.addInterestRegion(ir);
-		return n > 0;
+		// TODO Auto-generated method stub
+		return dao.addInterestRegion(ir) > 0;
 	}
 
 	@Override
-	public boolean deleteInterestRegion(int no) {
-		int n = dao.deleteInterestRegion(no);
-		return n > 0;
-	}
-
-	@Override
-	public int countRegion(String id) {
-		return dao.countRegion(id);
+	public boolean deleteInterestRegion(InterestRegion ir) {
+		// TODO Auto-generated method stub
+		return dao.deleteInterestRegion(ir) > 0;
 	}
 
 }

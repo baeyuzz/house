@@ -493,7 +493,6 @@ th > i {
 }
 
 #house-map {
-  widows: 1000px;
   height: 800px;
 }
 

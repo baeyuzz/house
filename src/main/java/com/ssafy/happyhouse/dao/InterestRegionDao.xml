@@ -12,32 +12,21 @@
 		from
 			interestregion
 		where
-			id = #{id}
-		limit
-			${start}, ${interval}
-	</select>
-	
-	<select id="countRegion"
-		resultType="int">
-		select
-			count(*)
-		from
-			interestregion
-		where
-			id = #{value}
+			userid = #{value}
 	</select>
 	
 	<insert id="addInterestRegion">
 		insert into
-			interestregion(province, city, dong, id)
+			interestregion(sigungu, userid)
 		values
-			(#{province}, #{city}, #{dong}, #{id})
+			(#{sigungu}, #{userid})
 	</insert>
 
 	<delete id="deleteInterestRegion">
 		delete from
 			interestregion
 		where
-			no = #{value}
+			sigungu		= #{sigungu}
+			and userid	= #{userid}
 	</delete>
 </mapper>
