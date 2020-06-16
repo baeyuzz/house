@@ -12,7 +12,7 @@
             <!-- 로드뷰를 표시할 div 입니다 -->
           </div>
         </div>
-        <button class="btn btn-primary mt-3" @click="reposition">지도 중심을 건물 위치로 이동</button>
+        <button class="btn btn-primary mt-3" @click="reposition">지도를 건물 위치로 이동</button>
       </div>
 
       <!-- 건물 정보 -->
@@ -93,12 +93,13 @@
       </div>
     </div>
     <hr />
-
+    <!-- 뉴스,범죄그래프 -->
     <div class="row right-box mt-3 bottom-content">
-      <div class="col-8 align-self-center">
-        <div id="news" class="table-responsive">
-          <h2>뉴스</h2>
-          <table class="table table-bordered">
+      <div class="col-7" style="padding-right : 5%">
+        <div id="news">
+          <div>관련 뉴스 보기</div> 
+          <br>
+          <!-- <table class="table table-bordered">
             <tbody>
             <tr>
               <td v-for="(n) in news" v-bind:key="n.link"  class="news-item">
@@ -112,12 +113,23 @@
               </td>
             </tr>
             </tbody>
-          </table>
+          </table> -->
+          <div v-for="(n,index) in this.news" :key="n.no">
+            <div v-if="index<3" style="float : left; font-size : 14px;">
+              <a :title="n.title" v-bind:href="n.link" target="_blank">{{n.title}}</a>
+              <div :title="n.description" >{{n.description}}</div>
+              <div class="pubDate">
+                  <span class="pubDate">{{n.pubDate}}</span>
+                </div>
+            </div>
+                <br>
+          </div>
         </div>
       </div>
       <div class="chart-container col-4">
         <canvas class="chart-canvas" id="crime-chart"></canvas>
       </div>
+      <div class="col-1"/>
     </div>
   </div>
 </template>
@@ -126,6 +138,9 @@
 import http from "@/http-common.js";
 import Chart from "chart.js";
 import $ from "jquery";
+import Vue from 'vue';
+import VueCarousel from 'vue-carousel';
+Vue.use(VueCarousel);
 
 export default {
   data() {
@@ -521,8 +536,8 @@ td {
 li {
   list-style: none;
 }
-#description {
-  font-size: 15px;
+#description #title {
+  font-size: 13px;
 }
 .pubDate {
   font-size: 12px;
@@ -545,8 +560,10 @@ li {
   width: 500;
   height: 300px;
 }
-.news-item {
-  max-width: 200px;
+#news {
+  max-height: 300px;
+  text-overflow: ellipsis;
+  overflow: auto;
 }
 
 .news-item > div {
@@ -556,4 +573,5 @@ li {
 .bottom-content{
   height: 300px;
 }
+
 </style>
