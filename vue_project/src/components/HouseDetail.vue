@@ -4,12 +4,16 @@
     <div class="row">
       <div class="map-news-box col-4 container right-box">
         <div class="maps">
-          <div id="mapWrapper" style="width:400px;height:100%;float:left">
-            <div id="map" style="width:100%;height:100%"></div>
-          </div>
-          <div id="roadWrap" style="width:400px;height:300px;float:left">
-            <div id="roadview" style="width:100%;height:100%"></div>
-            <!-- 로드뷰를 표시할 div 입니다 -->
+          <div id="map-container">
+            <div id="rvWrapper">
+              <div id="roadview" style="width:100%;height:100%;"></div>
+              <!-- 로드뷰를 표시할 div 입니다 -->
+            </div>
+            <div id="mapWrapper">
+              <div id="map" style="width:100%;height:100%"></div>
+              <!-- 지도를 표시할 div 입니다 -->
+              <div id="roadviewControl" @click="setRoadviewRoad"></div>
+            </div>
           </div>
         </div>
         <button class="btn btn-primary mt-3" @click="reposition">지도를 건물 위치로 이동</button>
@@ -97,24 +101,24 @@
     <div class="row right-box mt-3 bottom-content">
       <div class="col-7" style="padding-right : 5%">
         <div id="news">
-          <div>관련 뉴스 보기</div> 
-          <br>
+          <div>관련 뉴스 보기</div>
+          <br />
           <div v-for="(n,index) in this.news" :key="n.no">
             <div v-if="index<3" style="float : left; font-size : 14px;">
               <a :title="n.title" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-              <div :title="n.description" >{{n.description}}</div>
+              <div :title="n.description">{{n.description}}</div>
               <div class="pubDate">
-                  <span class="pubDate">{{n.pubDate}}</span>
-                </div>
+                <span class="pubDate">{{n.pubDate}}</span>
+              </div>
             </div>
-            <br>
+            <br />
           </div>
         </div>
       </div>
       <div class="chart-container col-4">
         <canvas class="chart-canvas" id="crime-chart"></canvas>
       </div>
-      <div class="col-1"/>
+      <div class="col-1" />
     </div>
   </div>
 </template>
@@ -123,8 +127,8 @@
 import http from "@/http-common.js";
 import Chart from "chart.js";
 import $ from "jquery";
-import Vue from 'vue';
-import VueCarousel from 'vue-carousel';
+import Vue from "vue";
+import VueCarousel from "vue-carousel";
 Vue.use(VueCarousel);
 
 export default {
@@ -143,7 +147,13 @@ export default {
       map: {},
       currentPos: {},
       address: "",
-      mapCreated: false
+      mapCreated: false,
+
+      overlayOn: false,
+      marker: {},
+      container: {},
+      rv: {},
+      rvClient: {}
     };
   },
   created() {
@@ -221,10 +231,15 @@ export default {
       this.setMap(new kakao.maps.LatLng(this.house.lat, this.house.lng));
     },
     setMap(coords) {
+      this.overlayOn = false; // 지도 위에 로드뷰 오버레이가 추가된 상태를 가지고 있을 변수
+      this.container = document.getElementById("map-container"); // 지도와 로드뷰를 감싸고 있는 div 입니다
+
+      var mapContainer = document.getElementById("map"), // 지도를 표시할 div 입니다
+      rvContainer = document.getElementById("roadview"); //로드뷰를 표시할 div 입니다
+
       this.currentPos = coords;
 
-      // 지도를 담을 컨테이너를 가져옵니다
-      var container = document.getElementById("map");
+      let mapCenter = coords;
 
       // 지도에 옵션을 설정합니다
       var options = {
@@ -235,40 +250,21 @@ export default {
       };
 
       // 지도를 만들어 컨테이너에 붙입니다.
-      var map = new kakao.maps.Map(container, options);
-      map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW); //지도 위에 로드뷰 도로 올리기
-      console.log("Make and attach map Complete");
-
-      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-      var mapTypeControl = new kakao.maps.MapTypeControl();
-
-      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-
-      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-      var zoomControl = new kakao.maps.ZoomControl();
-      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-      console.log("Add control to map Complete");
-
-      // 마커 생성
-      new kakao.maps.Marker({
-        map: map, // 마커를 표시할 지도
-        position: this.currentPos // 마커의 위치
-      });
-      console.log("Add marker to map Complete");
-
-      console.dir(map);
+      var map = new kakao.maps.Map(mapContainer, options);
       this.map = map;
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      let rvContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
-      let rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
-      let rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
-      let mapWrapper = document.getElementById("mapWrapper");
 
-      toggleRoadview(coords);
+      // 로드뷰 객체를 생성합니다
+      var rv = new kakao.maps.Roadview(rvContainer);
+      this.rv = rv;
 
-      let markImage = new kakao.maps.MarkerImage(
+      // 좌표로부터 로드뷰 파노라마 ID를 가져올 로드뷰 클라이언트 객체를 생성합니다
+      var rvClient = new kakao.maps.RoadviewClient();
+      this.rvClient = rvClient;
+
+      let vue = this;
+
+      // 마커 이미지를 생성합니다
+      var markImage = new kakao.maps.MarkerImage(
         "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png",
         new kakao.maps.Size(26, 46),
         {
@@ -282,39 +278,155 @@ export default {
         }
       );
 
-      let rvMarker = new kakao.maps.Marker({
+      // 드래그가 가능한 마커를 생성합니다
+      var marker = new kakao.maps.Marker({
         image: markImage,
-        position: coords,
-        draggable: true,
-        map: map
+        position: mapCenter,
+        draggable: true
       });
 
+      this.marker = marker;
+
+      // 로드뷰에 좌표가 바뀌었을 때 발생하는 이벤트를 등록합니다
+      kakao.maps.event.addListener(rv, "position_changed", function() {
+        // 현재 로드뷰의 위치 좌표를 얻어옵니다
+        var rvPosition = rv.getPosition();
+
+        // 지도의 중심을 현재 로드뷰의 위치로 설정합니다
+        vue.map.setCenter(rvPosition);
+
+        // 지도 위에 로드뷰 도로 오버레이가 추가된 상태이면
+        if (vue.overlayOn) {
+          // 마커의 위치를 현재 로드뷰의 위치로 설정합니다
+          vue.marker.setPosition(rvPosition);
+        }
+      });
+
+      // 마커에 dragend 이벤트를 등록합니다
+      kakao.maps.event.addListener(marker, "dragend", function() {
+        // 현재 마커가 놓인 자리의 좌표입니다
+        var position = vue.marker.getPosition();
+
+        // 마커가 놓인 위치를 기준으로 로드뷰를 설정합니다
+        vue.toggleRoadview(position);
+      });
+
+      //지도에 클릭 이벤트를 등록합니다
       kakao.maps.event.addListener(map, "click", function(mouseEvent) {
-        // 현재 클릭한 부분의 좌표를 리턴
+        // 지도 위에 로드뷰 도로 오버레이가 추가된 상태가 아니면 클릭이벤트를 무시합니다
+        if (!vue.overlayOn) {
+          return;
+        }
+
+        // 클릭한 위치의 좌표입니다
         var position = mouseEvent.latLng;
 
-        rvMarker.setPosition(position);
-        toggleRoadview(position); //로드뷰를 토글합니다
+        // 마커를 클릭한 위치로 옮깁니다
+        vue.marker.setPosition(position);
+
+        // 클락한 위치를 기준으로 로드뷰를 설정합니다
+        vue.toggleRoadview(position);
       });
 
-      function toggleRoadview(position) {
-        //전달받은 좌표(position)에 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄웁니다
-        rvClient.getNearestPanoId(position, 50, function(panoId) {
-          if (panoId === null) {
-            rvContainer.style.display = "none"; //로드뷰를 넣은 컨테이너를 숨깁니다
-            mapWrapper.style.heigth = "100%";
-            map.relayout();
-          } else {
-            // mapWrapper.style.height = '50%';
-            map.relayout(); //지도를 감싸고 있는 영역이 변경됨에 따라, 지도를 재배열합니다
-            rvContainer.style.display = "block"; //로드뷰를 넣은 컨테이너를 보이게합니다
-            rv.setPanoId(panoId, position); //panoId를 통한 로드뷰 실행
-            rv.relayout(); //로드뷰를 감싸고 있는 영역이 변경됨에 따라, 로드뷰를 재배열합니다
-          }
-        });
-      }
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      var mapTypeControl = new kakao.maps.MapTypeControl();
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      // 마커 생성
+      new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: this.currentPos // 마커의 위치
+      });
+
+      this.map = map;
+    },
+    toggleRoadview(position) {
+      let vue = this;
+      this.rvClient.getNearestPanoId(position, 50, function(panoId) {
+        // 파노라마 ID가 null 이면 로드뷰를 숨깁니다
+        if (panoId === null) {
+          vue.toggleMapWrapper(true, position);
+        } else {
+          vue.toggleMapWrapper(false, position);
+
+          // panoId로 로드뷰를 설정합니다
+          vue.rv.setPanoId(panoId, position);
+        }
+      });
+    },
+    toggleMapWrapper(active, position) {
+      if (active) {
+        // 지도를 감싸고 있는 div의 너비가 100%가 되도록 class를 변경합니다
+        this.container.className = "";
+
+        // 지도의 크기가 변경되었기 때문에 relayout 함수를 호출합니다
+        this.map.relayout();
+
+        // 지도의 너비가 변경될 때 지도중심을 입력받은 위치(position)로 설정합니다
+        this.map.setCenter(position);
+      } else {
+        // 지도만 보여지고 있는 상태이면 지도의 너비가 50%가 되도록 class를 변경하여
+        // 로드뷰가 함께 표시되게 합니다
+        if (this.container.className.indexOf("view_roadview") === -1) {
+          this.container.className = "view_roadview";
+
+          // 지도의 크기가 변경되었기 때문에 relayout 함수를 호출합니다
+          this.map.relayout();
+
+          // 지도의 너비가 변경될 때 지도중심을 입력받은 위치(position)로 설정합니다
+          this.map.setCenter(position);
+        }
+      }
+    },
+    toggleOverlay(active) {
+      if (active) {
+        this.overlayOn = true;
+
+        // 지도 위에 로드뷰 도로 오버레이를 추가합니다
+        this.map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+
+        // 지도 위에 마커를 표시합니다
+        this.marker.setMap(this.map);
+
+        // 마커의 위치를 지도 중심으로 설정합니다
+        this.marker.setPosition(this.map.getCenter());
+
+        // 로드뷰의 위치를 지도 중심으로 설정합니다
+        this.toggleRoadview(this.map.getCenter());
+      } else {
+        this.overlayOn = false;
+
+        // 지도 위의 로드뷰 도로 오버레이를 제거합니다
+        this.map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+
+        // 지도 위의 마커를 제거합니다
+        this.marker.setMap(null);
+      }
+    },
+    setRoadviewRoad() {
+      var control = document.getElementById("roadviewControl");
+
+      // 버튼이 눌린 상태가 아니면
+      if (control.className.indexOf("active") === -1) {
+        control.className = "active";
+
+        // 로드뷰 도로 오버레이가 보이게 합니다
+        this.toggleOverlay(true);
+      } else {
+        control.className = "";
+
+        // 로드뷰 도로 오버레이를 제거합니다
+        this.closeRoadview();
+      }
+    },
+    closeRoadview() {
+      var position = this.marker.getPosition();
+      this.toggleMapWrapper(true, position);
+      // 로드뷰 도로 오버레이를 제거합니다
+      this.toggleOverlay(false);
     },
 
     reposition() {
@@ -539,10 +651,10 @@ li {
   width: 90%;
 }
 .right-box {
-  padding-left: 5%;
+  padding-left: 2%;
 }
 .maps {
-  width: 500;
+  width: 600px;
   height: 300px;
 }
 #news {
@@ -555,8 +667,44 @@ li {
   margin-top: 5px;
 }
 
-.bottom-content{
+.bottom-content {
   height: 300px;
+}
+
+#map-container {
+  overflow: hidden;
+  height: 600px;
+  position: relative;
+}
+#mapWrapper {
+  width: 100%;
+  height: 600px;
+  z-index: 1;
+}
+#rvWrapper {
+  width: 100%;
+  height: 600px;
+  top: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}
+#map-container.view_roadview #mapWrapper {
+  width: 0%;
+}
+#roadviewControl {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 42px;
+  height: 42px;
+  z-index: 1;
+  cursor: pointer;
+  background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/common/img_search.png)
+    0 -450px no-repeat;
+}
+#roadviewControl.active {
+  background-position: 0 -350px;
 }
 
 </style>

@@ -106,20 +106,16 @@
                 <template v-if="envs.length > 0">
                   <thead>
                     <tr>
-                      <th>사업체 이름</th>
-                      <th>환경 영향 구분 코드</th>
-                      <th>주소</th>
-                      <th>경도</th>
-                      <th>위도</th>
+                      <th @click="sortEnv('name')">사업체 이름</th>
+                      <th @click="sortEnv('type')">환경영향타입</th>
+                      <th @click="sortEnv('address')">주소</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="env in envs" v-bind:key="env.no">
                       <td>{{env.name}}</td>
-                      <td>{{env.bizcode}}</td>
+                      <td>{{env.type}}</td>
                       <td>{{env.address}}</td>
-                      <td>{{env.lng}}</td>
-                      <td>{{env.lat}}</td>
                     </tr>
                   </tbody>
                 </template>
@@ -230,29 +226,25 @@ export default {
   },
   methods: {
     searchEnv(index) {
-      console.log(index);
-      /*
-      this.dong = this.regions[index].dong;
-      this.curNo = this.regions[index].no;
+      this.curIdx = index;
+      console.log("searchEnv: " + this.regions[index].sigungu);
       http
         .post("/rest/env", {
-          dong: this.dong
+          sigudong: this.regions[index].sigungu
         })
         .then(response => {
           this.envs = response.data.list;
-
-          if (response.data.hasPaging) {
-            this.envPaging = response.data.paging;
-          } else {
-            this.envPaging = "";
-          }
           this.shops = [];
-          this.shopPaging = "";
+
+          // 환경정보는 맵 안쓰니까 숨기기
+          $("#map").hide();
+
+          // 차트 만들기
+          this.makeChart(response.data.chart, "env");
         })
         .catch(error => {
           alert("Error: " + error);
         });
-      */
     },
     searchShop(index) {
       this.curIdx = index;
@@ -270,19 +262,26 @@ export default {
           this.mapCreate++;
 
           // chart 만들기
-          this.makeChart(response.data.chart);
+          this.makeChart(response.data.chart, "shop");
         })
         .catch(error => {
           alert("Error: " + error);
         });
     },
-    makeChart(chartData) {
+    makeChart(chartData, gubun) {
       // 라벨, 데이터 만들기
       let labels = [];
       let data = [];
       for (let d of chartData) {
         labels.push(d.type);
         data.push(d.count);
+      }
+
+      let label = '';
+      if(gubun == "shop") {
+        label = "상권 분포";
+      } else {
+        label = "환경 영향 분포";
       }
 
       let ctx = $("#chart");
@@ -293,7 +292,7 @@ export default {
           datasets: [
             {
               data: data,
-              label: "상권 분포",
+              label: label,
               backgroundColor: "#ccebff",
               borderColor: "#0099ff",
               pointBackgroundColor: "#003d66"
@@ -313,6 +312,19 @@ export default {
         })
         .then(response => {
           this.shops = response.data;
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+    },
+    sortEnv(by) {
+      http
+        .post("/rest/env/sort", {
+          list: this.envs,
+          by: by
+        })
+        .then(response => {
+          this.envs = response.data;
         })
         .catch(error => {
           alert("Error: " + error);
@@ -363,6 +375,9 @@ export default {
       }
     },
     initMapForShop() {
+      // 이걸 먼져 해야한대요
+      $("#map").show();
+
       // 지도를 담을 컨테이너를 가져옵니다
       var container = document.getElementById("map");
       // 지도에 옵션을 설정합니다
@@ -523,8 +538,6 @@ export default {
       // 기본적으로 food 마커들이 보이게 함
       this.changeMarker("food");
       console.log("Add all marker complete");
-
-      $("#map").show();
     },
     initMapForEnv() {
       console.log("Map for env");

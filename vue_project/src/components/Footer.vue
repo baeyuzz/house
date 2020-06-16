@@ -9,6 +9,8 @@
             <br>
             서민성, 배유진
         </a>
+        <!-- 무료 아이콘 쓰려면 이거 쓰래요 -->
+        <br />Icons made by <a href="https://www.flaticon.com/authors/prosymbols" title="Prosymbols">Prosymbols</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
         </div>
         <br>
         <br>

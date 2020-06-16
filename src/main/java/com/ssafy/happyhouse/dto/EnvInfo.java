@@ -3,36 +3,27 @@ package com.ssafy.happyhouse.dto;
 public class EnvInfo {
 	private int no;
 	private String name;
-	private String bizcode;
+	private int code;
+	private String type;
 	private String address;
-	private String dongcode;
-	private String dong;
-	private String lng;
-	private String lat;
+	private double lng;
+	private double lat;
+	private String sigudong;
 
 	public EnvInfo() {
 	}
 
-	public EnvInfo(int no, String name, String bizcode, String address, String dongcode, String dong, String lng,
-			String lat) {
+	public EnvInfo(int no, String name, int code, String type, String address, double lng, double lat,
+			String sigudong) {
+		super();
 		this.no = no;
 		this.name = name;
-		this.bizcode = bizcode;
+		this.code = code;
+		this.type = type;
 		this.address = address;
-		this.dongcode = dongcode;
-		this.dong = dong;
 		this.lng = lng;
 		this.lat = lat;
-	}
-
-	public EnvInfo(String name, String bizcode, String address, String dongcode, String dong, String lng, String lat) {
-		this.name = name;
-		this.bizcode = bizcode;
-		this.address = address;
-		this.dongcode = dongcode;
-		this.dong = dong;
-		this.lng = lng;
-		this.lat = lat;
+		this.sigudong = sigudong;
 	}
 
 	public int getNo() {
@@ -51,12 +42,20 @@ public class EnvInfo {
 		this.name = name;
 	}
 
-	public String getBizcode() {
-		return bizcode;
+	public int getCode() {
+		return code;
 	}
 
-	public void setBizcode(String bizcode) {
-		this.bizcode = bizcode;
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getAddress() {
@@ -67,42 +66,34 @@ public class EnvInfo {
 		this.address = address;
 	}
 
-	public String getDongcode() {
-		return dongcode;
-	}
-
-	public void setDongcode(String dongcode) {
-		this.dongcode = dongcode;
-	}
-
-	public String getDong() {
-		return dong;
-	}
-
-	public void setDong(String dong) {
-		this.dong = dong;
-	}
-
-	public String getLng() {
+	public double getLng() {
 		return lng;
 	}
 
-	public void setLng(String lng) {
+	public void setLng(double lng) {
 		this.lng = lng;
 	}
 
-	public String getLat() {
+	public double getLat() {
 		return lat;
 	}
 
-	public void setLat(String lat) {
+	public void setLat(double lat) {
 		this.lat = lat;
+	}
+
+	public String getSigudong() {
+		return sigudong;
+	}
+
+	public void setSigudong(String sigudong) {
+		this.sigudong = sigudong;
 	}
 
 	@Override
 	public String toString() {
-		return "EnvInfo [no=" + no + ", name=" + name + ", bizcode=" + bizcode + ", address=" + address + ", dongcode="
-				+ dongcode + ", dong=" + dong + ", lng=" + lng + ", lat=" + lat + "]";
+		return "EnvInfo [no=" + no + ", name=" + name + ", code=" + code + ", type=" + type + ", address=" + address
+				+ ", lng=" + lng + ", lat=" + lat + ", sigudong=" + sigudong + "]";
 	}
 
 	

@@ -152,7 +152,7 @@ export default {
 
 #top-menu {
   margin: 0px;
-  background-image: url("/include/headerimg.jpg");
+  background-image: url("http://127.0.0.1:8080/include/headerimg.png");
   background-position: center top;
   background-size: cover;
 }

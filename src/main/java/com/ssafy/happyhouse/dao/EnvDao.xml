@@ -9,19 +9,18 @@
 		select
 			*
 		from
-			EnvInfo
+			envinfo
 		where
-			dong = #{dong}
-		limit
-			${start}, ${interval}
+			sigudong = #{value}
 	</select>
-	
-	<select id="countEnv" resultType="int">
+
+	<select id="chartData" resultType="EnvChartData">
 		select
-			count(*)
+			type
+			, count(*) as count
 		from
-			EnvInfo
-		where
-			dong = #{value}
+			envinfo
+		group by
+			type
 	</select>
 </mapper>

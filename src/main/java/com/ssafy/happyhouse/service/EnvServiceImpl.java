@@ -1,12 +1,12 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.happyhouse.dao.EnvDao;
+import com.ssafy.happyhouse.dto.EnvChartData;
 import com.ssafy.happyhouse.dto.EnvInfo;
 
 @Service
@@ -20,13 +20,14 @@ public class EnvServiceImpl implements EnvService{
 	}
 
 	@Override
-	public List<EnvInfo> searchAllEnvInfo(Map<String, Object> map) {
-		return dao.searchAll(map);
+	public List<EnvInfo> searchAllEnvInfo(String sigudong) {
+		return dao.searchAll(sigudong);
 	}
 
 	@Override
-	public int countEnv(String dong) {
-		return dao.countEnv(dong);
+	public List<EnvChartData> chartData() {
+		return dao.chartData();
 	}
+
 	
 }
