@@ -1,7 +1,9 @@
 <template>
   <div>
     <section class="content-box">
-      <h1>공지 게시판</h1>
+      <br>
+      <h2 style="text-align : center">공지사항</h2>
+      <br>      
       <form action="#" method="post">
         <div class="form-inline sms-form-center">
           <label class="mr-sm-2" for="title">제목 검색</label>

@@ -1,7 +1,9 @@
 <template>
   <div>
     <section>
-      <h1 style="text-align : center">Q & A</h1>
+      <br>
+      <h2 style="text-align : center">Q & A</h2>
+      <br>
       <form action="#" method="post">
         <div class="form-inline sms-form-center">
           <label class="mr-sm-2" for="title">Q&A 검색</label>

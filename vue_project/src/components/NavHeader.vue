@@ -158,7 +158,7 @@ export default {
 }
 
 #user-box {
-  height: 150px;
+  height: 80px;
   font-size: 15px;
 }
 

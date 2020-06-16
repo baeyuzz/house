@@ -1,7 +1,9 @@
 <template>
   <div>
     <section class="content-box">
-      <h1>공지사항 작성</h1>
+      <br>
+      <h2 style="text-align : center">공지사항</h2>
+      <br>
       <form method="post" action="#">
         <table class="table table-borderless shadow-lg p-3 rounded">
           <tr>
