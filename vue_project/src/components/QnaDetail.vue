@@ -145,6 +145,7 @@ export default {
       })
       .then(()=>{
         this.getReplies(this.qno);
+        this.comment = '';
 
       })
       .catch(()=>{

@@ -1,12 +1,11 @@
 <template>
-  <div>
+  <div class = "container-fluid">
+    <br>
     <div class="row">
-      <div class="map-news-box col-4">
+      <div class="map-news-box col-4 container right-box">
         <div id="map"></div>
         <button class="btn btn-primary" @click="reposition">건물 위치로 이동</button>
         <!-- NEWS -->
-
-        
         <div style="text-align : left">
           <br>
           <button
@@ -18,8 +17,8 @@
           >관련 뉴스 보기</button>
         </div>
         <div class="collapse" id="news">
-          <div style="text-align : left" v-for="(n) in news" v-bind:key="n.link">
-            <ul>
+          <div style="text-align : left" v-for="(n, index) in news" v-bind:key="n.link">
+            <ul v-if="index<4">
               <li>
                 <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
                 <div id="description">{{n.description}}</div>
@@ -32,8 +31,8 @@
           </div>
         </div>
       </div>
-      <!-- </div> -->
-      <div class="content-box col-3">
+      <!-- 건물 정보 -->
+      <div class="container content-box col-3">
         <div class="info-box table-responsive">
           <table class="table">
             <thead>
@@ -88,15 +87,26 @@
           <router-link class="btn btn-info" to="/">메인으로 돌아가기</router-link>
         </div>
       </div>
-      <!-- <div class="col-2"></div> -->
 
+      <!-- 그래프 -->
       <div class="container chart-box col-4">
-        <div class="chart-container"><canvas class="chart-canvas row" id="chart-area"></canvas></div>
-        <span>평균 매매가 : {{this.avgDeal}} 천원</span>
-        <div class="chart-container"><canvas class="chart-canvas row" id="chart-area-rent"></canvas></div>
-        <span>평균 보증금 : {{this.avgRent1}} 천원 </span>
-        <span> / 평균 월세 :   {{this.avgRent2}} 만원</span>
-        <canvas class="chart-canvas row" id="crime-chart"></canvas>
+        <div v-if="this.avgDeal>-1" class="chart-container">
+          <canvas class="chart-canvas row" id="chart-area"></canvas>
+          <div style="font-size:14px">
+            <span>평균 매매가 : {{this.avgDeal}} 천원</span>
+          </div>
+        </div>
+        <div v-if="this.avgRent1>-1" class="chart-container">
+          <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
+          <div style="font-size:14px">
+            <p>평균 보증금/전세 : {{this.avgRent1}} 원
+              <br>
+            평균 월세 :   {{this.avgRent2}} 만원</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas class="chart-canvas row" id="crime-chart"></canvas>
+        </div>
       </div>
     </div>
     <hr />
@@ -271,18 +281,19 @@ export default {
     },
     makeChart(data) {
       // 축 범위 지정을 위해 계산좀
-      let min = 999999999;
-      let max = 0;
+      let dmin = 999999999;
+      let dmax = 0;
       for(let d of data.data) {
-        if(d < min) min = d;
-        if(d > max) max = d;
+        if(d < dmin) dmin = d;
+        if(d > dmax) dmax = d;
       }
 
-      min -= 2000;
-      max += 2000;
+      dmin -= 2000;
+      dmax += 2000;
 
-      if(min < 0) min = 0;
+      if(dmin < 0) dmin = 0;
 
+      
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
         type: "line",
@@ -302,8 +313,8 @@ export default {
           scales: {
             yAxes: [{
               ticks: {
-                min: min
-                , max: max
+                min: dmin,
+                max: dmax
               }
             }]
           }
@@ -320,35 +331,77 @@ export default {
         }
       });
 
-      // 월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
-      if (this.house.type == 3 || this.house.type == 4) {
-        let ctx_rent = $("#chart-area-rent");
+
+
+      dmax = 0; // 보증금 max 값으로 씀
+      for(let d of data.deposit) {
+        if(d > dmax) dmax = d;
+      }
+      dmax += 2000;
+
+      dmin = 0; // 월세 max 값으로 씀
+      for(let r of data.rent){
+        if(r>dmin) dmin = r;
+      }
+      if(dmin == 0)
+        dmin = dmax;
+      else dmin +=100
+
+      // 전/월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
+      let ctx_rent = $("#chart-area-rent");
         let chartObject_rent = new Chart(ctx_rent, {
           type: "line",
           data: {
-            labels: data.labels2,
+            labels: data.monthly,
             datasets: [
               {
-                data: data.rent,
                 label: "월세",
-                backgroundColor: "#b3ffb3",
-                borderColor: "#00ff00",
-                pointBackgroundColor: "#004d00"
+                fill : false,
+                borderColor: 'rgb(255, 130, 0)',
+                data: data.rent,
+                yAxisID: '월세',
+
+              },
+              {
+                data: data.deposit,
+                label : "보증금",
+                fill : false,
+                borderColor: 'rgb(255, 210, 0)',
+                yAxisID: '보증금',
+
               }
-            ]
+          ]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              id: '월세',
+              type: 'linear',
+              position: 'left',
+              ticks : {
+                max : dmin,
+                min : 0,
+              }
+            }, {
+              id: '보증금',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                max: dmax,
+                min: 0
+              }
+            }]
           }
+        }
         });
         ctx_rent.click(e => {
           let activePoints = chartObject_rent.getElementsAtEvent(e);
           if (activePoints.length > 0) {
             let clickedElementIndex = activePoints[0]._index;
-
             let no = this.nos[clickedElementIndex];
-
             this.resetDetail(no);
           }
         });
-      }
     },
     // 범죄 발생 그래프
     crimeChart(data) {
@@ -361,9 +414,7 @@ export default {
             {
               data: data.data,
               label: "해당 구 강력 범죄 발생횟수 (2018년)",
-              backgroundColor: "#ccebff",
-              borderColor: "#0099ff",
-              pointBackgroundColor: "#003d66"
+              backgroundColor: '#ff1a66',
             }
           ]
         },
@@ -444,9 +495,13 @@ li {
 }
 .chart-container {
   overflow: auto;
+  width: 90%;
 }
 #map {
   width: 500px;
   height: 400px;
+}
+.right-box{
+  padding-left: 5%;
 }
 </style>
