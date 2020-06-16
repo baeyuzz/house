@@ -1,46 +1,22 @@
 <template>
-  <div class = "container-fluid">
-    <br>
+  <div class="container-fluid">
+    <br />
     <div class="row">
       <div class="map-news-box col-4 container right-box">
-        <div class = "maps">
-          <div id = "mapWrapper" style="width:400px;height:100%;float:left">
+        <div class="maps">
+          <div id="mapWrapper" style="width:400px;height:100%;float:left">
             <div id="map" style="width:100%;height:100%"></div>
           </div>
-          <div id = "roadWrap" style="width:400px;height:300px;float:left">
-            <div id="roadview" style="width:100%;height:100%"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+          <div id="roadWrap" style="width:400px;height:300px;float:left">
+            <div id="roadview" style="width:100%;height:100%"></div>
+            <!-- 로드뷰를 표시할 div 입니다 -->
           </div>
         </div>
-        <button class="btn btn-primary" @click="reposition">건물 위치로 이동</button>
-        <!-- NEWS -->
-        <div style="text-align : left">
-          <br>
-          <button
-            data-toggle="collapse"
-            href="#news"
-            aria-expanded="false"
-            aria-controls="news"
-            class="btn btn-warning"
-          >관련 뉴스 보기</button>
-        </div>
-        <div class="collapse" id="news">
-          <div style="text-align : left" v-for="(n, index) in news" v-bind:key="n.link">
-            <ul v-if="index<4">
-              <li>
-                <a :title="n.link" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-                <div id="description">{{n.description}}</div>
-                <div class="pubDate">
-                  <span class="pubDate">{{n.pubDate}}</span>
-                </div>
-              </li>
-              <hr />
-            </ul>
-          </div>
-        </div>
+        <button class="btn btn-primary mt-3" @click="reposition">지도 중심을 건물 위치로 이동</button>
       </div>
-        
+
       <!-- 건물 정보 -->
-      <div class="container content-box col-3">
+      <div class="container content-box col-3 align-self-center">
         <div class="info-box table-responsive">
           <table class="table">
             <thead>
@@ -107,18 +83,42 @@
         <div v-if="this.avgRent1>-1" class="chart-container">
           <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
           <div style="font-size:14px">
-            <p>평균 보증금/전세 : {{this.avgRent1}} 원
-              <br>
-            평균 월세 :   {{this.avgRent2}} 만원</p>
+            <p>
+              평균 보증금/전세 : {{this.avgRent1}} 원
+              <br />
+              평균 월세 : {{this.avgRent2}} 만원
+            </p>
           </div>
-        </div>
-        <div class="chart-container">
-          <canvas class="chart-canvas row" id="crime-chart"></canvas>
         </div>
       </div>
     </div>
     <hr />
-    <br />
+
+    <div class="row right-box mt-3 bottom-content">
+      <div class="col-8 align-self-center">
+        <div id="news" class="table-responsive">
+          <h2>뉴스</h2>
+          <table class="table table-bordered">
+            <tbody>
+            <tr>
+              <td v-for="(n) in news" v-bind:key="n.link"  class="news-item">
+                <div>
+                  <a :title="n.title" v-bind:href="n.link" target="_blank">{{n.title}}</a>
+                </div>
+                <div :title="n.description" id="description">{{n.description}}</div>
+                <div class="pubDate">
+                  <span class="pubDate">{{n.pubDate}}</span>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-container col-4">
+        <canvas class="chart-canvas" id="crime-chart"></canvas>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -136,14 +136,14 @@ export default {
       news: [],
 
       nos: [],
-      avgDeal : '',
-      avgRent1 : '',
-      avgRent2 : '',
+      avgDeal: "",
+      avgRent1: "",
+      avgRent2: "",
 
       map: {},
       currentPos: {},
       address: "",
-      mapCreated: false,
+      mapCreated: false
     };
   },
   created() {
@@ -171,7 +171,6 @@ export default {
             this.avgDeal = response.data.avgDeal;
             this.avgRent1 = response.data.avgRent1;
             this.avgRent2 = response.data.avgRent2;
-            
           })
           .catch(error => {
             alert("Error: " + error);
@@ -187,7 +186,6 @@ export default {
           .catch(error => {
             alert("Error: " + error);
           });
-        
       })
       .catch(error => {
         alert("Error: ", error);
@@ -219,27 +217,6 @@ export default {
   },
   methods: {
     initMap() {
-      /*
-      // 주소-좌표 변환 객체를 생성합니다
-      var geocoder = new kakao.maps.services.Geocoder();
-
-      // 주소로 좌표를 검색합니다
-      console.log(this.address);
-      let vue = this;
-      geocoder.addressSearch(this.address, function(
-        result,
-        status
-      ) {
-        // 정상적으로 검색이 완료됐으면
-        if (status === kakao.maps.services.Status.OK) {
-          console.log('Kakao Map API - 주소로 좌표 검색 성공');
-          vue.setMap(new kakao.maps.LatLng(result[0].y, result[0].x));
-        } else {
-          console.log('Kakao Map API - 주소로 좌표 검색 실패!!');
-          vue.setMap(new kakao.maps.LatLng(33.450705, 126.570677));
-        }
-      });
-      */
       // 그냥 DB에 좌표 값을 가지고 있는게 편함
       this.setMap(new kakao.maps.LatLng(this.house.lat, this.house.lng));
     },
@@ -255,15 +232,12 @@ export default {
         center: coords,
         // 처음 표시될 확대/축소 레벨
         level: 3
-
       };
 
       // 지도를 만들어 컨테이너에 붙입니다.
       var map = new kakao.maps.Map(container, options);
       map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW); //지도 위에 로드뷰 도로 올리기
       console.log("Make and attach map Complete");
-
-
 
       // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
       var mapTypeControl = new kakao.maps.MapTypeControl();
@@ -286,8 +260,8 @@ export default {
 
       console.dir(map);
       this.map = map;
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      let rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      let rvContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
       let rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
       let rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
       let mapWrapper = document.getElementById("mapWrapper");
@@ -295,56 +269,53 @@ export default {
       toggleRoadview(coords);
 
       let markImage = new kakao.maps.MarkerImage(
-          'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png',
-          new kakao.maps.Size(26, 46),
-          {
-              // 스프라이트 이미지를 사용합니다.
-              // 스프라이트 이미지 전체의 크기를 지정하고
-              spriteSize: new kakao.maps.Size(1666, 168),
-              // 사용하고 싶은 영역의 좌상단 좌표를 입력합니다.
-              // background-position으로 지정하는 값이며 부호는 반대입니다.
-              spriteOrigin: new kakao.maps.Point(705, 114),
-              offset: new kakao.maps.Point(13, 46)
-          }
+        "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png",
+        new kakao.maps.Size(26, 46),
+        {
+          // 스프라이트 이미지를 사용합니다.
+          // 스프라이트 이미지 전체의 크기를 지정하고
+          spriteSize: new kakao.maps.Size(1666, 168),
+          // 사용하고 싶은 영역의 좌상단 좌표를 입력합니다.
+          // background-position으로 지정하는 값이며 부호는 반대입니다.
+          spriteOrigin: new kakao.maps.Point(705, 114),
+          offset: new kakao.maps.Point(13, 46)
+        }
       );
 
       let rvMarker = new kakao.maps.Marker({
-          image : markImage,
-          position: coords,
-          draggable: true,
-          map: map
+        image: markImage,
+        position: coords,
+        draggable: true,
+        map: map
       });
 
-      kakao.maps.event.addListener(map, 'click', function(mouseEvent){
-          
-          // 현재 클릭한 부분의 좌표를 리턴 
-          var position = mouseEvent.latLng; 
+      kakao.maps.event.addListener(map, "click", function(mouseEvent) {
+        // 현재 클릭한 부분의 좌표를 리턴
+        var position = mouseEvent.latLng;
 
-          rvMarker.setPosition(position);
-          toggleRoadview(position); //로드뷰를 토글합니다
+        rvMarker.setPosition(position);
+        toggleRoadview(position); //로드뷰를 토글합니다
       });
 
-      function toggleRoadview(position){
-
+      function toggleRoadview(position) {
         //전달받은 좌표(position)에 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄웁니다
         rvClient.getNearestPanoId(position, 50, function(panoId) {
-            if (panoId === null) {
-                rvContainer.style.display = 'none'; //로드뷰를 넣은 컨테이너를 숨깁니다
-                mapWrapper.style.heigth = '100%';
-                map.relayout();
-            } else {
-                // mapWrapper.style.height = '50%';
-                map.relayout(); //지도를 감싸고 있는 영역이 변경됨에 따라, 지도를 재배열합니다
-                rvContainer.style.display = 'block'; //로드뷰를 넣은 컨테이너를 보이게합니다
-                rv.setPanoId(panoId, position); //panoId를 통한 로드뷰 실행
-                rv.relayout(); //로드뷰를 감싸고 있는 영역이 변경됨에 따라, 로드뷰를 재배열합니다
-            }
-       });
-     } 
+          if (panoId === null) {
+            rvContainer.style.display = "none"; //로드뷰를 넣은 컨테이너를 숨깁니다
+            mapWrapper.style.heigth = "100%";
+            map.relayout();
+          } else {
+            // mapWrapper.style.height = '50%';
+            map.relayout(); //지도를 감싸고 있는 영역이 변경됨에 따라, 지도를 재배열합니다
+            rvContainer.style.display = "block"; //로드뷰를 넣은 컨테이너를 보이게합니다
+            rv.setPanoId(panoId, position); //panoId를 통한 로드뷰 실행
+            rv.relayout(); //로드뷰를 감싸고 있는 영역이 변경됨에 따라, 로드뷰를 재배열합니다
+          }
+        });
+      }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     },
-    
 
     reposition() {
       console.dir(this.map);
@@ -354,17 +325,16 @@ export default {
       // 축 범위 지정을 위해 계산좀
       let dmin = 999999999;
       let dmax = 0;
-      for(let d of data.data) {
-        if(d < dmin) dmin = d;
-        if(d > dmax) dmax = d;
+      for (let d of data.data) {
+        if (d < dmin) dmin = d;
+        if (d > dmax) dmax = d;
       }
 
       dmin -= 2000;
       dmax += 2000;
 
-      if(dmin < 0) dmin = 0;
+      if (dmin < 0) dmin = 0;
 
-      
       let ctx = $("#chart-area");
       let chartObject = new Chart(ctx, {
         type: "line",
@@ -382,12 +352,14 @@ export default {
         },
         options: {
           scales: {
-            yAxes: [{
-              ticks: {
-                min: dmin,
-                max: dmax
+            yAxes: [
+              {
+                ticks: {
+                  min: dmin,
+                  max: dmax
+                }
               }
-            }]
+            ]
           }
         }
       });
@@ -402,77 +374,75 @@ export default {
         }
       });
 
-
-
       dmax = 0; // 보증금 max 값으로 씀
-      for(let d of data.deposit) {
-        if(d > dmax) dmax = d;
+      for (let d of data.deposit) {
+        if (d > dmax) dmax = d;
       }
       dmax += 2000;
 
       dmin = 0; // 월세 max 값으로 씀
-      for(let r of data.rent){
-        if(r>dmin) dmin = r;
+      for (let r of data.rent) {
+        if (r > dmin) dmin = r;
       }
-      if(dmin == 0)
-        dmin = dmax;
-      else dmin +=100
+      if (dmin == 0) dmin = dmax;
+      else dmin += 100;
 
       // 전/월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
       let ctx_rent = $("#chart-area-rent");
-        let chartObject_rent = new Chart(ctx_rent, {
-          type: "line",
-          data: {
-            labels: data.monthly,
-            datasets: [
-              {
-                label: "월세",
-                fill : false,
-                borderColor: 'rgb(255, 130, 0)',
-                data: data.rent,
-                yAxisID: '월세',
-
-              },
-              {
-                data: data.deposit,
-                label : "보증금",
-                fill : false,
-                borderColor: 'rgb(255, 210, 0)',
-                yAxisID: '보증금',
-
-              }
+      let chartObject_rent = new Chart(ctx_rent, {
+        type: "line",
+        data: {
+          labels: data.monthly,
+          datasets: [
+            {
+              label: "월세",
+              fill: false,
+              borderColor: "rgb(255, 130, 0)",
+              data: data.rent,
+              yAxisID: "월세"
+            },
+            {
+              data: data.deposit,
+              label: "보증금",
+              fill: false,
+              borderColor: "rgb(255, 210, 0)",
+              yAxisID: "보증금"
+            }
           ]
         },
         options: {
           scales: {
-            yAxes: [{
-              id: '월세',
-              type: 'linear',
-              position: 'left',
-              ticks : {
-                max : dmin,
-                min : 0,
+            yAxes: [
+              {
+                id: "월세",
+                type: "linear",
+                position: "left",
+                ticks: {
+                  max: dmin,
+                  min: 0
+                }
+              },
+              {
+                id: "보증금",
+                type: "linear",
+                position: "right",
+                ticks: {
+                  max: dmax,
+                  min: 0
+                }
               }
-            }, {
-              id: '보증금',
-              type: 'linear',
-              position: 'right',
-              ticks: {
-                max: dmax,
-                min: 0
-              }
-            }]
+            ]
           }
         }
-        });
-        ctx_rent.click(e => {
-          let activePoints = chartObject_rent.getElementsAtEvent(e);
-          if (activePoints.length > 0) {
-            let clickedElementIndex = activePoints[0]._index;
-            let no = this.nos[clickedElementIndex];
-            this.resetDetail(no);
-          }
-        });
+      });
+      ctx_rent.click(e => {
+        let activePoints = chartObject_rent.getElementsAtEvent(e);
+        if (activePoints.length > 0) {
+          let clickedElementIndex = activePoints[0]._index;
+          let no = this.nos[clickedElementIndex];
+          this.resetDetail(no);
+        }
+      });
     },
     // 범죄 발생 그래프
     crimeChart(data) {
@@ -485,7 +455,7 @@ export default {
             {
               data: data.data,
               label: "해당 구 강력 범죄 발생횟수 (2018년)",
-              backgroundColor: '#ff1a66',
+              backgroundColor: "#ff1a66"
             }
           ]
         },
@@ -568,11 +538,22 @@ li {
   overflow: auto;
   width: 90%;
 }
-.right-box{
+.right-box {
   padding-left: 5%;
 }
 .maps {
-  width : 500;
-  height : 300px;
+  width: 500;
+  height: 300px;
+}
+.news-item {
+  max-width: 200px;
+}
+
+.news-item > div {
+  margin-top: 5px;
+}
+
+.bottom-content{
+  height: 300px;
 }
 </style>

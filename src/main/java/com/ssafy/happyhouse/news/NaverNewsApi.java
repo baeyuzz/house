@@ -78,6 +78,8 @@ public class NaverNewsApi {
 				description = description.replace("&quot;","");
 				
 				String pubDate = item.get("pubDate").toString();
+				
+				pubDate = pubDate.replace("+0900", "");
 
 				news.add(new News(no,title, link, description, pubDate));
 			}
