@@ -469,7 +469,7 @@ export default {
           datasets: [
             {
               data: data.data,
-              label: "해당 구 강력 범죄 발생횟수 (2018년)",
+              label: "해당 구 강력 범죄 발생건수 (2018년)",
               backgroundColor: "#ff1a66"
             }
           ]
