@@ -14,23 +14,31 @@
               <template v-if="regions.length > 0">
                 <template v-for="(region, index) in regions">
                   <tr :key="region.no">
-                    <td>{{region.sigungu}}</td>
+                    <td>
+                      <div style="float : left">
+                        {{region.sigungu}}
+                      </div>
+                      <div style="text-align : right">
+                        <a href="#" @click.prevent="searchEnv(index)">환경 <i class="fa fa-search" aria-hidden="true"></i></a>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <a href="#" @click.prevent="searchShop(index)">상권 <i class="fa fa-search" aria-hidden="true"></i></a>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <a href="#" @click.prevent="removeRegion(index)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                      </div>  
+                    </td>
+                  <!-- </tr>
+                  <tr :key="region.no">
+                    
                   </tr>
                   <tr :key="region.no">
-                    <td>
-                      <a href="#" @click.prevent="searchEnv(index)">환경 정보 검색</a>
-                    </td>
                   </tr>
                   <tr :key="region.no">
-                    <td>
-                      <a href="#" @click.prevent="searchShop(index)">동네 업종 검색</a>
-                    </td>
-                  </tr>
-                  <tr :key="region.no">
-                    <td>
-                      <a href="#" @click.prevent="removeRegion(index)">관심지역에서 제거</a>
-                    </td>
-                  </tr>
+                  -->
+                  </tr> 
                 </template>
               </template>
               <template v-else>
