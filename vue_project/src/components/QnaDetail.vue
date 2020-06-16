@@ -1,7 +1,9 @@
 <template>
    <div>
     <section class="content-box">
-     <h2>Q&A</h2>
+      <br>
+      <h2 style="text-align : center">Q & A</h2>
+      <br>
       <div class="article-box">
         <table class="table table-borderless shadow-lg p-3 rounded">
           <tr>

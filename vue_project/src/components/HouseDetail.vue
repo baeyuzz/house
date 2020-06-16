@@ -99,21 +99,6 @@
         <div id="news">
           <div>관련 뉴스 보기</div> 
           <br>
-          <!-- <table class="table table-bordered">
-            <tbody>
-            <tr>
-              <td v-for="(n) in news" v-bind:key="n.link"  class="news-item">
-                <div>
-                  <a :title="n.title" v-bind:href="n.link" target="_blank">{{n.title}}</a>
-                </div>
-                <div :title="n.description" id="description">{{n.description}}</div>
-                <div class="pubDate">
-                  <span class="pubDate">{{n.pubDate}}</span>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table> -->
           <div v-for="(n,index) in this.news" :key="n.no">
             <div v-if="index<3" style="float : left; font-size : 14px;">
               <a :title="n.title" v-bind:href="n.link" target="_blank">{{n.title}}</a>
@@ -122,7 +107,7 @@
                   <span class="pubDate">{{n.pubDate}}</span>
                 </div>
             </div>
-                <br>
+            <br>
           </div>
         </div>
       </div>
