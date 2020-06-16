@@ -75,6 +75,7 @@
                 placeholder="아파트 이름을 입력해주세요"
               />
               <button @click.prevent="search" class="btn btn-primary">검색</button>
+              <button @click.prevent="addRegion" class="btn btn-secondary ml-2">관심지역에 추가</button>
             </div>
           </div>
         </form>
@@ -170,6 +171,11 @@ export default {
       mapCreate: 0
     };
   },
+  computed: {
+    id() {
+      return this.$store.state.id;
+    }
+  },
   watch: {
     mapCreate() {
       console.log("init map in mapCreate watcher called!");
@@ -213,9 +219,9 @@ export default {
 
       http
         .post("/rest/house/pagenav", {
-          pg: n
-          , nod: vue.nod
-          , list: vue.list
+          pg: n,
+          nod: vue.nod,
+          list: vue.list
         })
         .then(response => {
           vue.tableList = response.data.tableList;
@@ -283,21 +289,25 @@ export default {
       for (let deal of this.mapList) {
         let obj = {};
         obj.latlng = new kakao.maps.LatLng(deal.lat, deal.lng);
-        obj.content = 
-            '<div class="kakao-wrap">' + 
-            '    <input id="kakao-no" type="hidden" value=' + deal.no + '/>' + 
-            '    <div class="kakao-info">' + 
-            '        <div class="kakao-title">' + 
-                          deal.aptName + 
-            '        </div>' + 
-            '        <div class="kakao-body">' + 
-            '            <div class="kakao-desc">' + 
-            '                <div class="kakao-ellipsis">' + deal.address + '</div>' + 
-            '                <div class="kakao-ellipsis kakao-red">클릭시 상세 정보로 이동</div>' + 
-            '            </div>' + 
-            '        </div>' + 
-            '    </div>' +    
-            '</div>';
+        obj.content =
+          '<div class="kakao-wrap">' +
+          '    <input id="kakao-no" type="hidden" value=' +
+          deal.no +
+          "/>" +
+          '    <div class="kakao-info">' +
+          '        <div class="kakao-title">' +
+          deal.aptName +
+          "        </div>" +
+          '        <div class="kakao-body">' +
+          '            <div class="kakao-desc">' +
+          '                <div class="kakao-ellipsis">' +
+          deal.address +
+          "</div>" +
+          '                <div class="kakao-ellipsis kakao-red">클릭시 상세 정보로 이동</div>' +
+          "            </div>" +
+          "        </div>" +
+          "    </div>" +
+          "</div>";
         obj.trickVal = deal.no;
 
         positions.push(obj);
@@ -366,14 +376,39 @@ export default {
       console.log(by);
       http
         .post("/rest/house/sort", {
-          by: by
-          ,nod: this.nod
-          ,list: this.list
+          by: by,
+          nod: this.nod,
+          list: this.list
         })
         .then(response => {
           this.list = response.data.list;
           this.tableList = response.data.tableList;
           this.nav = response.data.nav;
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+    },
+    addRegion() {
+      if(this.id.length == 0) {
+        alert('로그인 후 사용 할 수 있는 기능입니다.');
+        this.$router.push('/user/login');
+        return;
+      }
+
+      let sigungu = this.sido + " " + this.sigungu + " " + this.dong;
+
+      http
+        .post("/rest/interest", {
+          sigungu: sigungu,
+          userid: this.id
+        })
+        .then(response => {
+          if (response.data) {
+            alert("관심지역이 추가되었습니다");
+          } else {
+            alert("관심지역 추가 실패");
+          }
         })
         .catch(error => {
           alert("Error: " + error);
@@ -495,5 +530,4 @@ th > i {
 #house-map {
   height: 800px;
 }
-
 </style>
