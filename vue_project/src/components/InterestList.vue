@@ -59,74 +59,73 @@
       <!-- 환경, 상권정보 -->
       <div class="information-table mt-3 offset-3 col-9">
         <template v-show="envs.length > 0 || shops.length > 0">
-          <div class="container">
-          <!-- 현재 표시되는 지역에 대한 정보 -->
-          <h2>{{sigudong}} - {{infotype}}</h2>
-          <!-- 상점 카테고리 -->
-          <div v-show="shops.length > 0" class="category">
-            <ul>
-              <li id="foodMenu" @click="changeMarker('food')">
-                <span class="ico_comm ico_food"></span>
-                음식
-              </li>
-              <li id="lifeMenu" @click="changeMarker('life')">
-                <span class="ico_comm ico_life"></span>
-                생활서비스
-              </li>
-              <li id="shopMenu" @click="changeMarker('shop')">
-                <span class="ico_comm ico_shop"></span>
-                소매
-              </li>
-              <li id="studyMenu" @click="changeMarker('study')">
-                <span class="ico_comm ico_study"></span>
-                학문/교육
-              </li>
-              <li id="houseMenu" @click="changeMarker('house')">
-                <span class="ico_comm ico_house"></span>
-                부동산
-              </li>
-              <li id="playMenu" @click="changeMarker('play')">
-                <span class="ico_comm ico_play"></span>
-                관광/여가/오락
-              </li>
-              <li id="sleepMenu" @click="changeMarker('sleep')">
-                <span class="ico_comm ico_sleep"></span>
-                숙박
-              </li>
-            </ul>
-          </div>
+          <div class="container category-box">
+            <!-- 현재 표시되는 지역에 대한 정보 -->
+            <h2>{{sigudong}} - {{infotype}}</h2>
+            <!-- 상점 카테고리 -->
+            <div v-show="shops.length > 0" class="category">
+              <ul>
+                <li id="foodMenu" @click="changeMarker('food')">
+                  <span class="ico_comm ico_food"></span>
+                  음식
+                </li>
+                <li id="lifeMenu" @click="changeMarker('life')">
+                  <span class="ico_comm ico_life"></span>
+                  생활서비스
+                </li>
+                <li id="shopMenu" @click="changeMarker('shop')">
+                  <span class="ico_comm ico_shop"></span>
+                  소매
+                </li>
+                <li id="studyMenu" @click="changeMarker('study')">
+                  <span class="ico_comm ico_study"></span>
+                  학문/교육
+                </li>
+                <li id="houseMenu" @click="changeMarker('house')">
+                  <span class="ico_comm ico_house"></span>
+                  부동산
+                </li>
+                <li id="playMenu" @click="changeMarker('play')">
+                  <span class="ico_comm ico_play"></span>
+                  관광/여가/오락
+                </li>
+                <li id="sleepMenu" @click="changeMarker('sleep')">
+                  <span class="ico_comm ico_sleep"></span>
+                  숙박
+                </li>
+              </ul>
+            </div>
 
-          <!-- 환경 카테고리 -->
-          <div v-show="envs.length > 0" class="env-category">
-            <ul>
-              <li id="groundMenu" @click="changeEnvMarker('ground')">
-                <span class="ico_comm ico_ground"></span>
-                대기오염
-              </li>
-              <li id="waterMenu" @click="changeEnvMarker('water')">
-                <span class="ico_comm ico_water"></span>
-                수질오염
-              </li>
-              <li id="poisonMenu" @click="changeEnvMarker('poison')">
-                <span class="ico_comm ico_poison"></span>
-                유독물
-              </li>
-              <li id="trashMenu" @click="changeEnvMarker('trash')">
-                <span class="ico_comm ico_trash"></span>
-                폐기물
-              </li>
-              <li id="noiseMenu" @click="changeEnvMarker('noise')">
-                <span class="ico_comm ico_noise"></span>
-                소음진동
-              </li>
-            </ul>
-          </div>
+            <!-- 환경 카테고리 -->
+            <div v-show="envs.length > 0" class="env-category">
+              <ul>
+                <li id="groundMenu" @click="changeEnvMarker('ground')">
+                  <span class="ico_comm ico_ground"></span>
+                  대기오염
+                </li>
+                <li id="waterMenu" @click="changeEnvMarker('water')">
+                  <span class="ico_comm ico_water"></span>
+                  수질오염
+                </li>
+                <li id="poisonMenu" @click="changeEnvMarker('poison')">
+                  <span class="ico_comm ico_poison"></span>
+                  유독물
+                </li>
+                <li id="trashMenu" @click="changeEnvMarker('trash')">
+                  <span class="ico_comm ico_trash"></span>
+                  폐기물
+                </li>
+                <li id="noiseMenu" @click="changeEnvMarker('noise')">
+                  <span class="ico_comm ico_noise"></span>
+                  소음진동
+                </li>
+              </ul>
+            </div>
           </div>
           <!-- 지도 -->
           <div class="container map-box">
             <div id="map"></div>
           </div>
-
 
           <!-- 상점, 환경 정보 테이블(내부 내용반 조건에 따라 바뀜) -->
           <div v-if="envs.length > 0 || shops.length > 0" class="container table-box">
@@ -206,8 +205,8 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      sigudong: '',
-      infotype: '',
+      sigudong: "",
+      infotype: "",
 
       regions: [],
       shops: [],
@@ -277,9 +276,9 @@ export default {
         );
     });
 
-    if(this.shops.length > 0) {
+    if (this.shops.length > 0) {
       this.shopCategorySet();
-    } else if(this.envs.length > 0) {
+    } else if (this.envs.length > 0) {
       this.envCategorySet();
     }
 
@@ -314,8 +313,8 @@ export default {
         $(".sleep")
       ];
 
-      for(let i = 0; i < 7; i++) {
-        if(menus[i].className == "menu_selected") {
+      for (let i = 0; i < 7; i++) {
+        if (menus[i].className == "menu_selected") {
           trs[i].show();
         } else {
           trs[i].hide();
@@ -338,8 +337,8 @@ export default {
         $(".noise")
       ];
 
-      for(let i = 0; i < 5; i++) {
-        if(menus[i].className == "menu_selected") {
+      for (let i = 0; i < 5; i++) {
+        if (menus[i].className == "menu_selected") {
           trs[i].show();
         } else {
           trs[i].hide();
@@ -350,7 +349,7 @@ export default {
       this.isUpdated = false;
       this.curIdx = index;
       this.sigudong = this.regions[index].sigungu;
-      this.infotype = '환경 정보';
+      this.infotype = "환경 정보";
       console.log("searchEnv: " + this.regions[index].sigungu);
       http
         .post("/rest/env", {
@@ -375,7 +374,7 @@ export default {
       this.isUpdated = false;
       this.curIdx = index;
       this.sigudong = this.regions[index].sigungu;
-      this.infotype = '상권 정보';
+      this.infotype = "상권 정보";
       console.log("searchShop: " + this.regions[index].sigungu);
       http
         .post("/rest/shop", {
@@ -489,10 +488,11 @@ export default {
         .then(response => {
           this.regions = response.data;
 
-          if(this.envs.length == 0 &&
-             this.shops.length == 0 &&
-             this.regions.length > 0) {
-            
+          if (
+            this.envs.length == 0 &&
+            this.shops.length == 0 &&
+            this.regions.length > 0
+          ) {
             this.searchShop(0);
           }
         })
@@ -852,7 +852,7 @@ export default {
         this.setMarkers(this.map, targ);
       }
 
-      if(this.isUpdated) {
+      if (this.isUpdated) {
         this.shopCategorySet();
       }
     },
@@ -880,7 +880,7 @@ export default {
         this.setEnvMarkers(this.map, targ);
       }
 
-      if(this.isUpdated) {
+      if (this.isUpdated) {
         this.envCategorySet();
       }
     },
@@ -932,6 +932,7 @@ td {
   margin-bottom: 20px;
 }
 
+.category-box,
 .map-box,
 .table-box,
 .chart-box {
@@ -950,7 +951,7 @@ td {
   color: #000;
 }
 .category {
-  width: 570px;
+  width: 563px;
   height: 60px;
   border: 1px solid black;
   font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
@@ -963,7 +964,6 @@ td {
   color: #fff;
   border-left: 1px solid #915b2f;
   border-right: 1px solid #915b2f;
-  margin: 0 -1px;
 }
 .category li {
   list-style: none;
@@ -1010,7 +1010,7 @@ td {
   color: #000;
 }
 .env-category {
-  width: 410px;
+  width: 403px;
   height: 60px;
   border: 1px solid black;
   font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
@@ -1023,7 +1023,6 @@ td {
   color: #fff;
   border-left: 1px solid #915b2f;
   border-right: 1px solid #915b2f;
-  margin: 0 -1px;
 }
 .env-category li {
   list-style: none;
