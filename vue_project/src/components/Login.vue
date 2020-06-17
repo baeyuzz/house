@@ -26,7 +26,7 @@
         <div id="btns">
           <br />
           <router-link to="/user/findpw">
-            <input class="button btn pl-2 pr-2" id="findpwd" type="button" value="비밀번호 찾기" />
+            <input class="button btn pl-2 pr-2 ml-5 mr-4" id="findpwd" type="button" value="비밀번호 찾기" />
           </router-link>
           <router-link to="/">
             <input class="button btn pl-2 pr-2" type="button" id="gohome" value="돌아가기" />

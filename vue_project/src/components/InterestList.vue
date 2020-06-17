@@ -59,11 +59,9 @@
       <!-- 환경, 상권정보 -->
       <div class="information-table mt-3 offset-3 col-9">
         <template v-show="envs.length > 0 || shops.length > 0">
-          <!-- 지도 -->
-          <div class="container map-box">
-            <div id="map"></div>
-          </div>
-
+          <div class="container">
+          <!-- 현재 표시되는 지역에 대한 정보 -->
+          <h2>{{sigudong}} - {{infotype}}</h2>
           <!-- 상점 카테고리 -->
           <div v-show="shops.length > 0" class="category">
             <ul>
@@ -123,6 +121,12 @@
               </li>
             </ul>
           </div>
+          </div>
+          <!-- 지도 -->
+          <div class="container map-box">
+            <div id="map"></div>
+          </div>
+
 
           <!-- 상점, 환경 정보 테이블(내부 내용반 조건에 따라 바뀜) -->
           <div v-if="envs.length > 0 || shops.length > 0" class="container table-box">
@@ -202,6 +206,9 @@ import $ from "jquery";
 export default {
   data() {
     return {
+      sigudong: '',
+      infotype: '',
+
       regions: [],
       shops: [],
       envs: [],
@@ -342,6 +349,8 @@ export default {
     searchEnv(index) {
       this.isUpdated = false;
       this.curIdx = index;
+      this.sigudong = this.regions[index].sigungu;
+      this.infotype = '환경 정보';
       console.log("searchEnv: " + this.regions[index].sigungu);
       http
         .post("/rest/env", {
@@ -365,6 +374,8 @@ export default {
     searchShop(index) {
       this.isUpdated = false;
       this.curIdx = index;
+      this.sigudong = this.regions[index].sigungu;
+      this.infotype = '상권 정보';
       console.log("searchShop: " + this.regions[index].sigungu);
       http
         .post("/rest/shop", {
@@ -477,6 +488,13 @@ export default {
         .get("/rest/interest/" + this.id)
         .then(response => {
           this.regions = response.data;
+
+          if(this.envs.length == 0 &&
+             this.shops.length == 0 &&
+             this.regions.length > 0) {
+            
+            this.searchShop(0);
+          }
         })
         .catch(error => {
           alert("Error: " + error);
@@ -910,7 +928,7 @@ td {
   height: 600px;
 }
 .map-box {
-  margin-top: 80px;
+  margin-top: 10px;
   margin-bottom: 20px;
 }
 
@@ -932,13 +950,8 @@ td {
   color: #000;
 }
 .category {
-  position: absolute;
-  overflow: hidden;
-  top: 10px;
-  left: 65px;
   width: 570px;
   height: 60px;
-  z-index: 10;
   border: 1px solid black;
   font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
   font-size: 12px;
@@ -997,13 +1010,8 @@ td {
   color: #000;
 }
 .env-category {
-  position: absolute;
-  overflow: hidden;
-  top: 10px;
-  left: 65px;
   width: 410px;
   height: 60px;
-  z-index: 10;
   border: 1px solid black;
   font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
   font-size: 12px;

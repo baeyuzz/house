@@ -195,6 +195,18 @@ export default {
         this.listCreated = true;
         this.search();
       }
+    },
+    aptdeal() {
+      this.search();
+    },
+    housedeal() {
+      this.search();
+    },
+    aptrent() {
+      this.search();
+    },
+    houserent() {
+      this.search();
     }
   },
   // Created : 처음 데이터들을 불러오기 위함
@@ -408,6 +420,7 @@ export default {
         .then(response => {
           if (response.data) {
             alert("관심지역이 추가되었습니다");
+            this.$router.push('/interest/list');
           } else {
             alert("관심지역 추가 실패");
           }
