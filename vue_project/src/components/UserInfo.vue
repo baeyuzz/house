@@ -13,7 +13,7 @@
 					</tr>
 					<tr>
 						<th>비밀번호</th>
-						<td>{{userpwd}}</td>
+						<td>●●●●●●</td>
 					</tr>
 					<tr>
 						<th>이름</th>

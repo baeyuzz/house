@@ -27,7 +27,7 @@
               <tr>
                 <td colspan="2">
                   <h3>
-                    <i class="fas fa-building"></i>건물 정보
+                    <i class="fas fa-building"></i> 건물 거래 정보
                   </h3>
                 </td>
               </tr>
@@ -43,15 +43,15 @@
               </tr>
               <tr>
                 <th>건축 년도</th>
-                <td :title="house.buildYear">{{house.buildYear}}</td>
+                <td :title="house.buildYear">{{house.buildYear}}년</td>
               </tr>
               <tr>
                 <th>면적</th>
-                <td :title="house.area">{{house.area}}</td>
+                <td :title="house.area">{{house.area}}㎡ ({{this.pyung}}평)</td>
               </tr>
               <tr>
                 <th>층</th>
-                <td :title="house.floor">{{house.floor}}</td>
+                <td :title="house.floor">{{house.floor}}층</td>
               </tr>
               <tr>
                 <th>거래 유형</th>
@@ -59,11 +59,11 @@
               </tr>
               <tr>
                 <th>거래 금액</th>
-                <td :title="house.dealAmount">{{house.dealAmount}}</td>
+                <td :title="house.dealAmount">{{house.dealAmount}} (단위 : 천원)</td>
               </tr>
               <tr v-if="house.type > 2">
                 <th>임대료</th>
-                <td :title="house.rentMoney">{{house.rentMoney}}</td>
+                <td :title="house.rentMoney">{{house.rentMoney}} (단위 : 만원) </td>
               </tr>
               <tr>
                 <th>거래 날짜</th>
@@ -81,16 +81,16 @@
         <div v-if="this.avgDeal>-1" class="chart-container">
           <canvas class="chart-canvas row" id="chart-area"></canvas>
           <div style="font-size:14px">
-            <span>평균 매매가 : {{this.avgDeal}} 천원</span>
+            <span>평균 매매가 : {{this.avgDeal}} (단위 : 천원)</span>
           </div>
         </div>
         <div v-if="this.avgRent1>-1" class="chart-container">
           <canvas class="chart-canvas row" id="chart-area-rent"></canvas>
           <div style="font-size:14px">
             <p>
-              평균 보증금/전세 : {{this.avgRent1}} 원
+              평균 보증금/전세 : {{this.avgRent1}} (단위 : 천원)
               <br />
-              평균 월세 : {{this.avgRent2}} 만원
+              평균 월세 : {{this.avgRent2}} (단위 : 만원)
             </p>
           </div>
         </div>
@@ -101,7 +101,7 @@
     <div class="row right-box mt-3 bottom-content">
       <div class="col-7" style="padding-right : 5%">
         <div id="news">
-          <div>관련 뉴스 보기</div>
+          <div><strong>관련 뉴스 보기</strong></div>
           <br />
           <div v-for="(n,index) in this.news" :key="n.no">
             <div v-if="index<3" style="float : left; font-size : 14px;">
@@ -136,6 +136,7 @@ export default {
     return {
       no: 0,
       house: {},
+      pyung : '',
 
       news: [],
 
@@ -164,6 +165,7 @@ export default {
       .then(response => {
         this.house = response.data.house;
         this.news = response.data.news;
+        this.pyung = (this.house.area*0.3025).toFixed(2);
 
         // address watcher 를 부르기 위해서(카카오 맵 어려워)
         this.address = this.house.address;
@@ -490,14 +492,14 @@ export default {
       for (let d of data.deposit) {
         if (d > dmax) dmax = d;
       }
-      dmax += 2000;
+      dmax += 5000;
 
       dmin = 0; // 월세 max 값으로 씀
       for (let r of data.rent) {
         if (r > dmin) dmin = r;
       }
       if (dmin == 0) dmin = dmax;
-      else dmin += 100;
+      else dmin += 40;
 
       // 전/월세가 존재하는 경우 그거에 대한 그래프도 따로 보여주기
       let ctx_rent = $("#chart-area-rent");
@@ -605,6 +607,7 @@ export default {
         .get("/rest/house/detail/" + no)
         .then(response => {
           this.house = response.data.house;
+          this.pyung = (this.house.area*0.3025).toFixed(2);
         })
         .catch(error => {
           alert("Error: ", error);

@@ -1,6 +1,7 @@
 <template>
 		<div>
     <section class="content-box">
+      <br>
       <h2 style="text-align : center">Q & A</h2>
       <br>
       <div class="article-box">

@@ -75,7 +75,9 @@
                 placeholder="아파트 이름을 입력해주세요"
               />
               <button @click.prevent="search" class="btn btn-primary">검색</button>
+              <span v-if="this.$store.state.name!=''">
               <button @click.prevent="addRegion" class="btn btn-secondary ml-2">관심지역에 추가</button>
+              </span>
             </div>
           </div>
         </form>
