@@ -15,11 +15,33 @@
 			userid = #{value}
 	</select>
 	
+	<select id="searchApt"
+		resultType="HouseInfo">
+		select 
+			* 
+		from 
+			houseinfo
+		where 
+			address in (
+    			select 
+    				address
+    			from
+    				housedeal 
+    			where
+    				no in( select no from apt where userid = #{value}))
+	</select>
+	
 	<insert id="addInterestRegion">
 		insert into
 			interestregion(sigungu, userid)
 		values
 			(#{sigungu}, #{userid})
+	</insert>
+	<insert id="addApt">
+		insert into
+			apt (userid, no)
+		values
+			(#{userid}, #{no})
 	</insert>
 
 	<delete id="deleteInterestRegion">

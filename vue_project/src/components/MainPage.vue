@@ -426,7 +426,10 @@ export default {
           }
         })
         .catch(error => {
-          alert("Error: " + error);
+          if(error == "Error: Network Error")
+            alert("이미 추가된 지역입니다.");
+          else
+            alert(error);
         });
     },
     search() {
@@ -543,6 +546,6 @@ th > i {
 }
 
 #house-map {
-  height: 800px;
+  height: 600px;
 }
 </style>

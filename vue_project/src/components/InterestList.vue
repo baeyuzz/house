@@ -2,7 +2,7 @@
   <div id="root-template-box">
     <div class="mt-3 row">
       <!-- 관심지역 목록 -->
-      <button class="btn btn-danger ml-5" @click="grepInterestRegion">집 나간 관심지역정보 데려오기</button>
+      <!-- <button class="btn btn-danger ml-5" @click="grepInterestRegion">집 나간 관심지역정보 데려오기</button> -->
       <div id="sidebox" class="interest-table">
         <div class="table-responsive">
           <table class="table table-hover table-bordered">
@@ -61,7 +61,7 @@
         <template v-show="envs.length > 0 || shops.length > 0">
           <div class="container category-box">
             <!-- 현재 표시되는 지역에 대한 정보 -->
-            <h2>{{sigudong}} - {{infotype}}</h2>
+            <h3>{{sigudong}} {{infotype}}</h3>
             <!-- 상점 카테고리 -->
             <div v-show="shops.length > 0" class="category">
               <ul>
@@ -211,6 +211,7 @@ export default {
       regions: [],
       shops: [],
       envs: [],
+      apts:[],
 
       curIdx: -1,
 
@@ -285,6 +286,68 @@ export default {
     this.isUpdated = true;
   },
   methods: {
+    apt(){
+      http
+        .post("/rest/interest/myAptList", {
+          id: this.$store.state.id,
+        })
+        .then(response => {
+          if(response.data.list != null){
+            for(var a of response.data.list){
+              var markerPosition  = new kakao.maps.LatLng(a.lat,a.lng); 
+          // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+              position: markerPosition,
+            });
+            marker.setMap(this.map);
+
+
+            var iwContent = '<div style="padding :5px">'+ a.aptName +'</div>';
+
+            var infowindow = new kakao.maps.InfoWindow({
+              content : iwContent
+              , clickable : true
+            });
+
+            kakao.maps.event.addListener(
+              marker,
+              "mouseover",
+              this.makeOverListener(this.map, marker, infowindow)
+            );
+
+            // 마커에 마우스아웃 이벤트를 등록합니다
+            kakao.maps.event.addListener(
+              marker,
+              "mouseout",
+              this.makeOutListener(infowindow)
+            );
+
+            // kakao.maps.event.addListener(
+            //   marker,
+            //   "click",
+            //   this.makeClickListener(infowindow)
+            // );
+            }
+          }
+        })
+        .catch(error => {
+          alert("Error: " + error);
+        });
+
+
+    },
+    makeClickListener(infowindow) {
+      let vue = this;
+      return function() {
+        console.log(infowindow.trickVal);
+        vue.goDetail(infowindow.trickVal);
+      };
+    },
+    goDetail(no) {
+      console.log(no);
+      this.$router.push("/house/detail/" + no);
+    },
+
     shopCategorySet() {
       var foodMenu = document.getElementById("foodMenu");
       var lifeMenu = document.getElementById("lifeMenu");
@@ -502,7 +565,7 @@ export default {
     },
     initMap() {
       if (this.mapList.length == 0) return;
-
+      
       if (this.shops.length > 0) {
         this.initMapForShop();
       } else {
@@ -636,16 +699,16 @@ export default {
           "mouseout",
           vue.makeOutListener(infowindow)
         );
-        kakao.maps.event.addListener(
-          marker,
-          "click",
-          vue.makeClickListener(infowindow)
-        );
+        // kakao.maps.event.addListener(
+        //   marker,
+        //   "click",
+        //   vue.makeClickListener(infowindow)
+        // );
 
         return marker;
       }
 
-      // Narker 들 생성
+      // Marker 들 생성
       let point_h = 0;
       for (let seo_i = 0; seo_i < 7; seo_i++) {
         let poss = positions[seo_i];
@@ -671,6 +734,7 @@ export default {
       }
 
       // 기본적으로 food 마커들이 보이게 함
+      this.apt();
       this.changeMarker("food");
       console.log("Add all marker complete");
     },
@@ -787,6 +851,7 @@ export default {
       }
 
       // 기본적으로 ground 마커들이 보이게 함
+      this.apt();
       this.changeEnvMarker("ground");
     },
     makeOverListener(map, marker, infowindow) {
@@ -799,11 +864,12 @@ export default {
         infowindow.close();
       };
     },
-    makeClickListener(infowindow) {
-      return function() {
-        console.log(infowindow.trickVal);
-      };
-    },
+    // makeClickListener(infowindow) {
+    //   return function() {
+    //     vue.goDetail(infowindow.trickVal);
+    //     console.log(infowindow.trickVal);
+    //   };
+    // },
     setMarkers(map, idx) {
       let markers = this.shopMarkers[idx];
       for (var i = 0; i < markers.length; i++) {
@@ -889,6 +955,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style scoped>
@@ -914,14 +981,14 @@ td {
 #sidebox {
   background-color: white;
   position: absolute;
-  top: 433px;
-  left: 20px;
-  width: 350px;
+  top: 30%;
+  left: 3%;
+  width: 400px;
   max-height: 800px;
 }
 
 #sidebox th {
-  background-color: aquamarine;
+  background-color: skyblue;
 }
 
 #map {

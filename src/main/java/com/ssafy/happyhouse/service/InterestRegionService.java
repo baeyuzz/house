@@ -1,7 +1,9 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.ssafy.happyhouse.dto.HouseInfo;
 import com.ssafy.happyhouse.dto.InterestRegion;
 public interface InterestRegionService {
 
@@ -23,4 +25,10 @@ public interface InterestRegionService {
 	 * @param no	삭제할 관심지역의 일련번호
 	 */
 	public boolean deleteInterestRegion(InterestRegion ir);
+
+	public List<HouseInfo> searchApt(String id);
+
+	public boolean addApt(Map<String, Object> map);
+
+	public int getNo(int i);
 }

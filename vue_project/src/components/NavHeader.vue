@@ -94,7 +94,7 @@ export default {
           this.$store.commit('setname', {name: response.data.name,
                                         id: response.data.id});
         } else {
-          console.log("Session don't has a data");
+          console.log("Session doesn't haved data");
         }
       })
       .catch(error => {

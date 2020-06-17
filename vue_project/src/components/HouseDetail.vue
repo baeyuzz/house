@@ -73,6 +73,9 @@
           </table>
 
           <router-link class="btn btn-info" to="/">메인으로 돌아가기</router-link>
+          &nbsp;
+          &nbsp;
+          <button class="btn btn-warning" @click="addMyApts">찜 ♡</button>
         </div>
       </div>
 
@@ -228,6 +231,45 @@ export default {
     }
   },
   methods: {
+    addMyApts(){
+       http
+          .post("/rest/interest/addMyApt", {
+            no: this.house.no,
+            id: this.$store.state.id,
+          })
+          .then(() => {
+            console.log("add my apt ", this.house.no, this.$store.state.id);
+          })
+          .catch(error => {
+            alert("Error: " + error);
+          });
+
+        var sigunguList = this.house.address.split(" ");
+        var sigungu = sigunguList[0] + " "+sigunguList[1] + " " + sigunguList[2];
+        console.log(sigungu);
+        http
+        .post("/rest/interest", {
+          sigungu : sigungu,
+          userid: this.$store.state.id,
+        })
+        .then(response => {
+          if (response.data) {
+            alert("찜한 내역은 관심지역 보기에서 확인하실 수 있습니다")
+            // alert("관심지역이 추가되었습니다");
+            // this.$router.push('/interest/list');
+          } else {
+            alert("관심지역 추가 실패");
+          }
+        })
+        .catch(error => {
+          if(error == "Error: Network Error")
+            alert("찜한 내역은 관심지역 보기에서 확인하실 수 있습니다")
+            // alert("이미 추가된 지역입니다.");
+          else
+            alert(error);
+        });
+
+    },
     initMap() {
       // 그냥 DB에 좌표 값을 가지고 있는게 편함
       this.setMap(new kakao.maps.LatLng(this.house.lat, this.house.lng));
