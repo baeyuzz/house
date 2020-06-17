@@ -46,7 +46,7 @@ public class HouseController {
 		this.service = service;
 	}
 
-	@ApiOperation(value = "아파트/주택 거래 테이블 페이지 이동")
+	@ApiOperation(value = "아파트/주택 거래 테이블 페이징 처리")
 	@ResponseBody
 	@PostMapping("/pagenav")
 	private ResponseEntity<Map<String, Object>> pageNav(@RequestBody Map<String, Object> param, HttpSession session) {
@@ -133,7 +133,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "아파트/주택 거래 상세 정보 조회")
+	@ApiOperation(value = "아파트/주택 거래 상세 정보 조회(거래 정보, 아파트 관련 뉴스)")
 	@ResponseBody
 	@GetMapping("/detail/{no}")
 	private ResponseEntity<Map<String, Object>> houseDetail(@PathVariable int no, HttpSession session) {
@@ -150,7 +150,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "아파트/주택 거래정보 검색")
+	@ApiOperation(value = "아파트/주택 거래정보 목록 검색")
 	@ResponseBody
 	@PostMapping("/list")
 	public ResponseEntity<Map<String, Object>> searchHouseDeal(@RequestBody Map<String, Object> params,
@@ -229,7 +229,7 @@ public class HouseController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "그래프를 그려주기 위한 데이터 조회")
+	@ApiOperation(value = "거래 내용 상세 정보 페이지에 그래프를 그려주기 위한 데이터 조회")
 	@ResponseBody
 	@PostMapping("/chart")
 	public ResponseEntity<Map<String, Object>> getChartData(@RequestBody Map<String, Object> param) {
@@ -296,18 +296,21 @@ public class HouseController {
 	}
 
 	// 아래 세 개는 검색에 필요한 select 를 설정하기 위해 있는 것
+	@ApiOperation(value = "데이터베이스에서 국내 도/시 목록 조회")
 	@GetMapping("/sidoname")
 	@ResponseBody
 	private ResponseEntity<List<String>> getSidoName() {
 		return new ResponseEntity<List<String>>(service.sidoName(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "도/시 에 대한 시/구/군 목록 조회")
 	@GetMapping("/gugunname/{sido}")
 	@ResponseBody
 	private ResponseEntity<List<String>> getGugunName(@PathVariable String sido) {
 		return new ResponseEntity<List<String>>(service.gugunName(sido), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "시/구/군 에 대한 읍/면/동 목록 조회")
 	@GetMapping("/dongname/{gugun}")
 	@ResponseBody
 	private ResponseEntity<List<String>> getDongName(@PathVariable String gugun) {
@@ -315,12 +318,14 @@ public class HouseController {
 	}
 
 	// 아래 두개는 DB 에 좌표를 넣기 위한 것
+	@ApiOperation(value = "좌표를 얻기 위한 주소를 DB 에서 조회")
 	@GetMapping("/houseaddress")
 	@ResponseBody
 	private ResponseEntity<List<String>> getAddresses() {
 		return new ResponseEntity<List<String>>(service.address(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "구한 좌표를 DB 에 업데이트")
 	@PutMapping("/addrtolng")
 	@ResponseBody
 	private ResponseEntity<Boolean> addrToLng(@RequestBody Map<String, Object> param) {

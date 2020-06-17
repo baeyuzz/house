@@ -39,7 +39,7 @@ public class EnvController {
 		this.service = service;
 	}
 	
-	@ApiOperation(value = "관심지역의 모든 환경관련 정보 조회")
+	@ApiOperation(value = "관심지역의 모든 환경관련 정보 조회(업체 리스트, 차트용 데이터, 지도 표시용 데이터)")
 	@ResponseBody
 	@PostMapping
 	private ResponseEntity<Map<String, Object>> envList(@RequestBody Map<String, Object> param) {
@@ -55,7 +55,7 @@ public class EnvController {
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "정렬")
+	@ApiOperation(value = "현재 환경 정보 리스트를 주어진 기준으로 정렬")
 	@ResponseBody
 	@PostMapping("/sort")
 	private ResponseEntity<List<LinkedHashMap<String, Object>>> sort(@RequestBody Map<String, Object> param) {
@@ -73,6 +73,7 @@ public class EnvController {
 	}
 	
 	// 아래 두 개는 DB 에 주소를 넣기 위한 것
+	@ApiOperation(value = "환경 정보 테이블에서 좌표를 얻기위한 주소 추출")
 	@ResponseBody
 	@GetMapping("/address")
 	private ResponseEntity<List<String>> getAddress() {
@@ -96,6 +97,7 @@ public class EnvController {
 		return new ResponseEntity<List<String>>(ret, HttpStatus.OK);
 	}
 	
+	@ApiOperation(value = "환경정보 테이블에 좌표값 입력")
 	@ResponseBody
 	@PostMapping("/update")
 	private ResponseEntity<Boolean> updateLngLat(@RequestBody Map<String, Object> param) {
