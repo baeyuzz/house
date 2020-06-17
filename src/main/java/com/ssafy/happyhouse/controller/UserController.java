@@ -35,7 +35,7 @@ public class UserController {
 		this.service = service;
 	}
 
-	@ApiOperation(value = "로그인")
+	@ApiOperation(value = "로그인(일치하는 유저 정보가 DB 에 있는지 조회)")
 	@ResponseBody
 	@PostMapping("/login")
 	private ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> map, HttpSession session) {
@@ -66,7 +66,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "로그아웃")
+	@ApiOperation(value = "로그아웃(세션 처리)")
 	@ResponseBody
 	@GetMapping("/logout")
 	private ResponseEntity<String> logout(HttpSession session) {
@@ -97,7 +97,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "비밀번호 찾기")
+	@ApiOperation(value = "비밀번호 찾기(주어진 정보와 일치하는 유저가 DB 에 있는지 조회)")
 	@ResponseBody
 	@PostMapping("/findpw")
 	private ResponseEntity<Map<String, Object>> findPw2(@RequestBody Map<String, Object> map, HttpSession session) {
@@ -150,7 +150,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "마이페이지")
+	@ApiOperation(value = "마이페이지(유저의 상세 정보 조회)")
 	@ResponseBody
 	@GetMapping("/mypage/{userid}")
 	private ResponseEntity<Map<String, Object>> mypage(@PathVariable String userid, HttpSession session) {
@@ -196,6 +196,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 	
+	@ApiOperation(value = "유저 정보 삭제")
 	@ResponseBody
 	@GetMapping("/closeAccount/{userid}")
 	private ResponseEntity<Map<String, Object>> close(@PathVariable String userid, HttpSession session) {

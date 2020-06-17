@@ -65,7 +65,7 @@ public class ShopController {
 		return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "정렬")
+	@ApiOperation(value = "현재 상권 정보 테이블을 주어진 조건으로 정렬")
 	@ResponseBody
 	@PostMapping("/sort")
 	private ResponseEntity<List<LinkedHashMap<String, Object>>> sort(@RequestBody Map<String, Object> param) {
