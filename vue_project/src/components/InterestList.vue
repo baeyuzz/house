@@ -741,7 +741,7 @@ export default {
       }
       map.setBounds(bounds);
 
-      var markerImageSrc = "http://127.0.0.1:8080/img/shop_category.png";
+      var markerImageSrc = "http://127.0.0.1:8080/img/env_category.png";
 
       // 아래 Marker 생성에서 쓰일 함수 두개
       // 마커이미지의 주소와, 크기, 옵션으로 마커 이미지를 생성하여 리턴하는 함수입니다
@@ -1038,7 +1038,7 @@ td {
   margin: 0 auto 2px;
   width: 22px;
   height: 26px;
-  background: url("http://127.0.0.1:8080/img/shop_category.png") no-repeat;
+  background: url("http://127.0.0.1:8080/img/env_category.png") no-repeat;
 }
 .env-category .ico_ground {
   background-position: -10px 0;
