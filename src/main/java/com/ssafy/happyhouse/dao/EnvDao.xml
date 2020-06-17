@@ -23,4 +23,32 @@
 		group by
 			type
 	</select>
+	
+	<select id="getMapData" resultType="EnvInfo">
+		select distinct
+			type
+			, lng
+			, lat
+		from
+			envinfo
+		where
+			sigudong = #{value}
+	</select>
+	
+	<select id="getAddress" resultType="String">
+		select
+			address
+		from
+			envinfo
+	</select>
+	
+	<update id="updateLngLat">
+		update
+			envinfo
+		set
+			lng		= #{lng}
+			, lat	= #{lat}
+		where
+			address like concat(#{address}, '%')
+	</update>
 </mapper>

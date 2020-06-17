@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.happyhouse.dto.HouseDeal;
-import com.ssafy.happyhouse.dto.HouseInfo;
 import com.ssafy.happyhouse.dto.HousePageBean;
 import com.ssafy.happyhouse.news.NaverNewsApi;
 import com.ssafy.happyhouse.news.News;

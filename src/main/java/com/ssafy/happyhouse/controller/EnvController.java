@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,10 +46,12 @@ public class EnvController {
 		String sigudong = (String)param.get("sigudong");
 		List<EnvInfo> list = service.searchAllEnvInfo(sigudong);
 		List<EnvChartData> chart = service.chartData();
+		List<EnvInfo> map = service.getMapData(sigudong);
 		
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		ret.put("list", list);
 		ret.put("chart", chart);
+		ret.put("map", map);
 		return new ResponseEntity<Map<String,Object>>(ret, HttpStatus.OK);
 	}
 	
@@ -68,5 +70,35 @@ public class EnvController {
 		Collections.sort(envList, EnvComparator.getComparator(by));
 
 		return new ResponseEntity<List<LinkedHashMap<String, Object>>>(envList, HttpStatus.OK);
+	}
+	
+	// 아래 두 개는 DB 에 주소를 넣기 위한 것
+	@ResponseBody
+	@GetMapping("/address")
+	private ResponseEntity<List<String>> getAddress() {
+		List<String> list = service.getAddress();
+		
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		for(String address : list) {
+			String[] strs = address.split(" ");
+			
+			if(strs.length < 4) continue;
+			
+			strs[3] = strs[3].replace("번지", "");
+			String addr = strs[0] + " " + 
+						  strs[1] + " " + 
+						  strs[2] + " " + strs[3];
+			
+			ret.add(addr);
+		}
+		
+		return new ResponseEntity<List<String>>(ret, HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@PostMapping("/update")
+	private ResponseEntity<Boolean> updateLngLat(@RequestBody Map<String, Object> param) {
+		return new ResponseEntity<Boolean>(service.updateLngLat(param), HttpStatus.OK);
 	}
 }

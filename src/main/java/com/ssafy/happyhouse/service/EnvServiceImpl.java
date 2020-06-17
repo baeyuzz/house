@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,21 @@ public class EnvServiceImpl implements EnvService{
 	@Override
 	public List<EnvChartData> chartData() {
 		return dao.chartData();
+	}
+
+	@Override
+	public List<String> getAddress() {
+		return dao.getAddress();
+	}
+
+	@Override
+	public boolean updateLngLat(Map<String, Object> param) {
+		return dao.updateLngLat(param) > 0;
+	}
+
+	@Override
+	public List<EnvInfo> getMapData(String sigudong) {
+		return dao.getMapData(sigudong);
 	}
 
 	

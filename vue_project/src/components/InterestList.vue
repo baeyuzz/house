@@ -98,6 +98,32 @@
             </ul>
           </div>
 
+          <!-- 환경 카테고리 -->
+          <div v-show="envs.length > 0" class="env-category">
+            <ul>
+              <li id="groundMenu" @click="changeEnvMarker('ground')">
+                <span class="ico_comm ico_ground"></span>
+                대기오염
+              </li>
+              <li id="waterMenu" @click="changeEnvMarker('water')">
+                <span class="ico_comm ico_water"></span>
+                수질오염
+              </li>
+              <li id="poisonMenu" @click="changeEnvMarker('poison')">
+                <span class="ico_comm ico_poison"></span>
+                유독물
+              </li>
+              <li id="trashMenu" @click="changeEnvMarker('trash')">
+                <span class="ico_comm ico_trash"></span>
+                폐기물
+              </li>
+              <li id="noiseMenu" @click="changeEnvMarker('noise')">
+                <span class="ico_comm ico_noise"></span>
+                소음진동
+              </li>
+            </ul>
+          </div>
+
           <!-- 상점, 환경 정보 테이블(내부 내용반 조건에 따라 바뀜) -->
           <div v-if="envs.length > 0 || shops.length > 0" class="container table-box">
             <div class="table-responsive info-table">
@@ -112,7 +138,15 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="env in envs" v-bind:key="env.no">
+                    <tr
+                      v-for="env in envs"
+                      v-bind:key="env.no"
+                      :class="{ground: env.type == '대기오염',
+                                 water: env.type == '수질오염',
+                                 poison: env.type == '유독물',
+                                 trash: env.type == '폐기물',
+                                 noise: env.type == '소음진동'}"
+                    >
                       <td>{{env.name}}</td>
                       <td>{{env.type}}</td>
                       <td>{{env.address}}</td>
@@ -134,6 +168,13 @@
                       v-for="(shop, index) in shops"
                       v-bind:key="shop.no"
                       @click="clickShop(index)"
+                      :class="{food: shop.type1 == '음식',
+                               life: shop.type1 == '생활서비스',
+                               shop: shop.type1 == '소매',
+                               study: shop.type1 == '학문/교육',
+                               house: shop.type1 == '부동산',
+                               play: shop.type1 == '관광/여가/오락',
+                               sleep: shop.type1 == '숙박'}"
                     >
                       <td :title="shop.name">{{shop.name}}</td>
                       <td :title="shop.type4">{{shop.type4}}</td>
@@ -173,7 +214,12 @@ export default {
       mapCreate: 0,
 
       shopMarkers: [],
-      shopSetMarkers: []
+      shopSetMarkers: [],
+
+      envMarkers: [],
+      envSetMarkers: [],
+
+      isUpdated: false
     };
   },
   watch: {
@@ -223,9 +269,78 @@ export default {
           1000
         );
     });
+
+    if(this.shops.length > 0) {
+      this.shopCategorySet();
+    } else if(this.envs.length > 0) {
+      this.envCategorySet();
+    }
+
+    this.isUpdated = true;
   },
   methods: {
+    shopCategorySet() {
+      var foodMenu = document.getElementById("foodMenu");
+      var lifeMenu = document.getElementById("lifeMenu");
+      var shopMenu = document.getElementById("shopMenu");
+      var studyMenu = document.getElementById("studyMenu");
+      var houseMenu = document.getElementById("houseMenu");
+      var playMenu = document.getElementById("playMenu");
+      var sleepMenu = document.getElementById("sleepMenu");
+
+      let menus = [
+        foodMenu,
+        lifeMenu,
+        shopMenu,
+        studyMenu,
+        houseMenu,
+        playMenu,
+        sleepMenu
+      ];
+      let trs = [
+        $(".food"),
+        $(".life"),
+        $(".shop"),
+        $(".study"),
+        $(".house"),
+        $(".play"),
+        $(".sleep")
+      ];
+
+      for(let i = 0; i < 7; i++) {
+        if(menus[i].className == "menu_selected") {
+          trs[i].show();
+        } else {
+          trs[i].hide();
+        }
+      }
+    },
+    envCategorySet() {
+      var groundMenu = document.getElementById("groundMenu");
+      var waterMenu = document.getElementById("waterMenu");
+      var poisonMenu = document.getElementById("poisonMenu");
+      var trashMenu = document.getElementById("trashMenu");
+      var noiseMenu = document.getElementById("noiseMenu");
+
+      let menus = [groundMenu, waterMenu, poisonMenu, trashMenu, noiseMenu];
+      let trs = [
+        $(".ground"),
+        $(".water"),
+        $(".poison"),
+        $(".trash"),
+        $(".noise")
+      ];
+
+      for(let i = 0; i < 5; i++) {
+        if(menus[i].className == "menu_selected") {
+          trs[i].show();
+        } else {
+          trs[i].hide();
+        }
+      }
+    },
     searchEnv(index) {
+      this.isUpdated = false;
       this.curIdx = index;
       console.log("searchEnv: " + this.regions[index].sigungu);
       http
@@ -236,8 +351,9 @@ export default {
           this.envs = response.data.list;
           this.shops = [];
 
-          // 환경정보는 맵 안쓰니까 숨기기
-          $("#map").hide();
+          // 맵 만들기
+          this.mapList = response.data.map;
+          this.mapCreate++;
 
           // 차트 만들기
           this.makeChart(response.data.chart, "env");
@@ -247,6 +363,7 @@ export default {
         });
     },
     searchShop(index) {
+      this.isUpdated = false;
       this.curIdx = index;
       console.log("searchShop: " + this.regions[index].sigungu);
       http
@@ -277,8 +394,8 @@ export default {
         data.push(d.count);
       }
 
-      let label = '';
-      if(gubun == "shop") {
+      let label = "";
+      if (gubun == "shop") {
         label = "상권 분포";
       } else {
         label = "환경 영향 분포";
@@ -484,9 +601,9 @@ export default {
 
         // 마커에 표시할 인포윈도우를 생성합니다
         var infowindow = new kakao.maps.InfoWindow({
-          content: positions.content // 인포윈도우에 표시할 내용
+          content: position.content // 인포윈도우에 표시할 내용
         });
-        infowindow.trickVal = positions.trickVal;
+        infowindow.trickVal = position.trickVal;
 
         // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
         // 이벤트 리스너로는 클로저를 만들어 등록합니다
@@ -541,6 +658,118 @@ export default {
     },
     initMapForEnv() {
       console.log("Map for env");
+      $("#map").show();
+
+      // 지도를 담을 컨테이너를 가져옵니다
+      var container = document.getElementById("map");
+      // 지도에 옵션을 설정합니다
+      var options = { level: 3 };
+      if (this.mapList.length > 0) {
+        options.center = new kakao.maps.LatLng(
+          this.mapList[0].lat,
+          this.mapList[0].lng
+        );
+      }
+
+      // 지도를 만들어 컨테이너에 붙입니다.
+      var map = new kakao.maps.Map(container, options);
+      console.log("Add map on dom complete");
+
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      var mapTypeControl = new kakao.maps.MapTypeControl();
+
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      var zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      console.log("Add control on map complete");
+
+      this.map = map;
+
+      // 각 카테고리 별 마커의 위치가 저장될 리스트
+      let positions = [];
+
+      // 각 카테고리 별 마커를 저장할 리스트 초기화
+      this.envMarkers = [];
+      for (let i = 0; i < 5; i++) {
+        this.envMarkers.push([]);
+
+        positions.push([]);
+      }
+
+      var bounds = new kakao.maps.LatLngBounds();
+      for (let env of this.mapList) {
+        let obj = {};
+        obj.latlng = new kakao.maps.LatLng(env.lat, env.lng);
+
+        // 각 카테고리별 마커 좌표 배열 셋팅
+        if (env.type == "대기오염") {
+          positions[0].push(obj);
+        } else if (env.type == "수질오염") {
+          positions[1].push(obj);
+        } else if (env.type == "유독물") {
+          positions[2].push(obj);
+        } else if (env.type == "폐기물") {
+          positions[3].push(obj);
+        } else if (env.type == "소음진동") {
+          positions[4].push(obj);
+        }
+
+        // 모든 마커가 다 보이는 형태로 지도 셋팅
+        bounds.extend(obj.latlng);
+      }
+      map.setBounds(bounds);
+
+      var markerImageSrc = "http://127.0.0.1:8080/img/shop_category.png";
+
+      // 아래 Marker 생성에서 쓰일 함수 두개
+      // 마커이미지의 주소와, 크기, 옵션으로 마커 이미지를 생성하여 리턴하는 함수입니다
+      function createMarkerImage(src, size, options) {
+        var markerImage = new kakao.maps.MarkerImage(src, size, options);
+        return markerImage;
+      }
+
+      // 좌표와 마커이미지를 받아 마커를 생성하여 리턴하는 함수입니다
+      function createMarker(position, image) {
+        // 마커 생성
+        var marker = new kakao.maps.Marker({
+          position: position.latlng,
+          image: image
+        });
+
+        return marker;
+      }
+
+      // Narker 들 생성
+      let point_h = 0;
+      for (let seo_i = 0; seo_i < 5; seo_i++) {
+        let poss = positions[seo_i];
+        for (var i = 0; i < poss.length; i++) {
+          var imageSize = new kakao.maps.Size(22, 26),
+            imageOptions = {
+              spriteOrigin: new kakao.maps.Point(10, point_h),
+              spriteSize: new kakao.maps.Size(36, 250)
+            };
+
+          // 마커이미지와 마커를 생성합니다
+          var markerImage = createMarkerImage(
+              markerImageSrc,
+              imageSize,
+              imageOptions
+            ),
+            marker = createMarker(poss[i], markerImage);
+
+          // 생성된 마커를 마커 배열에 추가합니다
+          this.envMarkers[seo_i].push(marker);
+        }
+        point_h += 36;
+      }
+
+      // 기본적으로 ground 마커들이 보이게 함
+      this.changeEnvMarker("ground");
     },
     makeOverListener(map, marker, infowindow) {
       return function() {
@@ -559,6 +788,12 @@ export default {
     },
     setMarkers(map, idx) {
       let markers = this.shopMarkers[idx];
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+      }
+    },
+    setEnvMarkers(map, idx) {
+      let markers = this.envMarkers[idx];
       for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
       }
@@ -591,14 +826,44 @@ export default {
       else if (type == "play") targ = 5;
       else if (type == "sleep") targ = 6;
 
-      for (let i = 0; i < 7; i++) {
-        if (i == targ) {
-          menus[i].className = "menu_selected";
-          this.setMarkers(this.map, i);
-        } else {
-          menus[i].className = "";
-          this.setMarkers(null, i);
-        }
+      if (menus[targ].className == "menu_selected") {
+        menus[targ].className = "";
+        this.setMarkers(null, targ);
+      } else {
+        menus[targ].className = "menu_selected";
+        this.setMarkers(this.map, targ);
+      }
+
+      if(this.isUpdated) {
+        this.shopCategorySet();
+      }
+    },
+    changeEnvMarker(type) {
+      var groundMenu = document.getElementById("groundMenu");
+      var waterMenu = document.getElementById("waterMenu");
+      var poisonMenu = document.getElementById("poisonMenu");
+      var trashMenu = document.getElementById("trashMenu");
+      var noiseMenu = document.getElementById("noiseMenu");
+
+      let menus = [groundMenu, waterMenu, poisonMenu, trashMenu, noiseMenu];
+
+      let targ = 0;
+      if (type == "ground") targ = 0;
+      else if (type == "water") targ = 1;
+      else if (type == "poison") targ = 2;
+      else if (type == "trash") targ = 3;
+      else if (type == "noise") targ = 4;
+
+      if (menus[targ].className == "menu_selected") {
+        menus[targ].className = "";
+        this.setEnvMarkers(null, targ);
+      } else {
+        menus[targ].className = "menu_selected";
+        this.setEnvMarkers(this.map, targ);
+      }
+
+      if(this.isUpdated) {
+        this.envCategorySet();
       }
     },
     grepInterestRegion() {
@@ -722,5 +987,64 @@ td {
 }
 .category .ico_sleep {
   background-position: -10px -216px;
+}
+
+/* 환경 정보의 카테고리를 위하여 */
+.env-category,
+.env-category * {
+  margin: 0;
+  padding: 0;
+  color: #000;
+}
+.env-category {
+  position: absolute;
+  overflow: hidden;
+  top: 10px;
+  left: 65px;
+  width: 410px;
+  height: 60px;
+  z-index: 10;
+  border: 1px solid black;
+  font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+  font-size: 12px;
+  text-align: center;
+  background-color: #fff;
+}
+.env-category .menu_selected {
+  background: #ff5f4a;
+  color: #fff;
+  border-left: 1px solid #915b2f;
+  border-right: 1px solid #915b2f;
+  margin: 0 -1px;
+}
+.env-category li {
+  list-style: none;
+  float: left;
+  width: 80px;
+  height: 60px;
+  padding-top: 10px;
+  cursor: pointer;
+}
+.env-category .ico_comm {
+  display: block;
+  margin: 0 auto 2px;
+  width: 22px;
+  height: 26px;
+  background: url("http://127.0.0.1:8080/img/shop_category.png") no-repeat;
+}
+.env-category .ico_ground {
+  background-position: -10px 0;
+}
+.env-category .ico_water {
+  background-position: -10px -36px;
+}
+.env-category .ico_poison {
+  background-position: -10px -72px;
+}
+.env-category .ico_trash {
+  background-position: -10px -108px;
+}
+.env-category .ico_noise {
+  background-position: -10px -144px;
 }
 </style>
